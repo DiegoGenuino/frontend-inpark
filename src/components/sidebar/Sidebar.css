@@ -1,0 +1,48 @@
+aside {
+    width: fit-content;
+    height: 100vh;
+    background-color: FFFFFF;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    color: #ffffff;
+    padding: 0 10px;
+    border-right: 1px solid #00000080;
+}
+
+aside ul {}
+
+aside ul li {
+    list-style: none;
+}
+
+aside ul li a {
+    color: #00000050;
+    text-decoration: none;
+}
+
+aside .sidebar-header{
+    display: flex;
+    padding: 0 10px;
+    justify-content: center;
+    align-items: center;
+}
+aside .sidebar-user-picture {
+    width: 5rem;
+    height: 5rem;
+    background-size: cover;
+    background-color: #000000;
+    border-radius: 5rem;
+}
+
+aside .sidebar-user-information {
+    display: flex;
+    flex-direction: column;
+    color: #000000;
+}
+
+aside .sidebar-user-information .inpark-logotipo {
+    width: 5rem;
+    height: 5rem;
+
+}
