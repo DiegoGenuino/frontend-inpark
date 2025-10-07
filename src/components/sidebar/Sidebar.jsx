@@ -20,6 +20,7 @@ export const Sidebar = () => {
                 <li><Link to="/">Menu</Link></li>
                 <li><Link to="/estacionamentos">Estacionamentos</Link></li>
                 <li><Link to="/minhas-reservas">Minhas reservas</Link></li>
+           <li><Link to="/signup">Signup</Link></li>
 
                 {role === 'usuario' && (
                     <>
