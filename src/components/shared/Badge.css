@@ -1,0 +1,111 @@
+/* Badge Component - Minimalista */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 500;
+  border-radius: 4px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+/* Tamanhos */
+.badge--sm {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  line-height: 1rem;
+}
+
+.badge--md {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.badge--lg {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+}
+
+/* Variantes */
+.badge--default {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.badge--success {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.badge--warning {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.badge--danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.badge--info {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.badge--dark {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+/* Dot indicator */
+.badge__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+}
+
+.badge--sm .badge__dot {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+.badge--lg .badge__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+/* Dot with specific colors */
+.badge--success .badge__dot {
+  background: #10b981;
+}
+
+.badge--warning .badge__dot {
+  background: #f59e0b;
+}
+
+.badge--danger .badge__dot {
+  background: #ef4444;
+}
+
+.badge--info .badge__dot {
+  background: #3b82f6;
+}
+
+.badge--default .badge__dot {
+  background: #6b7280;
+}
+
+.badge--dark .badge__dot {
+  background: #ffffff;
+}

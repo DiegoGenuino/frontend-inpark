@@ -1,0 +1,693 @@
+/* Página Principal */
+.pagamento-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+/* Header */
+.pagamento-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pagamento-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.btn-voltar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-voltar:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+/* Container Principal */
+.pagamento-container {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 32px;
+}
+
+/* Conteúdo Principal */
+.pagamento-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.error-message .icon {
+  font-size: 16px;
+}
+
+/* Seções */
+.secao {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.secao h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+/* 1. Resumo da Transação */
+.resumo-transacao .resumo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resumo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.resumo-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.info-icon {
+  color: #3b82f6;
+  font-size: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 4px 0;
+}
+
+.info-valor {
+  font-size: 14px;
+  color: #374151;
+  margin: 0 0 2px 0;
+  font-weight: 500;
+}
+
+.info-endereco {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.resumo-total {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.valor-total {
+  color: #059669;
+  font-size: 24px;
+}
+
+/* 2. Métodos de Pagamento */
+.metodos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.metodo-card {
+  position: relative;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: white;
+}
+
+.metodo-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.metodo-card.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.metodo-card input[type="radio"] {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.metodo-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.metodo-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.metodo-icon.pix {
+  color: #00aa5e;
+}
+
+.metodo-icon.cartao {
+  color: #3b82f6;
+}
+
+.metodo-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.metodo-info p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 2px 0;
+}
+
+.metodo-info small {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* 3. Formulário PIX */
+.pix-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.pix-qrcode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qr-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.qr-placeholder svg {
+  color: #00aa5e;
+}
+
+.pix-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pix-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+}
+
+.pix-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.pix-item:last-child {
+  margin-bottom: 0;
+}
+
+.pix-item span:first-child {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.pix-item span:last-child {
+  color: #374151;
+  font-weight: 600;
+}
+
+.pix-codigo label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.codigo-container {
+  display: flex;
+  gap: 8px;
+}
+
+.codigo-text {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: monospace;
+  resize: none;
+  height: 80px;
+  background: #f9fafb;
+}
+
+.btn-copiar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  height: fit-content;
+}
+
+.btn-copiar:hover {
+  background: #2563eb;
+}
+
+.btn-copiar.copiado {
+  background: #059669;
+}
+
+.pix-instrucoes {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.pix-instrucoes .icon {
+  color: #3b82f6;
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pix-instrucoes p {
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.pix-instrucoes ol {
+  margin: 0;
+  padding-left: 16px;
+  color: #374151;
+}
+
+.pix-instrucoes li {
+  margin-bottom: 4px;
+}
+
+/* 3. Formulário do Cartão */
+.cartao-container {
+  width: 100%;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.campo label .icon {
+  color: #3b82f6;
+  font-size: 16px;
+}
+
+.form-input {
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.campo-grupo {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.campo-checkbox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-label small {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Sidebar */
+.pagamento-sidebar {
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resumo-pagamento {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.resumo-pagamento h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.resumo-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.resumo-linha:last-child {
+  margin-bottom: 0;
+}
+
+.resumo-linha span:first-child {
+  color: #6b7280;
+}
+
+.resumo-linha span:last-child {
+  color: #374151;
+  font-weight: 600;
+}
+
+.resumo-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 12px 0;
+}
+
+.resumo-linha.total {
+  font-size: 16px;
+  font-weight: 700;
+  padding-top: 8px;
+}
+
+.resumo-linha.total span:last-child {
+  color: #059669;
+  font-size: 18px;
+}
+
+.acoes-pagamento {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-finalizar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-finalizar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+}
+
+.btn-finalizar:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-cancelar {
+  padding: 12px 24px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-cancelar:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.loading-spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.seguranca-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.seguranca-info .icon {
+  color: #0ea5e9;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.seguranca-info p {
+  margin: 0 0 4px 0;
+  color: #0c4a6e;
+  font-weight: 600;
+}
+
+.seguranca-info small {
+  color: #0369a1;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .pagamento-page {
+    padding: 16px;
+  }
+  
+  .pagamento-header h1 {
+    font-size: 24px;
+  }
+  
+  .pagamento-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .pagamento-sidebar {
+    position: static;
+    order: -1;
+  }
+  
+  .metodos-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pix-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .campo-grupo {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .codigo-container {
+    flex-direction: column;
+  }
+  
+  .btn-copiar {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .metodo-card {
+    padding: 16px;
+  }
+  
+  .metodo-content {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  .metodo-card input[type="radio"] {
+    position: static;
+    margin-bottom: 8px;
+  }
+  
+  .campo-grupo {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-input {
+    font-size: 16px; /* Evita zoom no iOS */
+  }
+}

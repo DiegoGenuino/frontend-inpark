@@ -1,0 +1,494 @@
+/* Página Principal */
+.confirmacao-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+/* Container Principal */
+.confirmacao-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header de Sucesso */
+.sucesso-header {
+  text-align: center;
+  background: white;
+  padding: 40px 24px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.sucesso-icon {
+  margin-bottom: 16px;
+}
+
+.sucesso-icon svg {
+  font-size: 64px;
+  color: #059669;
+}
+
+.sucesso-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.sucesso-header p {
+  font-size: 18px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Informações da Transação */
+.transacao-info {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.transacao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.transacao-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.btn-imprimir {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-imprimir:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.transacao-detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detalhe-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.detalhe-linha .label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.detalhe-linha .valor {
+  color: #374151;
+  font-weight: 600;
+}
+
+.detalhe-linha .valor.destaque {
+  color: #059669;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Detalhes da Reserva */
+.reserva-confirmada {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.reserva-confirmada h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.reserva-card-confirmacao {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  background: #f9fafb;
+}
+
+.reserva-codigo {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.codigo-label {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.codigo-valor {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3b82f6;
+  font-family: monospace;
+}
+
+.reserva-detalhes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.detalhe-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detalhe-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detalhe-header .icon {
+  color: #3b82f6;
+  font-size: 18px;
+}
+
+.detalhe-header .title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.detalhe-content {
+  padding-left: 26px;
+}
+
+.detalhe-content p {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.detalhe-content p:last-child {
+  margin-bottom: 0;
+}
+
+.detalhe-content .nome {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.detalhe-content .placa {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 16px;
+}
+
+.detalhe-content .valor-final {
+  font-weight: 700;
+  color: #059669;
+  font-size: 16px;
+}
+
+.detalhe-content .status-pagamento {
+  color: #059669;
+  font-weight: 600;
+}
+
+/* Próximos Passos */
+.proximos-passos {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.proximos-passos h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.passos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.passo {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+}
+
+.passo-numero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.passo-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.passo-content p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Ações */
+.acoes-confirmacao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.btn-qrcode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-qrcode:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.btn-minhas-reservas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-minhas-reservas:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-home:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Informações de Contato */
+.info-contato {
+  text-align: center;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.info-contato h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e40af;
+  margin: 0 0 8px 0;
+}
+
+.info-contato p {
+  font-size: 14px;
+  color: #1e40af;
+  margin: 0 0 12px 0;
+}
+
+.contato-opcoes {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.contato-opcoes span {
+  font-size: 14px;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .confirmacao-page {
+    padding: 16px;
+  }
+  
+  .sucesso-header {
+    padding: 32px 20px;
+  }
+  
+  .sucesso-header h1 {
+    font-size: 28px;
+  }
+  
+  .sucesso-icon svg {
+    font-size: 48px;
+  }
+  
+  .transacao-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .reserva-detalhes-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .contato-opcoes {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reserva-card-confirmacao {
+    padding: 16px;
+  }
+  
+  .codigo-valor {
+    font-size: 20px;
+  }
+  
+  .passo {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .passo-numero {
+    align-self: center;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .confirmacao-page {
+    background: white;
+    padding: 0;
+  }
+  
+  .btn-imprimir,
+  .acoes-confirmacao,
+  .info-contato {
+    display: none;
+  }
+  
+  .confirmacao-container {
+    gap: 16px;
+  }
+  
+  .sucesso-header,
+  .transacao-info,
+  .reserva-confirmada,
+  .proximos-passos {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    page-break-inside: avoid;
+  }
+}

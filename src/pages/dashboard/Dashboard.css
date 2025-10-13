@@ -1,0 +1,996 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+* {
+  font-family: "Poppins";
+  font-weight: 400;
+}
+
+.dashboard {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Header Principal da Dashboard */
+.dashboard-main-header {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 32px;
+  color: #1a1a1a;
+  box-shadow: 0 4px 2px rgba(195, 255, 0, 0.15);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.dashboard-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.dashboard-subtitle {
+  font-size: 18px;
+  color: #4a5a00;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.quick-action-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #1a1a1a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.quick-action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.quick-action-btn svg {
+  font-size: 24px;
+}
+
+/* Stats Rápidas */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #c2fe00;
+  background: linear-gradient(338deg, #c2fe00 0%, #ffffff 56%);
+}
+
+.stat-card:hover {
+  background: linear-gradient(
+    338deg,
+    rgba(194, 254, 0, 1) 0%,
+    rgba(255, 255, 255, 1) 70%
+  );
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: var(--bg-gray-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+}
+
+.stat-icon svg {
+  font-size: 24px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #4a5a00;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Seções do Dashboard */
+.search-section,
+.reserva-ativa-section,
+.estacionamentos-proximos-section,
+.menu-navegacao-section {
+  margin-bottom: 40px;
+}
+
+.search-section h2,
+.reserva-ativa-section h2,
+.estacionamentos-proximos-section h2,
+.menu-navegacao-section h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+/* 1. Busca Rápida */
+.quick-search {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  color: #9ca3af;
+  font-size: 20px;
+  z-index: 1;
+}
+
+.search-input {
+  flex: 1;
+  padding: 16px 16px 16px 48px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px 0 0 12px;
+  font-size: 16px;
+  transition: border-color 0.15s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-button {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 0 12px 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.search-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.location-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  color: #3b82f6;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  align-self: flex-start;
+}
+
+.location-button:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+/* 3. Reserva Ativa */
+.reserva-ativa-card {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+}
+
+.reserva-info {
+  flex: 1;
+}
+
+.estacionamento-nome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.estacionamento-nome .icon {
+  font-size: 24px;
+}
+
+.estacionamento-nome h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.reserva-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.detail-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.ver-detalhes-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ver-detalhes-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 2. Estacionamentos Próximos */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ver-todos-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.ver-todos-btn:hover {
+  color: #1d4ed8;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.estacionamentos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.estacionamento-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.estacionamento-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  padding: 16px 16px 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.distancia {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.card-content {
+  padding: 16px;
+}
+
+.endereco {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.endereco .icon {
+  color: #6b7280;
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.endereco span {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.vagas-info {
+  margin-bottom: 12px;
+}
+
+.vagas-count {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.vagas-disponiveis {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.vagas-total {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.vagas-status {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preco {
+  margin-bottom: 16px;
+}
+
+.preco span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #059669;
+}
+
+.reservar-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reservar-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.reservar-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 4. Menu de Navegação */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.menu-item:hover {
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.menu-icon {
+  font-size: 24px;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.menu-content {
+  flex: 1;
+}
+
+.menu-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.menu-content p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.chevron {
+  font-size: 20px;
+  color: #9ca3af;
+  transition: color 0.15s ease;
+}
+
+.menu-item:hover .chevron {
+  color: #3b82f6;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+
+  /* Responsividade para o novo header */
+  .dashboard-main-header {
+    padding: 24px 20px;
+    margin-bottom: 24px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-title {
+    font-size: 28px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 16px;
+  }
+
+  .header-actions {
+    align-self: flex-end;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-number {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+  }
+
+  /* Header antigo */
+  .dashboard-header h1 {
+    font-size: 28px;
+  }
+
+  .dashboard-header p {
+    font-size: 16px;
+  }
+
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-input {
+    border-radius: 12px;
+  }
+
+  .search-button {
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+
+  .reserva-ativa-card {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .reserva-details {
+    justify-content: center;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .estacionamentos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-input {
+    font-size: 16px; /* Evita zoom no iOS */
+  }
+}
+
+/* Seção de Opções Rápidas */
+.quick-actions-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.quick-actions-section h2 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.quick-action-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.quick-action-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(194, 254, 0, 0.2);
+  border-color: #c2fe00;
+}
+
+.quick-action-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #c2fe00 0%, #8bb800 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2c3e50;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.quick-action-content {
+  flex: 1;
+}
+
+.quick-action-content h3 {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.quick-action-content p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.quick-action-item .chevron {
+  color: #6c757d;
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.quick-action-item:hover .chevron {
+  transform: translateX(4px);
+  color: #c2fe00;
+}
+
+/* Responsividade para opções rápidas */
+@media (max-width: 768px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-action-item {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .quick-action-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .quick-action-content h3 {
+    font-size: 1rem;
+  }
+
+  .quick-action-content p {
+    font-size: 0.85rem;
+  }
+}
+
+/* Seção do Gráfico de Gastos */
+.gastos-chart-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.chart-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.chart-icon {
+  color: #c2fe00;
+  font-size: 28px;
+}
+
+.chart-stats {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.stat-item .stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.stat-item .stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #c2fe00;
+}
+
+.chart-container {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+/* Responsividade do gráfico */
+@media (max-width: 1200px) {
+  .chart-container {
+    height: 350px;
+  }
+
+  .chart-stats {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 992px) {
+  .gastos-chart-section {
+    padding: 20px;
+  }
+
+  .chart-container {
+    height: 320px;
+  }
+
+  .chart-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .stat-item .stat-value {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .gastos-chart-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+
+  .chart-stats {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .stat-item {
+    align-items: flex-start;
+    text-align: left;
+    flex: 1;
+  }
+
+  .chart-container {
+    height: 280px;
+    padding: 12px;
+  }
+
+  .chart-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .chart-icon {
+    font-size: 26px;
+  }
+
+  .stat-item .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .gastos-chart-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .chart-header {
+    margin-bottom: 16px;
+  }
+
+  .chart-stats {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .stat-item {
+    width: 100%;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .chart-container {
+    height: 250px;
+    padding: 8px;
+  }
+
+  .chart-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .chart-icon {
+    font-size: 22px;
+  }
+
+  .stat-item .stat-value {
+    font-size: 0.95rem;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gastos-chart-section {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .chart-container {
+    height: 220px;
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  .chart-header h2 {
+    font-size: 1.1rem;
+    gap: 8px;
+  }
+
+  .chart-icon {
+    font-size: 20px;
+  }
+
+  .stat-item {
+    padding: 6px;
+  }
+
+  .stat-item .stat-value {
+    font-size: 0.9rem;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .gastos-chart-section {
+    padding: 8px;
+  }
+
+  .chart-container {
+    height: 200px;
+    padding: 4px;
+  }
+
+  .chart-header h2 {
+    font-size: 1rem;
+    gap: 6px;
+  }
+
+  .chart-icon {
+    font-size: 18px;
+  }
+
+  .stat-item .stat-value {
+    font-size: 0.85rem;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.7rem;
+  }
+}

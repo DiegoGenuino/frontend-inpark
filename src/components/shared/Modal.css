@@ -1,0 +1,266 @@
+/* Modal Component - Minimalista */
+
+/* Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: modal-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Content */
+.modal__content {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-height: calc(100vh - 2rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modal-scale-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+@keyframes modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Tamanhos */
+.modal__content--sm {
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal__content--md {
+  width: 100%;
+  max-width: 600px;
+}
+
+.modal__content--lg {
+  width: 100%;
+  max-width: 800px;
+}
+
+.modal__content--xl {
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* Header */
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.modal__close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  font-size: 1.5rem;
+}
+
+.modal__close-button:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.modal__close-button:active {
+  background: #e5e7eb;
+}
+
+/* Body */
+.modal__body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal__body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal__body::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.modal__body::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+.modal__body::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Footer */
+.modal__footer {
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* Actions */
+.modal__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.modal__actions--left {
+  justify-content: flex-start;
+}
+
+.modal__actions--center {
+  justify-content: center;
+}
+
+.modal__actions--right {
+  justify-content: flex-end;
+}
+
+.modal__actions--space-between {
+  justify-content: space-between;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal__content {
+    max-height: calc(100vh - 1rem);
+    border-radius: 6px;
+  }
+
+  .modal__content--sm,
+  .modal__content--md,
+  .modal__content--lg,
+  .modal__content--xl {
+    max-width: 100%;
+  }
+
+  .modal__header {
+    padding: 1rem;
+  }
+
+  .modal__title {
+    font-size: 1.125rem;
+  }
+
+  .modal__body {
+    padding: 1rem;
+  }
+
+  .modal__footer {
+    padding: 1rem;
+  }
+
+  .modal__actions {
+    flex-direction: column;
+  }
+
+  .modal__actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal__header {
+    padding: 0.875rem;
+  }
+
+  .modal__title {
+    font-size: 1rem;
+  }
+
+  .modal__body {
+    padding: 0.875rem;
+  }
+
+  .modal__footer {
+    padding: 0.875rem;
+  }
+}
+
+/* Estados especiais */
+.modal__body--no-padding {
+  padding: 0;
+}
+
+.modal__footer--no-border {
+  border-top: none;
+}
+
+.modal__header--no-border {
+  border-bottom: none;
+}
+
+/* Loading state */
+.modal__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.modal__spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #111827;
+  border-radius: 50%;
+  animation: modal-spin 0.6s linear infinite;
+}
+
+@keyframes modal-spin {
+  to { transform: rotate(360deg); }
+}

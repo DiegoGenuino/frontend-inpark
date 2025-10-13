@@ -1,0 +1,1 @@
+export { default as Avaliacao } from './Avaliacao.jsx';

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import Inparklogo from '../assets/inpark.logo.svg';
+import Inparklogo from '../../assets/inpark.logo.svg';
 
 export const Signup = () => {
     const [dataForm, setDataForm] = useState({

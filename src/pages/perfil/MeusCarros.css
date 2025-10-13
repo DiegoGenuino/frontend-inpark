@@ -1,0 +1,617 @@
+.meus-carros-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  color: #2c5aa0;
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.page-header p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Seção Adicionar Carro */
+.add-car-section {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-add-carro {
+  background: #000000;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(44, 90, 160, 0.3);
+}
+
+.btn-add-carro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 90, 160, 0.4);
+}
+
+.btn-add-carro svg {
+  font-size: 1.3rem;
+}
+
+/* Grid de Carros */
+.carros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.no-carros {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.no-carros svg {
+  color: #2c5aa0;
+  margin-bottom: 1rem;
+}
+
+.no-carros h3 {
+  color: #333;
+  margin: 0 0 0.5rem 0;
+}
+
+.no-carros p {
+  color: #666;
+  margin: 0;
+}
+
+/* Cards de Carros */
+.carro-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid #f0f0f0;
+  min-height: 200px;
+}
+
+.carro-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  border-color: #e0e0e0;
+}
+
+.carro-card.principal {
+  border: 2px solid #2c5aa0;
+  box-shadow: 0 4px 20px rgba(44, 90, 160, 0.15);
+}
+
+/* Badges */
+.badge-principal,
+.badge-preferencial {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-principal {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
+
+.badge-preferencial {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  top: 42px;
+}
+
+/* Informações do Carro */
+.carro-info {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 140px;
+  justify-content: space-between;
+}
+
+.carro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.carro-title {
+  flex: 1;
+}
+
+.modelo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.carro-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cor {
+  color: #666;
+}
+
+.apelido {
+  color: #2c5aa0;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.apelido::before {
+  content: '"';
+}
+
+.apelido::after {
+  content: '"';
+}
+
+/* Placa destacada */
+.placa-container {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.placa {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+/* Status principal */
+.status-principal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.status-principal svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Ações do Carro */
+.carro-actions {
+  padding: 16px 20px;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-action {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: auto;
+}
+
+.btn-action svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-principal {
+  background: #e8f4fd;
+  color: #2c5aa0;
+  border: 1px solid #bde0ff;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+}
+
+.btn-principal:hover {
+  background: #2c5aa0;
+  color: white;
+  border-color: #2c5aa0;
+}
+
+.btn-edit {
+  background: transparent;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-edit:hover {
+  background: #f5f5f5;
+  color: #333;
+  border-color: #ccc;
+}
+
+.btn-delete {
+  background: transparent;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-delete:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #2c5aa0 0%, #1e3d6f 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Formulário */
+.carro-form {
+  padding: 2rem;
+}
+
+.meus-carros-container .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.meus-carros-container .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.meus-carros-container .form-group input,
+.meus-carros-container .form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  background: white;
+}
+
+.meus-carros-container .form-group input:focus,
+.meus-carros-container .form-group select:focus {
+  outline: none;
+  border-color: #8BB800;
+}
+
+.meus-carros-container .form-group input.error,
+.meus-carros-container .form-group select.error {
+  border-color: #dc3545;
+}
+
+.meus-carros-container .error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.meus-carros-container .field-hint {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* Checkbox personalizado */
+.meus-carros-container .checkbox-group {
+  margin: 1.5rem 0;
+}
+
+.meus-carros-container .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
+
+.meus-carros-container .checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.meus-carros-container .checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.meus-carros-container .checkbox-label input[type="checkbox"]:checked + .checkmark {
+  background-color: #8BB800;
+  border-color: #8BB800;
+}
+
+.meus-carros-container .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Upload de arquivo */
+.file-upload {
+  position: relative;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #fafafa;
+  color: #666;
+}
+
+.file-label:hover {
+  border-color: #2c5aa0;
+  background: #f0f8ff;
+  color: #2c5aa0;
+}
+
+.file-label svg {
+  font-size: 1.2rem;
+}
+
+/* Ações do Formulário */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+  margin-top: 2rem;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-save {
+  background-color: #2c5aa0;
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #1e3d6f;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+}
+
+/* Seção de Informações */
+.info-section {
+  max-width: 1200px;
+  margin: 3rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 1rem;
+  border-left: 4px solid #2c5aa0;
+}
+
+.info-card svg {
+  color: #2c5aa0;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.info-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.info-card p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .meus-carros-container {
+    padding: 1rem;
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .carros-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .carro-actions {
+    flex-direction: column;
+  }
+  
+  .btn-action {
+    min-width: auto;
+  }
+  
+  .modal-content {
+    margin: 0.5rem;
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .carro-form {
+    padding: 1.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .info-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .meus-carros-container {
+    padding: 0.5rem;
+  }
+  
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .btn-add-carro {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+}

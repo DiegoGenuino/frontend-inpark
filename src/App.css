@@ -1,7 +1,7 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 .app-container {
@@ -11,6 +11,5 @@
 
 .main-content {
   flex: 1;
-  padding: 20px;
-  margin-left: 250px; /* Ajuste conforme a largura da sua sidebar */
+  background-color: #ffffff;
 }

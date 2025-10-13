@@ -1,0 +1,374 @@
+.avaliacao-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 0;
+}
+
+.avaliacao-header {
+  background: #2c5aa0;
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.avaliacao-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.avaliacao-content {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.estacionamento-info {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.estacionamento-info h2 {
+  margin: 0 0 0.5rem 0;
+  color: #2c5aa0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.estacionamento-info p {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+}
+
+.avaliacao-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.form-group label.required::after {
+  content: ' *';
+  color: #e74c3c;
+}
+
+/* Rating de Estrelas */
+.rating-container {
+  text-align: center;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-size: 2rem;
+  color: #ddd;
+}
+
+.star-button:hover {
+  background-color: #f8f9fa;
+  transform: scale(1.1);
+}
+
+.star-button.active {
+  color: #ffc107;
+}
+
+.rating-text {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Comentário */
+.form-group textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.3s;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2c5aa0;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* Recomendação */
+.recommendation-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.rec-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.rec-button:hover {
+  border-color: #2c5aa0;
+  color: #2c5aa0;
+}
+
+.rec-button.active {
+  border-color: #2c5aa0;
+  background-color: #2c5aa0;
+  color: white;
+}
+
+.rec-button svg {
+  font-size: 1.2rem;
+}
+
+/* Detalhes da Experiência */
+.experience-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: white;
+}
+
+.checkbox-option:hover {
+  border-color: #2c5aa0;
+  background-color: #f8f9fa;
+}
+
+.checkbox-option input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.checkbox-option input[type="checkbox"]:checked + .checkmark {
+  background-color: #2c5aa0;
+  border-color: #2c5aa0;
+}
+
+.checkbox-option input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Botões de Ação */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  padding: 0 1.5rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 140px;
+}
+
+.btn-primary {
+  background-color: #2c5aa0;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1e3d6f;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background-color: white;
+  color: #666;
+  border: 2px solid #e0e0e0;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: #666;
+  color: #333;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .avaliacao-content {
+    margin: 1rem auto;
+    padding: 0 1rem;
+  }
+  
+  .avaliacao-form {
+    padding: 1.5rem;
+  }
+  
+  .estacionamento-info {
+    padding: 1rem;
+  }
+  
+  .stars {
+    gap: 0.25rem;
+  }
+  
+  .star-button {
+    font-size: 1.5rem;
+    padding: 0.25rem;
+  }
+  
+  .recommendation-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .rec-button {
+    padding: 0.75rem 1.5rem;
+    justify-content: center;
+    min-width: 160px;
+  }
+  
+  .experience-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .avaliacao-header {
+    padding: 1rem;
+  }
+  
+  .avaliacao-header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .avaliacao-content {
+    padding: 0 0.75rem;
+  }
+  
+  .avaliacao-form {
+    padding: 1rem;
+  }
+  
+  .star-button {
+    font-size: 1.25rem;
+  }
+}

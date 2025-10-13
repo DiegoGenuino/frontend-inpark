@@ -1,0 +1,140 @@
+/* ParkingCard Component - Minimalista */
+
+.parking-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.parking-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.parking-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.parking-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.parking-card__info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.parking-card__icon {
+  color: #6b7280;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.parking-card__address {
+  font-size: 0.875rem;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.parking-card__cep {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0.125rem 0 0 0;
+  font-family: 'Courier New', monospace;
+}
+
+.parking-card__hours {
+  font-size: 0.875rem;
+  color: #111827;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+}
+
+.parking-card__spots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+}
+
+.parking-card__spot-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.parking-card__spot-number {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1;
+}
+
+.parking-card__spot-label {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.parking-card__progress {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.parking-card__progress-bar {
+  height: 100%;
+  background: #111827;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.parking-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.parking-card__actions .btn {
+  flex: 1;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .parking-card__title {
+    font-size: 0.9375rem;
+  }
+
+  .parking-card__spots {
+    gap: 0.5rem;
+    padding: 0.625rem;
+  }
+
+  .parking-card__spot-number {
+    font-size: 1.125rem;
+  }
+
+  .parking-card__actions {
+    flex-direction: column;
+  }
+}

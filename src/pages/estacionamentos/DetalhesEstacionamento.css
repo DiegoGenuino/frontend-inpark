@@ -1,0 +1,674 @@
+.detalhes-estacionamento {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.detalhes-loading,
+.detalhes-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Header */
+.detalhes-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detalhes-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.btn-voltar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-voltar:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+/* Seções */
+.secao {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.secao h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.secao h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.secao h3 .icon {
+  color: #3b82f6;
+  font-size: 24px;
+}
+
+/* 1. Identificação e Local */
+.identificacao .local-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.endereco {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.endereco .icon {
+  color: #3b82f6;
+  font-size: 24px;
+  margin-top: 2px;
+}
+
+.endereco-principal {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.endereco-complemento {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.distancia {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0f9ff;
+  color: #0369a1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.distancia .icon {
+  font-size: 18px;
+}
+
+.descricao {
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 2. Mídia e Horário */
+.midia-horario {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+.galeria h3 {
+  margin-bottom: 16px;
+}
+
+.galeria-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.galeria-imagem {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.galeria-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-size: 20px;
+}
+
+.galeria-nav:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.galeria-nav.prev {
+  left: 12px;
+}
+
+.galeria-nav.next {
+  right: 12px;
+}
+
+.galeria-indicadores {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.indicador {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.indicador.ativo {
+  background: white;
+}
+
+.horario-funcionamento {
+  display: flex;
+  flex-direction: column;
+}
+
+.horario-info {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.horario {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.status {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.status.aberto {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.fechado {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* 3. Vagas e Tempo Real */
+.vagas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.vaga-tipo {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.vaga-tipo.preferencial {
+  background: #fef3c7;
+}
+
+.vaga-numero {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.numero {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.total {
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.vaga-label {
+  display: block;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.ocupacao-bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ocupacao-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #f59e0b 70%, #ef4444 100%);
+  transition: width 0.3s ease;
+}
+
+/* 4. Tarifas e Preços */
+.precos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.preco-item {
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.preco-label {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.preco-valor {
+  font-size: 20px;
+  font-weight: 700;
+  color: #059669;
+}
+
+.formas-pagamento h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+}
+
+.formas-pagamento h4 .icon {
+  color: #3b82f6;
+  font-size: 20px;
+}
+
+.pagamento-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pagamento-chip {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 5. Avaliações */
+.avaliacao-resumo {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.nota-media {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+.nota {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.estrelas {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  color: #d1d5db;
+  font-size: 20px;
+}
+
+.star.filled {
+  color: #fbbf24;
+}
+
+.total-avaliacoes {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.lista-avaliacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.avaliacao-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.avaliacao-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.usuario {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.avaliacao-nota {
+  display: flex;
+  gap: 1px;
+}
+
+.avaliacao-nota .star {
+  font-size: 14px;
+}
+
+.data {
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+.comentario {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* 7. Recursos */
+.recursos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.recurso-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  position: relative;
+}
+
+.recurso-item.disponivel {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.recurso-item.indisponivel {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+  opacity: 0.7;
+}
+
+.recurso-item svg {
+  font-size: 20px;
+}
+
+.indisponivel-tag {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* 6. Mapa */
+.mapa-container {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.mapa-placeholder {
+  height: 300px;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.mapa-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: #3b82f6;
+}
+
+.mapa-placeholder p {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.mapa-placeholder small {
+  font-size: 12px;
+}
+
+/* Ações Principais */
+.acoes-principais {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 20px 0;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 32px;
+}
+
+.btn-reservar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 12px;
+}
+
+.btn-reservar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+}
+
+.acoes-secundarias {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-ligar,
+.btn-rota,
+.btn-avaliar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-ligar:hover,
+.btn-rota:hover,
+.btn-avaliar:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .detalhes-estacionamento {
+    padding: 16px;
+  }
+  
+  .detalhes-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .detalhes-header h1 {
+    font-size: 24px;
+  }
+  
+  .midia-horario {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .identificacao .local-info {
+    flex-direction: column;
+  }
+  
+  .vagas-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .precos-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .recursos-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .acoes-secundarias {
+    grid-template-columns: 1fr;
+  }
+  
+  .avaliacao-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .data {
+    margin-left: 0;
+  }
+}

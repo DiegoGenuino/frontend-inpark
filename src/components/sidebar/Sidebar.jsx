@@ -1,48 +1,118 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from "../../utils/auth";
+import InparkLogo from "../../assets/inpark.svg"
 import './Sidebar.css'
-import InparkLogo from '../../assets/inpark.svg';
+// Importando ícones do React Icons
+import { 
+    MdDashboard, 
+    MdLocalParking, 
+    MdEventNote, 
+    MdBookmarks,
+    MdDirectionsCar,
+    MdAssessment,
+    MdExitToApp,
+    MdSearch,
+    MdPerson,
+    MdNotifications,
+    MdReceiptLong,
+    MdHome
+} from 'react-icons/md';
+
 export const Sidebar = () => {
-    const { role } = useAuth();
+    const { role, user, logout } = useAuth();
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        localStorage.removeItem('token');
+        logout();
+    };
+
+    // Extrair primeiro nome do usuário
+    const firstName = user?.nome ? user.nome.split(' ')[0] : 'Usuário';
 
     return (
-        <aside>
+        <aside className="sidebar">
             <div className="sidebar-header">
-                <div className="sidebar-user-picture"></div>
-                <div className="sidebar-user-information">
-                    <span>Olá, {role}</span>
-                    <img className='inpark-logotipo' src={InparkLogo} alt="Logotipo Inpark" />
+                        <div className="brand-name">
+                            <img src={InparkLogo} alt="Inpark" className="inpark-logo-img" />
                 </div>
             </div>
-            <ul>
-                {/* Links sempre visiveis */}
-                <li><Link to="/">Menu</Link></li>
-                <li><Link to="/estacionamentos">Estacionamentos</Link></li>
-                <li><Link to="/minhas-reservas">Minhas reservas</Link></li>
-           <li><Link to="/signup">Signup</Link></li>
+            
+            <nav className="sidebar-nav">
+                <div className="nav-section">
+                    <h3 className="section-title">PRINCIPAL</h3>
+                    <ul className="nav-list">
+                        <li className="nav-item">
+                            <Link to="/" className="nav-link">
+                                <MdHome className="nav-icon" />
+                                <span>Dashboard</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/minhas-reservas" className="nav-link">
+                                <MdBookmarks className="nav-icon" />
+                                <span>Minhas Reservas</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/estacionamentos" className="nav-link">
+                                <MdLocalParking className="nav-icon" />
+                                <span>Estacionamentos</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
 
-                {role === 'usuario' && (
-                    <>
-                        <li><Link to="/minhas-reservas">Minhas reservas</Link></li>
-                        <li><Link to="/reservas">Reservas</Link></li>
-                    </>
-                )}
+                <div className="nav-section">
+                    <h3 className="section-title">MINHA CONTA</h3>
+                    <ul className="nav-list">
+                        <li className="nav-item">
+                            <Link to="/meus-carros" className="nav-link">
+                                <MdDirectionsCar className="nav-icon" />
+                                <span>Meus Carros</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/meu-perfil" className="nav-link">
+                                <MdPerson className="nav-icon" />
+                                <span>Meu Perfil</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/notificacoes" className="nav-link">
+                                <MdNotifications className="nav-icon" />
+                                <span>Notificações</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/relatorio-despesas" className="nav-link">
+                                <MdReceiptLong className="nav-icon" />
+                                <span>Relatório de Despesas</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
 
-                {role === 'gerente' && (
-                    <>
-                        <li><Link to="/manage-users">Gerenciar Usuários</Link></li>
-                        <li><Link to="/view-reports">Ver Relatórios</Link></li>
-                    </>
-                )}
+                <div className="nav-section">
+                    <h3 className="section-title">SISTEMA</h3>
+                    <ul className="nav-list">
+                        <li className="nav-item">
+                            <a href="/sair" className="nav-link exit-link" onClick={handleLogout}>
+                                <MdExitToApp className="nav-icon" />
+                                <span>Sair</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
 
-                {role === 'dono' && (
-                    <>
-                        <li><Link to="/admin-settings">Configurações</Link></li>
-                        <li><Link to="/company-info">Informações da Empresa</Link></li>
-                    </>
-                )}
-            </ul>
-        </aside >
+            <div className="sidebar-footer">
+                <div className="version-info">
+                    Inpark v1.0<br />
+                    <span className="version-subtitle">General</span>
+                </div>
+            </div>
+        </aside>
     )
 }

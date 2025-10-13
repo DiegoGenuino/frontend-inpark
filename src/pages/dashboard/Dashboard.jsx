@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useAuth, getAuthHeaders } from '../utils/auth';
+import { useAuth, getAuthHeaders } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdLocationOn, MdAccessTime, MdDirectionsCar, MdMyLocation, MdChevronRight, MdPerson, MdNotifications, MdLocalParking, MdCalendarToday, MdTrendingUp } from 'react-icons/md';
 import {
