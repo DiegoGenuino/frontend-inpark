@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useAuth } from "../../utils/auth";
-import { useNavigate } from "react-router-dom";
 import InparkLogo from "../../assets/inpark-logo.svg";
 import "./Login.css";
 
@@ -11,12 +10,7 @@ export const Login = () => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, login, loginWithRole } = useAuth();
-
-  // Se já estiver autenticado, redireciona para dashboard
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  const { isAuthenticated, login } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,44 +26,19 @@ export const Login = () => {
     setLoading(true);
 
     try {
-      // Tentar login real com o backend
+      // Fazer login com o backend
       const result = await login(credentials.email, credentials.senha);
 
       if (!result.success) {
-        // Se falhar, tentar com usuários pré-definidos para teste
-        const users = {
-          "admin@inpark.com": { senha: "123456", role: "DONO" },
-          "gerente@inpark.com": { senha: "123456", role: "GERENTE" },
-          "usuario@inpark.com": { senha: "123456", role: "CLIENTE" },
-        };
-
-        const user = users[credentials.email];
-
-        if (user && user.senha === credentials.senha) {
-          // Login com dados mock
-          localStorage.setItem("token", "fake-jwt-token-" + user.role);
-          loginWithRole(user.role);
-        } else {
-          setError(result.error || "Email ou senha incorretos");
-        }
+        setError(result.error || "Email ou senha incorretos");
       }
+      // Se success=true, o AuthProvider já atualizou o estado e o usuário será redirecionado
     } catch (error) {
-      setError("Erro ao fazer login. Tente novamente.");
+      console.error('Erro no login:', error);
+      setError("Erro ao fazer login. Verifique sua conexão e tente novamente.");
     } finally {
       setLoading(false);
     }
-  };
-
-  // Função para preencher formulário rapidamente
-  const quickLogin = (userType) => {
-    const quickUsers = {
-      admin: { email: "admin@inpark.com", senha: "123456" },
-      gerente: { email: "gerente@inpark.com", senha: "123456" },
-      cliente: { email: "usuario@inpark.com", senha: "123456" },
-    };
-
-    setCredentials(quickUsers[userType]);
-    setError("");
   };
 
   // Função para obter feedback do email
@@ -93,16 +62,6 @@ export const Login = () => {
     }
     return { text: 'Senha deve ter pelo menos 6 caracteres', type: 'warning' };
   };
-
-  if (loading) {
-    return (
-      <div className="login-container">
-        <div className="loading-spinner">
-          <p>Carregando...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="login-container">
@@ -131,6 +90,7 @@ export const Login = () => {
             onChange={handleInputChange}
             placeholder="Digite seu email"
             required
+            disabled={loading}
           />
           <span 
             className="input-feedback"
@@ -152,6 +112,7 @@ export const Login = () => {
             onChange={handleInputChange}
             placeholder="Digite sua senha"
             required
+            disabled={loading}
           />
           <span 
             className="input-feedback"
