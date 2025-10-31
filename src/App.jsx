@@ -19,8 +19,13 @@ import './App.css'
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
 
+  console.log('🔍 AppContent - Estado atual:');
+  console.log('  - isAuthenticated:', isAuthenticated);
+  console.log('  - loading:', loading);
+
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
+    console.log('⏳ Mostrando tela de carregamento...');
     return (
       <div style={{ 
         display: 'flex', 
@@ -37,10 +42,12 @@ function AppContent() {
 
   // Se não estiver autenticado, mostra apenas o login
   if (!isAuthenticated) {
+    console.log('🔒 Usuário não autenticado - mostrando tela de login');
     return <Login />;
   }
 
   // Se estiver autenticado, mostra o app completo com sidebar e dashboard
+  console.log('✅ Usuário autenticado - mostrando app completo');
   return (
     <div className="app-container">
       <Sidebar/>
