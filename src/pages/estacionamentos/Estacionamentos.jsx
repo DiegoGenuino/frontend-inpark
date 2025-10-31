@@ -84,7 +84,7 @@ const ReservaModal = ({ estacionamento, onClose, isOpen }) => {
             <p style={{ margin: '0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>{estacionamento.endereco}</p>
             <p style={{ margin: '0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>CEP: {estacionamento.CEP}</p>
             <p style={{ margin: '0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-              Horário: {estacionamento.horarioAbertura?.substring(0, 5)} - {estacionamento.horarioFechamento?.substring(0, 5)}
+              Horário: {estacionamento.horaAbertura?.substring(0, 5)} - {estacionamento.horaFechamento?.substring(0, 5)}
             </p>
           </div>
 
@@ -193,7 +193,7 @@ const ReservaModal = ({ estacionamento, onClose, isOpen }) => {
                 }}
               />
               <small className="form-hint" style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.75rem', color: '#6b7280' }}>
-                Horário de funcionamento: {estacionamento.horarioAbertura?.substring(0, 5)} às {estacionamento.horarioFechamento?.substring(0, 5)}
+                Horário de funcionamento: {estacionamento.horaAbertura?.substring(0, 5)} às {estacionamento.horaFechamento?.substring(0, 5)}
               </small>
             </div>
 
@@ -268,72 +268,48 @@ export const Estacionamentos = () => {
     const fetchEstacionamentos = async () => {
       setLoading(true)
       setError(null)
+      
+      console.log('🏢 Buscando estacionamentos...')
+      console.log('🌐 URL:', `${API_BASE}/estacionamento`)
+      
       try {
         const headers = {
           'Content-Type': 'application/json',
           ...getAuthHeaders()
         }
 
-        const res = await fetch(`${API_BASE}/estacionamentos`, {
+        const res = await fetch(`${API_BASE}/estacionamento`, {
           method: 'GET',
           headers,
           signal: controller.signal
         })
+
+        console.log('📡 Status da resposta:', res.status)
 
         if (!res.ok) {
           throw new Error(`Erro na requisição: ${res.status} ${res.statusText}`)
         }
 
         const data = await res.json()
+        console.log('📦 Estacionamentos recebidos:', data)
+        console.log('📊 Total de estacionamentos:', data.length)
+        
         if (mounted) {
+          // Filtrar apenas estacionamentos ativos
           const estacionamentosAtivos = Array.isArray(data) ? data.filter(est => est.status === true) : []
+          console.log('✅ Estacionamentos ativos:', estacionamentosAtivos.length)
+          
           setEstacionamentos(estacionamentosAtivos)
           setFilteredEstacionamentos(estacionamentosAtivos)
         }
       } catch (err) {
+        console.error('❌ Erro ao buscar estacionamentos:', err)
+        
         if (mounted) {
           setError(err.message || 'Erro desconhecido')
-          // Dados mock para demonstração
-          const mockData = [
-            {
-              id: 1,
-              nome: "Estacionamento Central",
-              endereco: "Rua das Flores",
-              CEP: "12345-678",
-              numero: "123",
-              horaAbertura: "08:00:00",
-              horaFechamento: "22:00:00",
-              vagasPreferenciais: 15,
-              maximoDeVagas: 120,
-              status: true
-            },
-            {
-              id: 2,
-              nome: "Shopping Park",
-              endereco: "Av. Principal",
-              CEP: "54321-987",
-              numero: "456",
-              horaAbertura: "06:00:00",
-              horaFechamento: "24:00:00",
-              vagasPreferenciais: 25,
-              maximoDeVagas: 300,
-              status: true
-            },
-            {
-              id: 3,
-              nome: "Estacionamento Norte",
-              endereco: "Rua do Norte",
-              CEP: "11111-222",
-              numero: "789",
-              horaAbertura: "07:00:00",
-              horaFechamento: "21:00:00",
-              vagasPreferenciais: 10,
-              maximoDeVagas: 80,
-              status: true
-            }
-          ]
-          setEstacionamentos(mockData)
-          setFilteredEstacionamentos(mockData)
+          // Limpar dados em caso de erro
+          setEstacionamentos([])
+          setFilteredEstacionamentos([])
         }
       } finally {
         if (mounted) setLoading(false)
@@ -480,7 +456,7 @@ export const Estacionamentos = () => {
                   <MdAccessTime /> Horário de Funcionamento
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.875rem', fontFamily: 'monospace' }}>
-                  {formatTime(selectedEstacionamento.horarioAbertura)} - {formatTime(selectedEstacionamento.horarioFechamento)}
+                  {formatTime(selectedEstacionamento.horaAbertura)} - {formatTime(selectedEstacionamento.horaFechamento)}
                 </p>
               </div>
 
