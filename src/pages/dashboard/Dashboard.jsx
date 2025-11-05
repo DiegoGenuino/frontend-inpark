@@ -95,7 +95,7 @@ export default function Dashboard() {
                 borderWidth: 1,
                 cornerRadius: 8,
                 callbacks: {
-                    label: function(context) {
+                    label: function (context) {
                         return `R$ ${context.parsed.y.toFixed(2)}`;
                     }
                 }
@@ -113,7 +113,7 @@ export default function Dashboard() {
                     font: {
                         size: windowWidth <= 768 ? 10 : 12
                     },
-                    callback: function(value) {
+                    callback: function (value) {
                         return `R$ ${value}`;
                     }
                 }
@@ -145,14 +145,14 @@ export default function Dashboard() {
 
     useEffect(() => {
         fetchEstacionamentosProximos();
-        
+
         // Listener para redimensionamento da tela
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
         };
-        
+
         window.addEventListener('resize', handleResize);
-        
+
         return () => {
             window.removeEventListener('resize', handleResize);
         };
@@ -249,7 +249,7 @@ export default function Dashboard() {
                         </p>
                     </div>
                 </div>
-                
+
                 {/* Stats Rápidas */}
                 <div className="dashboard-stats">
                     <div className="stat-card">
@@ -288,7 +288,7 @@ export default function Dashboard() {
             <div className="quick-actions-section">
                 <h2>Acesso Rápido</h2>
                 <div className="quick-actions-grid">
-                    <button 
+                    <button
                         className="quick-action-item"
                         onClick={() => navigate('/notificacoes')}
                     >
@@ -300,7 +300,7 @@ export default function Dashboard() {
                         <MdChevronRight className="chevron" />
                     </button>
 
-                    <button 
+                    <button
                         className="quick-action-item"
                         onClick={() => navigate('/meu-perfil')}
                     >
@@ -312,7 +312,7 @@ export default function Dashboard() {
                         <MdChevronRight className="chevron" />
                     </button>
 
-                    <button 
+                    <button
                         className="quick-action-item"
                         onClick={() => navigate('/meus-carros')}
                     >
@@ -324,7 +324,7 @@ export default function Dashboard() {
                         <MdChevronRight className="chevron" />
                     </button>
 
-                    <button 
+                    <button
                         className="quick-action-item"
                         onClick={() => navigate('/minhas-reservas')}
                     >
@@ -364,7 +364,7 @@ export default function Dashboard() {
             <div className="estacionamentos-proximos-section">
                 <div className="section-header">
                     <h2>Estacionamentos Próximos</h2>
-                    <button 
+                    <button
                         className="ver-todos-btn"
                         onClick={() => navigate('/estacionamentos')}
                     >
@@ -372,7 +372,7 @@ export default function Dashboard() {
                         <MdChevronRight />
                     </button>
                 </div>
-                
+
                 {loading ? (
                     <div className="loading-container">
                         <div className="loading-spinner"></div>
@@ -408,7 +408,7 @@ export default function Dashboard() {
                                             <span>R$ {est.precoHora.toFixed(2).replace('.', ',')}/hora</span>
                                         </div>
                                     </div>
-                                    <button 
+                                    <button
                                         className="reservar-btn"
                                         onClick={() => navigate(`/estacionamento/${est.id}`)}
                                         disabled={est.vagasDisponiveis === 0}
