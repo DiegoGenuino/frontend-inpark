@@ -422,7 +422,9 @@ export const Estacionamentos = () => {
                 key={est.id}
                 parking={est}
                 onReserve={openReservaModal}
-                onViewDetails={(parking) => navigate(`/estacionamento/${parking.id}`)}
+                onViewDetails={(parking) => navigate(`/estacionamento/${parking.id}`, { 
+                  state: { estacionamento: parking } 
+                })}
               />
             ))
           )}
