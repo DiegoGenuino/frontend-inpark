@@ -61,47 +61,7 @@ const DetalhesEstacionamento = () => {
     } catch (err) {
       console.error('Erro ao carregar detalhes, usando mock:', err)
       // Mock data detalhado
-      setEstacionamento({
-        id: parseInt(id),
-        nome: "Shopping Center Norte",
-        endereco: "Av. Otto Baumgart, 500 - Vila Guilherme",
-        CEP: "02049-000",
-        cidade: "São Paulo - SP",
-        distancia: "1.2 km",
-        horarioAbertura: "06:00:00",
-        horarioFechamento: "22:00:00",
-        maximoDeVagas: 120,
-        vagasOcupadas: 78,
-        vagasPreferenciais: 15,
-        vagasPreferenciaisOcupadas: 8,
-        telefone: "(11) 3856-7890",
-        latitude: -23.5217,
-        longitude: -46.6237,
-        notaMedia: 4.3,
-        totalAvaliacoes: 247,
-        fotos: [
-          "https://via.placeholder.com/800x400/3b82f6/ffffff?text=Entrada+Principal",
-          "https://via.placeholder.com/800x400/059669/ffffff?text=Area+Interna",
-          "https://via.placeholder.com/800x400/dc2626/ffffff?text=Vagas+Cobertas",
-          "https://via.placeholder.com/800x400/7c3aed/ffffff?text=Area+VIP"
-        ],
-        precos: {
-          primeiraHora: 6.00,
-          demaisHoras: 4.00,
-          diaria: 35.00,
-          mensalista: 280.00
-        },
-        formasPagamento: ['Dinheiro', 'Cartão', 'PIX', 'App'],
-        recursos: [
-          { nome: 'Segurança 24h', icone: 'security', disponivel: true },
-          { nome: 'Manobrista', icone: 'person', disponivel: true },
-          { nome: 'Cobertura', icone: 'umbrella', disponivel: true },
-          { nome: 'Lavagem', icone: 'wash', disponivel: false },
-          { nome: 'Wi-Fi', icone: 'wifi', disponivel: true },
-          { nome: 'Acessibilidade', icone: 'accessible', disponivel: true }
-        ],
-        descricao: "Estacionamento moderno e seguro localizado no coração da Zona Norte. Oferece vagas cobertas e descobertas com sistema de segurança 24h e manobrista opcional."
-      })
+     
 
       // Mock avaliacoes
       setAvaliacoes([
