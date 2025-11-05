@@ -159,6 +159,36 @@
   margin: 0;
 }
 
+/* Documentação */
+.documentacao-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.doc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doc-item strong {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.doc-item span {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
 /* 2. Mídia e Horário */
 .midia-horario {
   display: grid;
@@ -593,7 +623,7 @@
 
 .acoes-secundarias {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 
@@ -644,6 +674,10 @@
   
   .identificacao .local-info {
     flex-direction: column;
+  }
+  
+  .documentacao-info {
+    grid-template-columns: 1fr;
   }
   
   .vagas-grid {
