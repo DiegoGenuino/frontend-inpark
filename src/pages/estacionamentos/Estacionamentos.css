@@ -1,68 +1,88 @@
 .estacionamentos-page {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 0;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
-.page-header {
+.estacionamentos-page .page-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: #e4ffe8;
+  padding: 1.5rem;
   margin-bottom: 32px;
+  color: #1a1a1a;
 }
 
-.page-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 8px 0;
+.estacionamentos-page .page-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 0.5rem 0;
 }
 
-.page-header p {
-  font-size: 16px;
-  color: #6b7280;
+.estacionamentos-page .page-header p {
+  font-size: 1rem;
+  color: #666;
   margin: 0;
+  font-weight: 400;
+  line-height: 1.4;
 }
 
-.search-section {
-  margin-bottom: 32px;
+.estacionamentos-page .search-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 1.5rem;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.search-bar {
+.estacionamentos-page .search-bar {
   position: relative;
   max-width: 500px;
   margin-bottom: 16px;
 }
 
-.search-icon {
+.estacionamentos-page .search-icon {
   position: absolute;
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
   color: #9ca3af;
   font-size: 20px;
+  z-index: 1;
 }
 
-.search-input {
+.estacionamentos-page .search-input {
   width: 100%;
-  padding: 12px 16px 12px 48px;
+  padding: 14px 16px 14px 48px;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   font-size: 16px;
-  transition: border-color 0.15s ease;
+  transition: all 0.2s ease;
   box-sizing: border-box;
+  background: #fafafa;
 }
 
-.search-input:focus {
+.estacionamentos-page .search-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #C2FE00;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(194, 254, 0, 0.1);
 }
 
-.results-count {
+.estacionamentos-page .results-count {
   font-size: 14px;
   color: #6b7280;
   font-weight: 500;
 }
 
-.loading-container {
+.estacionamentos-page .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,11 +90,11 @@
   padding: 64px 0;
 }
 
-.loading-spinner {
+.estacionamentos-page .loading-spinner {
   width: 40px;
   height: 40px;
   border: 4px solid #f3f4f6;
-  border-top: 4px solid #3b82f6;
+  border-top: 4px solid #C2FE00;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
@@ -85,24 +105,25 @@
   100% { transform: rotate(360deg); }
 }
 
-.error-container {
+.estacionamentos-page .error-container {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   color: #dc2626;
   padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
+  border-radius: 12px;
+  margin: 0 1.5rem 24px 1.5rem;
   text-align: center;
 }
 
-.estacionamentos-grid {
+.estacionamentos-page .estacionamentos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 0 1.5rem;
   margin-bottom: 2rem;
 }
 
-.estacionamento-card {
+.estacionamentos-page .estacionamento-card {
   background: white;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
@@ -111,12 +132,12 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.estacionamento-card:hover {
+.estacionamentos-page .estacionamento-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.card-header {
+.estacionamentos-page .card-header {
   padding: 20px 20px 0 20px;
   display: flex;
   justify-content: space-between;
@@ -124,7 +145,7 @@
   margin-bottom: 16px;
 }
 
-.estacionamento-name {
+.estacionamentos-page .estacionamento-name {
   font-size: 20px;
   font-weight: 600;
   color: #1f2937;
@@ -132,7 +153,7 @@
   flex: 1;
 }
 
-.status-badge {
+.estacionamentos-page .status-badge {
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
@@ -141,32 +162,32 @@
   letter-spacing: 0.5px;
 }
 
-.status-badge.available {
+.estacionamentos-page .status-badge.available {
   background-color: #dcfce7;
   color: #166534;
 }
 
-.status-badge.medium {
+.estacionamentos-page .status-badge.medium {
   background-color: #fef3c7;
   color: #92400e;
 }
 
-.status-badge.busy {
+.estacionamentos-page .status-badge.busy {
   background-color: #fee2e2;
   color: #dc2626;
 }
 
-.card-content {
+.estacionamentos-page .card-content {
   padding: 0 20px;
 }
 
-.location-info, .time-info {
+.estacionamentos-page .location-info, .estacionamentos-page .time-info {
   display: flex;
   align-items: flex-start;
   margin-bottom: 16px;
 }
 
-.info-icon {
+.estacionamentos-page .info-icon {
   color: #6b7280;
   font-size: 20px;
   margin-right: 12px;
@@ -174,58 +195,58 @@
   flex-shrink: 0;
 }
 
-.address {
+.estacionamentos-page .address {
   font-size: 14px;
   color: #374151;
   font-weight: 500;
   margin: 0 0 4px 0;
 }
 
-.cep {
+.estacionamentos-page .cep {
   font-size: 12px;
   color: #6b7280;
   margin: 0;
 }
 
-.hours {
+.estacionamentos-page .hours {
   font-size: 14px;
   color: #374151;
   font-weight: 600;
   margin: 0 0 4px 0;
 }
 
-.hours-label {
+.estacionamentos-page .hours-label {
   font-size: 12px;
   color: #6b7280;
   margin: 0;
 }
 
-.spots-info {
+.estacionamentos-page .spots-info {
   background-color: #f9fafb;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
 }
 
-.spots-grid {
+.estacionamentos-page .spots-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 12px;
 }
 
-.spot-item {
+.estacionamentos-page .spot-item {
   text-align: center;
 }
 
-.spot-number {
+.estacionamentos-page .spot-number {
   display: block;
   font-size: 20px;
   font-weight: 700;
   color: #1f2937;
 }
 
-.spot-label {
+.estacionamentos-page .spot-label {
   display: block;
   font-size: 11px;
   color: #6b7280;
@@ -235,7 +256,7 @@
   margin-top: 4px;
 }
 
-.occupancy-bar {
+.estacionamentos-page .occupancy-bar {
   width: 100%;
   height: 6px;
   background-color: #e5e7eb;
@@ -243,20 +264,20 @@
   overflow: hidden;
 }
 
-.occupancy-fill {
+.estacionamentos-page .occupancy-fill {
   height: 100%;
   background: linear-gradient(90deg, #10b981 0%, #f59e0b 70%, #ef4444 100%);
   transition: width 0.3s ease;
 }
 
-.card-actions {
+.estacionamentos-page .card-actions {
   padding: 20px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.btn-reserve {
+.estacionamentos-page .btn-reserve {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   border: none;
@@ -268,12 +289,12 @@
   transition: all 0.15s ease;
 }
 
-.btn-reserve:hover {
+.estacionamentos-page .btn-reserve:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
-.btn-details {
+.estacionamentos-page .btn-details {
   background: white;
   color: #374151;
   border: 1px solid #d1d5db;
@@ -285,46 +306,73 @@
   transition: all 0.15s ease;
 }
 
-.btn-details:hover {
+.estacionamentos-page .btn-details:hover {
   background-color: #f9fafb;
   border-color: #9ca3af;
 }
 
-.no-results {
+.estacionamentos-page .no-results {
   grid-column: 1 / -1;
   text-align: center;
   padding: 64px 0;
   color: #6b7280;
 }
 
-.no-results h3 {
+.estacionamentos-page .no-results h3 {
   font-size: 20px;
   margin: 16px 0 8px 0;
   color: #374151;
 }
 
-.no-results p {
+.estacionamentos-page .no-results p {
   font-size: 14px;
   margin: 0;
 }
 
 @media (max-width: 768px) {
-  .estacionamentos-page {
+  .estacionamentos-page .page-header {
+    padding: 20px 16px;
+  }
+  
+  .estacionamentos-page .page-title {
+    font-size: 24px;
+  }
+
+  .estacionamentos-page .search-section {
     padding: 16px;
   }
   
-  .estacionamentos-grid {
+  .estacionamentos-page .estacionamentos-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 0 16px;
   }
   
-  .search-input {
+  .estacionamentos-page .search-input {
     font-size: 16px; /* Evita zoom no iOS */
   }
 }
 
+@media (max-width: 480px) {
+  .estacionamentos-page .page-header {
+    padding: 16px 12px;
+  }
+
+  .estacionamentos-page .page-title {
+    font-size: 22px;
+  }
+
+  .estacionamentos-page .search-section {
+    padding: 12px;
+  }
+
+  .estacionamentos-page .estacionamentos-grid {
+    padding: 0 12px;
+  }
+}
+
 /* Modal Styles */
-.modal-overlay {
+.estacionamentos-page .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -338,14 +386,14 @@
   backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.estacionamentos-page .modal-content {
   background: white;
   border-radius: 16px;
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   animation: modalSlideIn 0.3s ease-out;
 }
 
@@ -360,7 +408,7 @@
   }
 }
 
-.modal-header {
+.estacionamentos-page .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -368,14 +416,14 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.modal-header h2 {
+.estacionamentos-page .modal-header h2 {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   color: #1f2937;
   margin: 0;
 }
 
-.modal-close {
+.estacionamentos-page .modal-close {
   background: none;
   border: none;
   color: #6b7280;
@@ -386,24 +434,24 @@
   transition: all 0.15s ease;
 }
 
-.modal-close:hover {
+.estacionamentos-page .modal-close:hover {
   background-color: #f3f4f6;
   color: #374151;
 }
 
-.modal-body {
+.estacionamentos-page .modal-body {
   padding: 24px;
 }
 
-.modal-section {
+.estacionamentos-page .modal-section {
   margin-bottom: 32px;
 }
 
-.modal-section:last-child {
+.estacionamentos-page .modal-section:last-child {
   margin-bottom: 0;
 }
 
-.modal-section h3 {
+.estacionamentos-page .modal-section h3 {
   display: flex;
   align-items: center;
   font-size: 18px;
@@ -413,54 +461,54 @@
   gap: 8px;
 }
 
-.modal-section h3 svg {
-  color: #3b82f6;
+.estacionamentos-page .modal-section h3 svg {
+  color: var(--primary-color);
 }
 
-.modal-address {
+.estacionamentos-page .modal-address {
   font-size: 16px;
   color: #374151;
   margin: 0 0 8px 0;
   font-weight: 500;
 }
 
-.modal-cep {
+.estacionamentos-page .modal-cep {
   font-size: 14px;
   color: #6b7280;
   margin: 0;
 }
 
-.modal-stats {
+.estacionamentos-page .modal-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
-.stat-item {
+.estacionamentos-page .stat-item {
   background-color: #f9fafb;
   padding: 16px;
   border-radius: 12px;
   text-align: center;
 }
 
-.stat-number {
+.estacionamentos-page .stat-number {
   display: block;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   color: #1f2937;
   margin-bottom: 4px;
 }
 
-.stat-label {
+.estacionamentos-page .stat-label {
   display: block;
   font-size: 12px;
   color: #6b7280;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.5px;
 }
 
-.price-info p {
+.estacionamentos-page .price-info p {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -471,17 +519,17 @@
   color: #374151;
 }
 
-.price-info p:last-child {
+.estacionamentos-page .price-info p:last-child {
   border-bottom: none;
 }
 
-.facilities {
+.estacionamentos-page .facilities {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 
-.facility-item {
+.estacionamentos-page .facility-item {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -493,12 +541,12 @@
   font-weight: 500;
 }
 
-.facility-item svg {
-  color: #3b82f6;
+.estacionamentos-page .facility-item svg {
+  color: var(--primary-color);
   font-size: 20px;
 }
 
-.modal-section p {
+.estacionamentos-page .modal-section p {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -507,12 +555,12 @@
   color: #374151;
 }
 
-.modal-section p svg {
+.estacionamentos-page .modal-section p svg {
   color: #6b7280;
   font-size: 18px;
 }
 
-.modal-actions {
+.estacionamentos-page .modal-actions {
   padding: 24px;
   border-top: 1px solid #e5e7eb;
   display: grid;
@@ -520,9 +568,9 @@
   gap: 16px;
 }
 
-.btn-reserve-modal {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: white;
+.estacionamentos-page .btn-reserve-modal {
+  background: var(--primary-color);
+  color: #1f2937;
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
@@ -532,12 +580,12 @@
   transition: all 0.15s ease;
 }
 
-.btn-reserve-modal:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+.estacionamentos-page .btn-reserve-modal:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(194, 254, 0, 0.3);
 }
 
-.btn-close-modal {
+.estacionamentos-page .btn-close-modal {
   background: white;
   color: #374151;
   border: 1px solid #d1d5db;
@@ -549,7 +597,7 @@
   transition: all 0.15s ease;
 }
 
-.btn-close-modal:hover {
+.estacionamentos-page .btn-close-modal:hover {
   background-color: #f9fafb;
   border-color: #9ca3af;
 }
@@ -560,24 +608,24 @@
     margin: 20px;
   }
   
-  .modal-header {
+  .estacionamentos-page .modal-header {
     padding: 20px 20px 16px 20px;
   }
   
-  .modal-body {
+  .estacionamentos-page .modal-body {
     padding: 20px;
   }
   
-  .modal-stats {
+  .estacionamentos-page .modal-stats {
     grid-template-columns: 1fr;
     gap: 12px;
   }
   
-  .facilities {
+  .estacionamentos-page .facilities {
     grid-template-columns: 1fr;
   }
   
-  .modal-actions {
+  .estacionamentos-page .modal-actions {
     padding: 20px;
     grid-template-columns: 1fr;
     gap: 12px;
@@ -585,18 +633,18 @@
 }
 
 /* Modal de Reserva Styles */
-.reserva-modal-content {
+.estacionamentos-page .reserva-modal-content {
   max-width: 500px;
 }
 
-.estacionamento-info {
+.estacionamentos-page .estacionamento-info {
   background-color: #f9fafb;
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 24px;
 }
 
-.estacionamento-info h3 {
+.estacionamentos-page .estacionamento-info h3 {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -605,13 +653,13 @@
   color: #1f2937;
 }
 
-.estacionamento-info p {
+.estacionamentos-page .estacionamento-info p {
   margin: 4px 0;
   font-size: 14px;
   color: #6b7280;
 }
 
-.error-message {
+.estacionamentos-page .error-message {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
   color: #dc2626;
@@ -621,19 +669,19 @@
   font-size: 14px;
 }
 
-.reserva-form {
+.estacionamentos-page .reserva-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.form-group {
+.estacionamentos-page .form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.form-group label {
+.estacionamentos-page .form-group label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -642,12 +690,12 @@
   color: #374151;
 }
 
-.form-group label svg {
-  color: #3b82f6;
+.estacionamentos-page .form-group label svg {
+  color: var(--primary-color);
   font-size: 18px;
 }
 
-.form-input {
+.estacionamentos-page .form-input {
   padding: 12px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
@@ -655,34 +703,34 @@
   transition: border-color 0.15s ease;
 }
 
-.form-input:focus {
+.estacionamentos-page .form-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(194, 254, 0, 0.1);
 }
 
-.form-input:disabled {
+.estacionamentos-page .form-input:disabled {
   background-color: #f9fafb;
   color: #6b7280;
   cursor: not-allowed;
 }
 
-.form-hint {
+.estacionamentos-page .form-hint {
   font-size: 12px;
   color: #6b7280;
   font-style: italic;
 }
 
-.form-actions {
+.estacionamentos-page .form-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-top: 8px;
 }
 
-.btn-submit-reserva {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: white;
+.estacionamentos-page .btn-submit-reserva {
+  background: var(--primary-color);
+  color: #1f2937;
   border: none;
   padding: 12px 20px;
   border-radius: 8px;
@@ -692,19 +740,19 @@
   transition: all 0.15s ease;
 }
 
-.btn-submit-reserva:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+.estacionamentos-page .btn-submit-reserva:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(194, 254, 0, 0.3);
 }
 
-.btn-submit-reserva:disabled {
+.estacionamentos-page .btn-submit-reserva:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.btn-cancel-reserva {
+.estacionamentos-page .btn-cancel-reserva {
   background: white;
   color: #374151;
   border: 1px solid #d1d5db;
@@ -716,12 +764,12 @@
   transition: all 0.15s ease;
 }
 
-.btn-cancel-reserva:hover:not(:disabled) {
+.estacionamentos-page .btn-cancel-reserva:hover:not(:disabled) {
   background-color: #f9fafb;
   border-color: #9ca3af;
 }
 
-.btn-cancel-reserva:disabled {
+.estacionamentos-page .btn-cancel-reserva:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -732,7 +780,7 @@
     margin: 20px;
   }
   
-  .form-actions {
+  .estacionamentos-page .form-actions {
     grid-template-columns: 1fr;
   }
 }
