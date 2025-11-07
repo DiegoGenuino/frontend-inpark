@@ -58,6 +58,10 @@ export const AuthProvider = ({ children }) => {
     console.log('📧 Email:', email);
     console.log('🌐 URL da API:', `${API_BASE}/auth/login`);
     
+    // Credenciais padrão para teste quando backend está offline
+    const DEFAULT_EMAIL = 'demo@inpark.com';
+    const DEFAULT_PASSWORD = 'demo123';
+    
     try {
       // Fazer login no backend
       const loginResponse = await fetch(`${API_BASE}/auth/login`, {
@@ -115,6 +119,41 @@ export const AuthProvider = ({ children }) => {
       return { success: true, role: decoded.role };
     } catch (error) {
       console.error('❌ Erro no login:', error);
+      
+      // Verificar se é erro de rede E se está usando credenciais padrão
+      if (error.message.includes('Failed to fetch') || error.message === 'Network request failed') {
+        if (email === DEFAULT_EMAIL && senha === DEFAULT_PASSWORD) {
+          console.log('🔌 Backend offline detectado - usando usuário padrão para teste');
+          
+          // Criar token mock
+          const mockToken = btoa(JSON.stringify({
+            sub: DEFAULT_EMAIL,
+            role: 'CLIENTE',
+            name: 'Diego Genuino',
+            exp: Date.now() + 86400000 // 24 horas
+          }));
+          
+          localStorage.setItem('token', `mock.${mockToken}`);
+          
+          // Atualizar estado com dados mock
+          setIsAuthenticated(true);
+          setRole('CLIENTE');
+          setUser({
+            email: DEFAULT_EMAIL,
+            role: 'CLIENTE',
+            name: 'Diego Genuino'
+          });
+          
+          console.log('✅ Login mock concluído com sucesso!');
+          return { success: true, role: 'CLIENTE', isMock: true };
+        } else {
+          return { 
+            success: false, 
+            error: 'Backend offline. Use as credenciais padrão (demo@inpark.com / demo123) para testar.' 
+          };
+        }
+      }
+      
       return { success: false, error: error.message };
     }
   };
@@ -136,10 +175,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    console.log('🚪 Iniciando logout...');
+    
+    // Remover token do localStorage
     localStorage.removeItem('token');
+    console.log('🗑️ Token removido do localStorage');
+    
+    // Limpar outros dados que possam existir (opcional)
+    // localStorage.removeItem('user');
+    // sessionStorage.clear();
+    
+    // Resetar estados da autenticação
     setIsAuthenticated(false);
     setRole('');
     setUser(null);
+    
+    console.log('✅ Logout concluído - usuário desautenticado');
   };
 
   return (
