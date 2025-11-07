@@ -223,8 +223,10 @@ const MeusCarros = () => {
   return (
     <div className="meus-carros-container">
       <div className="page-header">
-        <h1>Meus Carros</h1>
+        <div className="header-text">
         <p>Gerencie os veículos cadastrados em sua conta para facilitar suas reservas</p>
+        <h1>Meus Carros</h1>
+        </div>
       </div>
 
       {/* Botão Adicionar Novo Carro */}
