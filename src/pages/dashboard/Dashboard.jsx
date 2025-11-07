@@ -1,60 +1,71 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth, getAuthHeaders } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdLocationOn, MdAccessTime, MdDirectionsCar, MdMyLocation, MdChevronRight, MdPerson, MdNotifications, MdLocalParking, MdCalendarToday, MdTrendingUp } from 'react-icons/md';
+import { MdSearch, MdLocationOn, MdAccessTime, MdDirectionsCar, MdMyLocation, MdChevronRight, MdPerson, MdLocalParking, MdCalendarToday, MdTrendingUp } from 'react-icons/md';
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
+    BarElement,
     Title,
     Tooltip,
-    Legend,
-    Filler
+    Legend
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import './Dashboard.css';
 
 ChartJS.register(
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
+    BarElement,
     Title,
     Tooltip,
-    Legend,
-    Filler
+    Legend
 );
 
 export default function Dashboard() {
-    const { user } = useAuth();
+    const { user, role } = useAuth();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [estacionamentosProximos, setEstacionamentosProximos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    // Dados do gráfico
-    const gastosData = useMemo(() => ({
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-        datasets: [
-            {
-                label: 'Gastos com Estacionamento',
-                data: [120, 150, 180, 140, 200, 160, 190, 220, 180, 240, 210, 250],
-                fill: true,
-                backgroundColor: 'rgba(194, 254, 0, 0.1)',
-                borderColor: '#C2FE00',
-                borderWidth: 3,
-                pointBackgroundColor: '#C2FE00',
-                pointBorderColor: '#8BB800',
-                pointBorderWidth: 2,
-                pointRadius: 6,
-                pointHoverRadius: 8,
-                tension: 0.4
-            }
-        ]
-    }), []);
+    // Função para traduzir a role
+    const getRoleLabel = (userRole) => {
+        const roles = {
+            'CLIENTE': 'Cliente',
+            'DONO': 'Proprietário',
+            'ADMIN': 'Administrador'
+        };
+        return roles[userRole] || 'Cliente';
+    };
+
+    // Dados do gráfico de barras
+    const gastosData = useMemo(() => {
+        // Valores aleatórios para cada mês, alguns meses com destaque
+        const mesesDestaque = [1, 3, 4, 5, 6, 9]; // Meses com cor verde forte
+        const valores = [1.5, 6.5, 2.5, 10.5, 9, 8, 7, 3.5, 4, 9.5, 7, 6.5];
+        
+        return {
+            labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
+            datasets: [
+                {
+                    label: 'Gastos (R$)',
+                    data: valores,
+                    backgroundColor: valores.map((_, index) => 
+                        mesesDestaque.includes(index) ? '#00FF00' : 'rgba(0, 255, 0, 0.3)'
+                    ),
+                    borderColor: valores.map((_, index) => 
+                        mesesDestaque.includes(index) ? '#00FF00' : 'rgba(0, 255, 0, 0.3)'
+                    ),
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    barThickness: 40,
+                }
+            ]
+        };
+    }, []);
 
     // Opções do gráfico responsivas
     const chartOptions = useMemo(() => ({
@@ -66,80 +77,45 @@ export default function Dashboard() {
         },
         plugins: {
             legend: {
-                position: 'top',
-                labels: {
-                    color: '#2c3e50',
-                    font: {
-                        size: windowWidth <= 768 ? 12 : 14,
-                        weight: '600'
-                    },
-                    padding: 20,
-                    usePointStyle: true
-                }
+                display: false
             },
             title: {
-                display: true,
-                text: windowWidth <= 576 ? 'Gastos Mensais (R$)' : 'Gastos Mensais com Estacionamento (R$)',
-                color: '#2c3e50',
-                font: {
-                    size: windowWidth <= 768 ? 14 : 16,
-                    weight: '700'
-                },
-                padding: 20
+                display: false
             },
             tooltip: {
-                backgroundColor: 'rgba(44, 62, 80, 0.95)',
-                titleColor: '#C2FE00',
-                bodyColor: '#ffffff',
-                borderColor: '#C2FE00',
-                borderWidth: 1,
-                cornerRadius: 8,
-                callbacks: {
-                    label: function(context) {
-                        return `R$ ${context.parsed.y.toFixed(2)}`;
-                    }
-                }
+                enabled: false
             }
         },
         scales: {
             y: {
                 beginAtZero: true,
+                max: 12,
                 grid: {
-                    color: 'rgba(0, 0, 0, 0.1)',
+                    color: 'rgba(0, 0, 0, 0.05)',
                     drawBorder: false
                 },
                 ticks: {
+                    stepSize: 3,
                     color: '#6c757d',
                     font: {
-                        size: windowWidth <= 768 ? 10 : 12
-                    },
-                    callback: function(value) {
-                        return `R$ ${value}`;
+                        size: 12
                     }
                 }
             },
             x: {
                 grid: {
-                    display: false
+                    display: false,
+                    drawBorder: false
                 },
                 ticks: {
                     color: '#6c757d',
                     font: {
-                        size: windowWidth <= 768 ? 10 : 12
+                        size: 12
                     }
                 }
             }
-        },
-        elements: {
-            point: {
-                radius: windowWidth <= 768 ? 4 : 6,
-                hoverRadius: windowWidth <= 768 ? 6 : 8
-            },
-            line: {
-                borderWidth: windowWidth <= 768 ? 2 : 3
-            }
         }
-    }), [windowWidth]);
+    }), []);
 
     const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -241,44 +217,16 @@ export default function Dashboard() {
             <div className="dashboard-main-header">
                 <div className="header-content">
                     <div className="header-text">
+                        <p className="dashboard-label">Dashboard</p>
                         <h1 className="dashboard-title">
-                            Olá, {user?.nome?.split(' ')[0] || user?.email?.split('@')[0] || 'Cliente'}! 👋
+                            Olá, {user?.nome?.split(' ')[0] || user?.email?.split('@')[0] || 'Diego'}!
                         </h1>
-                        <p className="dashboard-subtitle">
-                            Pronto para encontrar sua vaga ideal? Gerencie suas reservas e explore estacionamentos próximos.
-                        </p>
                     </div>
-                </div>
-                
-                {/* Stats Rápidas */}
-                <div className="dashboard-stats">
-                    <div className="stat-card">
-                        <div className="stat-icon">
-                            <MdLocalParking />
-                        </div>
-                        <div className="stat-info">
-                            <span className="stat-number">{estacionamentosProximos.length}</span>
-                            <span className="stat-label">Estacionamentos próximos</span>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">
-                            <MdCalendarToday />
-                        </div>
-                        <div className="stat-info">
-                            <span className="stat-number">0</span>
-                            <span className="stat-label">Reserva ativa</span>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">
-                            <MdDirectionsCar />
-                        </div>
-                        <div className="stat-info">
-                            <span className="stat-number">
-                                {estacionamentosProximos.reduce((acc, est) => acc + est.vagasDisponiveis, 0)}
-                            </span>
-                            <span className="stat-label">Vagas disponíveis</span>
+                    <div className="card-user-info">
+                        <MdPerson className="user-icon" />
+                        <div className="info-user">
+                            <span className="user-name">{user?.nome || user?.email || 'Diego Genuino'}</span>
+                            <span className="user-role">{getRoleLabel(role)}</span>
                         </div>
                     </div>
                 </div>
@@ -286,28 +234,20 @@ export default function Dashboard() {
 
             {/* Opções Rápidas */}
             <div className="quick-actions-section">
-                <h2>Acesso Rápido</h2>
+                <h2>Acesso rápido</h2>
                 <div className="quick-actions-grid">
-                    <button 
-                        className="quick-action-item"
-                        onClick={() => navigate('/notificacoes')}
-                    >
-                        <MdNotifications className="quick-action-icon" />
-                        <div className="quick-action-content">
-                            <h3>Notificações</h3>
-                            <p>Alertas e lembretes</p>
-                        </div>
-                        <MdChevronRight className="chevron" />
-                    </button>
+                    {/* Notificações desativado */}
 
                     <button 
                         className="quick-action-item"
                         onClick={() => navigate('/meu-perfil')}
                     >
-                        <MdPerson className="quick-action-icon" />
+                        <div className="quick-action-icon-wrapper">
+                            <MdPerson className="quick-action-icon" />
+                        </div>
                         <div className="quick-action-content">
-                            <h3>Meu Perfil</h3>
-                            <p>Dados pessoais e configurações</p>
+                            <h3>Meu perfil</h3>
+                            <p>Acesso a dados pessoais</p>
                         </div>
                         <MdChevronRight className="chevron" />
                     </button>
@@ -316,9 +256,11 @@ export default function Dashboard() {
                         className="quick-action-item"
                         onClick={() => navigate('/meus-carros')}
                     >
-                        <MdDirectionsCar className="quick-action-icon" />
+                        <div className="quick-action-icon-wrapper">
+                            <MdDirectionsCar className="quick-action-icon" />
+                        </div>
                         <div className="quick-action-content">
-                            <h3>Meus Carros</h3>
+                            <h3>Meus carros</h3>
                             <p>Cadastre seus veículos</p>
                         </div>
                         <MdChevronRight className="chevron" />
@@ -328,9 +270,11 @@ export default function Dashboard() {
                         className="quick-action-item"
                         onClick={() => navigate('/minhas-reservas')}
                     >
-                        <MdLocalParking className="quick-action-icon" />
+                        <div className="quick-action-icon-wrapper">
+                            <MdLocalParking className="quick-action-icon" />
+                        </div>
                         <div className="quick-action-content">
-                            <h3>Minhas Reservas</h3>
+                            <h3>Minhas reservas</h3>
                             <p>Gerencie suas reservas</p>
                         </div>
                         <MdChevronRight className="chevron" />
@@ -341,109 +285,21 @@ export default function Dashboard() {
             {/* Gráfico de Gastos Mensais */}
             <div className="gastos-chart-section">
                 <div className="chart-header">
-                    <h2>
-                        <MdTrendingUp className="chart-icon" />
-                        Gastos do Mês
-                    </h2>
+                    <h2>Gastos do Mês</h2>
                     <div className="chart-stats">
                         <div className="stat-item">
                             <span className="stat-label">Este mês</span>
-                            <span className="stat-value">R$ 240,00</span>
+                            <span className="stat-value">R$ 100,00</span>
                         </div>
                         <div className="stat-item">
                             <span className="stat-label">Média mensal</span>
-                            <span className="stat-value">R$ 188,00</span>
+                            <span className="stat-value">R$ 276,82</span>
                         </div>
                     </div>
                 </div>
                 <div className="chart-container">
-                    <Line data={gastosData} options={chartOptions} />
+                    <Bar data={gastosData} options={chartOptions} />
                 </div>
-            </div>
-
-            <div className="estacionamentos-proximos-section">
-                <div className="section-header">
-                    <h2>Estacionamentos Próximos</h2>
-                    <button 
-                        className="ver-todos-btn"
-                        onClick={() => navigate('/estacionamentos')}
-                    >
-                        Ver todos
-                        <MdChevronRight />
-                    </button>
-                </div>
-                
-                {loading ? (
-                    <div className="loading-container">
-                        <div className="loading-spinner"></div>
-                        <p>Carregando estacionamentos...</p>
-                    </div>
-                ) : (
-                    <div className="estacionamentos-grid">
-                        {estacionamentosProximos.map((est) => {
-                            const vagasStatus = getVagasStatus(est.vagasDisponiveis, est.maximoDeVagas);
-                            return (
-                                <div key={est.id} className="estacionamento-card">
-                                    <div className="card-header">
-                                        <h3>{est.nome}</h3>
-                                        <span className="distancia">{est.distancia}</span>
-                                    </div>
-                                    <div className="card-content">
-                                        <div className="endereco">
-                                            <MdLocationOn className="icon" />
-                                            <span>{est.endereco}</span>
-                                        </div>
-                                        <div className="vagas-info">
-                                            <div className="vagas-count">
-                                                <span className="vagas-disponiveis" style={{ color: vagasStatus.color }}>
-                                                    {est.vagasDisponiveis}
-                                                </span>
-                                                <span className="vagas-total">/ {est.maximoDeVagas} vagas</span>
-                                            </div>
-                                            <span className="vagas-status" style={{ color: vagasStatus.color }}>
-                                                {vagasStatus.label}
-                                            </span>
-                                        </div>
-                                        <div className="preco">
-                                            <span>R$ {est.precoHora.toFixed(2).replace('.', ',')}/hora</span>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="reservar-btn"
-                                        onClick={() => navigate(`/estacionamento/${est.id}`)}
-                                        disabled={est.vagasDisponiveis === 0}
-                                    >
-                                        {est.vagasDisponiveis === 0 ? 'Lotado' : 'Ver Detalhes'}
-                                    </button>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-
-            {/* Busca Rápida */}
-            <div className="search-section">
-                <h2>Onde você quer estacionar?</h2>
-                <form onSubmit={handleSearch} className="quick-search">
-                    <div className="search-bar">
-                        <MdSearch className="search-icon" />
-                        <input
-                            type="text"
-                            placeholder="Busque por endereço ou nome do estacionamento..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="search-input"
-                        />
-                        <button type="submit" className="search-button">
-                            Buscar
-                        </button>
-                    </div>
-                    <button type="button" className="location-button">
-                        <MdMyLocation />
-                        Usar minha localização
-                    </button>
-                </form>
             </div>
         </div>
     );
