@@ -13,7 +13,6 @@ import ConfirmacaoPagamento from './pages/pagamentos/ConfirmacaoPagamento.jsx'
 import Avaliacao from './pages/avaliacoes/Avaliacao.jsx'
 import MeuPerfil from './pages/perfil/MeuPerfil.jsx'
 import MeusCarros from './pages/perfil/MeusCarros.jsx'
-import Notificacoes from './pages/perfil/Notificacoes.jsx'
 import './App.css'
 
 function AppContent() {
@@ -63,8 +62,8 @@ function AppContent() {
           <Route path="/minhas-reservas" element={<MinhasReservas />} />
           <Route path="/meus-carros" element={<MeusCarros />} />
           <Route path="/meu-perfil" element={<MeuPerfil />} />
-          <Route path="/notificacoes" element={<Notificacoes />} />
-          <Route path="/relatorio-despesas" element={<div>Relatório de Despesas - Em desenvolvimento</div>} />
+          {false && <Route path="/notificacoes" element={<div />} />}
+          {false && <Route path="/relatorio-despesas" element={<div />} />}
           <Route path="/reservas" element={<div>Reservas</div>} />
           <Route path="/vagas" element={<div>Vagas</div>} />
           <Route path="/historico" element={<div>Histórico</div>} />
