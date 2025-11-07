@@ -374,8 +374,10 @@ export const Estacionamentos = () => {
   return (
     <div className="estacionamentos-page">
       <div className="page-header">
-        <h1>Estacionamentos</h1>
+        <div className="header-text">
         <p>Encontre o melhor estacionamento para você</p>
+        <h1>Estacionamentos</h1>
+        </div>
       </div>
 
       <div className="search-section">
