@@ -20,6 +20,15 @@ export const Login = () => {
     }));
   };
 
+  // Função para preencher credenciais de teste rapidamente
+  const handleFillTestCredentials = () => {
+    setCredentials({
+      email: "demo@inpark.com",
+      senha: "demo123"
+    });
+    setError(""); // Limpar erros
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -79,6 +88,49 @@ export const Login = () => {
         />
         
         <h2>Acesse sua conta</h2>
+        
+        {/* Mensagem informativa sobre credenciais de teste */}
+        <div style={{
+          backgroundColor: '#e8f5e9',
+          border: '1px solid #4caf50',
+          borderRadius: '8px',
+          padding: '12px',
+          marginBottom: '20px',
+          fontSize: '13px',
+          color: '#2e7d32'
+        }}>
+          <strong>💡 Teste sem backend:</strong><br />
+          Email: <code style={{ 
+            backgroundColor: '#fff',
+            padding: '2px 6px',
+            borderRadius: '4px',
+            fontFamily: 'monospace'
+          }}>demo@inpark.com</code><br />
+          Senha: <code style={{ 
+            backgroundColor: '#fff',
+            padding: '2px 6px',
+            borderRadius: '4px',
+            fontFamily: 'monospace'
+          }}>demo123</code>
+          <button 
+            type="button"
+            onClick={handleFillTestCredentials}
+            style={{
+              marginTop: '8px',
+              padding: '6px 12px',
+              backgroundColor: '#4caf50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: '600',
+              width: '100%'
+            }}
+          >
+            ⚡ Preencher credenciais de teste
+          </button>
+        </div>
         
         <div className="form-group">
           <label htmlFor="email">Email</label>
