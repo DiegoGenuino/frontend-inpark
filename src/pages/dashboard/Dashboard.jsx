@@ -121,14 +121,14 @@ export default function Dashboard() {
 
     useEffect(() => {
         fetchEstacionamentosProximos();
-        
+
         // Listener para redimensionamento da tela
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
         };
-        
+
         window.addEventListener('resize', handleResize);
-        
+
         return () => {
             window.removeEventListener('resize', handleResize);
         };
@@ -238,7 +238,7 @@ export default function Dashboard() {
                 <div className="quick-actions-grid">
                     {/* Notificações desativado */}
 
-                    <button 
+                    <button
                         className="quick-action-item"
                         onClick={() => navigate('/meu-perfil')}
                     >
@@ -252,7 +252,7 @@ export default function Dashboard() {
                         <MdChevronRight className="chevron" />
                     </button>
 
-                    <button 
+                    <button
                         className="quick-action-item"
                         onClick={() => navigate('/meus-carros')}
                     >
@@ -266,7 +266,7 @@ export default function Dashboard() {
                         <MdChevronRight className="chevron" />
                     </button>
 
-                    <button 
+                    <button
                         className="quick-action-item"
                         onClick={() => navigate('/minhas-reservas')}
                     >

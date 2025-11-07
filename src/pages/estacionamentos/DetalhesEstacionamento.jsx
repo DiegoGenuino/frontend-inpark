@@ -63,8 +63,39 @@ const DetalhesEstacionamento = () => {
         throw new Error(`Erro ${response.status}: ${errorText}`)
       }
     } catch (err) {
+<<<<<<< HEAD
       console.error('Erro ao carregar detalhes:', err)
       setError(err.message || 'Não foi possível carregar os detalhes do estacionamento')
+=======
+      console.error('Erro ao carregar detalhes, usando mock:', err)
+      // Mock data detalhado
+     
+
+      // Mock avaliacoes
+      setAvaliacoes([
+        {
+          id: 1,
+          usuario: "Maria S.",
+          nota: 5,
+          comentario: "Excelente localização e atendimento. Sempre tem vaga disponível!",
+          data: "2025-10-06"
+        },
+        {
+          id: 2,
+          usuario: "João P.",
+          nota: 4,
+          comentario: "Bom estacionamento, preço justo. Só poderia ter mais vagas cobertas.",
+          data: "2025-10-05"
+        },
+        {
+          id: 3,
+          usuario: "Ana C.",
+          nota: 5,
+          comentario: "Seguro e bem localizado. Recomendo!",
+          data: "2025-10-03"
+        }
+      ])
+>>>>>>> 3ae40fcecaddc02821302fc421579390c69c4339
     } finally {
       setLoading(false)
     }
