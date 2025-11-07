@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../utils/auth";
 import InparkLogo from "../../assets/inpark.svg"
 import './Sidebar.css'
@@ -21,11 +21,21 @@ import {
 
 export const Sidebar = () => {
     const { role, user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = (e) => {
         e.preventDefault();
+        
+        // Remover token do localStorage
         localStorage.removeItem('token');
+        
+        // Chamar função de logout do contexto
         logout();
+        
+        // Redirecionar para página de login
+        navigate('/');
+        
+        console.log('✅ Logout realizado com sucesso');
     };
 
     // Extrair primeiro nome do usuário
@@ -79,18 +89,22 @@ export const Sidebar = () => {
                                 <span>Meu Perfil</span>
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link to="/notificacoes" className="nav-link">
-                                <MdNotifications className="nav-icon" />
-                                <span>Notificações</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/relatorio-despesas" className="nav-link">
-                                <MdReceiptLong className="nav-icon" />
-                                <span>Relatório de Despesas</span>
-                            </Link>
-                        </li>
+                        {false && (
+                          <li className="nav-item">
+                              <Link to="/notificacoes" className="nav-link">
+                                  <MdNotifications className="nav-icon" />
+                                  <span>Notificações</span>
+                              </Link>
+                          </li>
+                        )}
+                        {false && (
+                          <li className="nav-item">
+                              <Link to="/relatorio-despesas" className="nav-link">
+                                  <MdReceiptLong className="nav-icon" />
+                                  <span>Relatório de Despesas</span>
+                              </Link>
+                          </li>
+                        )}
                     </ul>
                 </div>
 
