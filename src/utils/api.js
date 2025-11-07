@@ -44,6 +44,30 @@ export const getToken = () => {
 };
 
 /**
+ * Remove o token e dados do usuário, fazendo logout completo
+ */
+export const clearAuthData = () => {
+  console.log('🗑️ Limpando dados de autenticação...');
+  
+  // Remover token
+  localStorage.removeItem('token');
+  
+  // Remover outros dados relacionados ao usuário
+  localStorage.removeItem('user');
+  
+  console.log('✅ Dados de autenticação removidos');
+};
+
+/**
+ * Verifica se o token existe e está válido
+ * @returns {boolean} - True se o token existe
+ */
+export const isAuthenticated = () => {
+  const token = getToken();
+  return !!token;
+};
+
+/**
  * Obtém os headers de autenticação
  * @returns {object} - Headers com o token de autenticação
  */
@@ -80,12 +104,17 @@ export const apiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, config);
     
-    // Se não autorizado, redirecionar para login
+    // Se não autorizado, limpar dados e redirecionar para login
     if (response.status === 401 || response.status === 403) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      console.warn('⚠️ Acesso não autorizado - removendo token e redirecionando');
+      
+      // Limpar todos os dados de autenticação usando função centralizada
+      clearAuthData();
+      
+      // Redirecionar para login
       window.location.href = '/login';
-      throw new Error('Não autorizado');
+      
+      throw new Error('Sessão expirada ou não autorizada');
     }
 
     // Se não for OK, lançar erro
@@ -102,7 +131,7 @@ export const apiRequest = async (endpoint, options = {}) => {
     
     return response;
   } catch (error) {
-    console.error('Erro na requisição:', error);
+    console.error('❌ Erro na requisição:', error);
     throw error;
   }
 };
