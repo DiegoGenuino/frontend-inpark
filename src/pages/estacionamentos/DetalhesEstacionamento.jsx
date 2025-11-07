@@ -63,15 +63,10 @@ const DetalhesEstacionamento = () => {
         throw new Error(`Erro ${response.status}: ${errorText}`)
       }
     } catch (err) {
-<<<<<<< HEAD
       console.error('Erro ao carregar detalhes:', err)
       setError(err.message || 'Não foi possível carregar os detalhes do estacionamento')
-=======
-      console.error('Erro ao carregar detalhes, usando mock:', err)
-      // Mock data detalhado
-     
-
-      // Mock avaliacoes
+      
+      // Mock avaliacoes em caso de erro
       setAvaliacoes([
         {
           id: 1,
@@ -95,7 +90,6 @@ const DetalhesEstacionamento = () => {
           data: "2025-10-03"
         }
       ])
->>>>>>> 3ae40fcecaddc02821302fc421579390c69c4339
     } finally {
       setLoading(false)
     }
