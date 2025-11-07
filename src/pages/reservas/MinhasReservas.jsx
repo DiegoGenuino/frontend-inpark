@@ -2,20 +2,12 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MdSearch,
-  MdLocationOn,
   MdAccessTime,
   MdDirectionsCar,
   MdAttachMoney,
-  MdInfo,
-  MdCancel,
   MdStar,
   MdLocalParking,
-  MdFileDownload,
-  MdQrCode,
-  MdMoreTime,
-  MdReceipt,
-  MdExitToApp,
-  MdCalendarToday,
+  MdCancel,
 } from "react-icons/md";
 import { useAuth } from "../../utils/auth";
 import "./MinhasReservas.css";
@@ -158,45 +150,6 @@ const MinhasReservas = () => {
     return { ativas, historico };
   }, [reservas]);
 
-  // Handlers
-  const handleVerDetalhes = (reserva) => {
-    navigate(`/detalhes-reserva/${reserva.id}`, { state: { reserva } });
-  };
-
-  const handleCancelarReserva = (id) => {
-    if (window.confirm("Tem certeza que deseja cancelar esta reserva?")) {
-      setReservas((prev) =>
-        prev.map((r) =>
-          r.id === id ? { ...r, statusReserva: "CANCELADA" } : r
-        )
-      );
-    }
-  };
-
-  const handleAvaliar = (id) => {
-    navigate("/avaliacao", { state: { reservaId: id } });
-  };
-
-  const handleVerQRCode = (reserva) => {
-    // Implementar visualização do QR Code
-    console.log("Ver QR Code para reserva:", reserva.id);
-  };
-
-  const handleEstenderTempo = (id) => {
-    // Implementar extensão de tempo
-    console.log("Estender tempo para reserva:", id);
-  };
-
-  const handleVerPoliticaReembolso = () => {
-    // Implementar visualização da política de reembolso
-    console.log("Ver política de reembolso");
-  };
-
-  const handleExportarPlanilha = () => {
-    // Implementar exportação
-    console.log("Exportar planilha");
-  };
-
   if (loading) {
     return (
       <div className="minhas-reservas-page">
@@ -211,8 +164,10 @@ const MinhasReservas = () => {
   return (
     <div className="minhas-reservas-page">
       <div className="page-header">
-        <h1>Minhas Reservas</h1>
+        <div className="header-text">
         <p>Gerencie todas as suas reservas de estacionamento</p>
+        <h1>Minhas Reservas</h1>
+        </div>
       </div>
 
       {error && <div className="error-container">{error}</div>}
@@ -281,7 +236,6 @@ const MinhasReservas = () => {
                   <th>Placa</th>
                   <th>Status</th>
                   <th>Valor</th>
-                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -329,109 +283,6 @@ const MinhasReservas = () => {
                         <div className="valor-info">
                           <MdAttachMoney size={16} />
                           <span>R$ {reserva.valorTotal.toFixed(2)}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="acoes-cell">
-                          {reserva.statusReserva === "PENDENTE" && (
-                            <>
-                              <button
-                                className="btn-acao btn-detalhes"
-                                onClick={() => handleVerDetalhes(reserva)}
-                              >
-                                <MdInfo />
-                              </button>
-                              <button
-                                className="btn-acao btn-cancelar"
-                                onClick={() =>
-                                  handleCancelarReserva(reserva.id)
-                                }
-                              >
-                                <MdCancel />
-                              </button>
-                            </>
-                          )}
-
-                          {reserva.statusReserva === "ACEITA" && (
-                            <>
-                              <button
-                                className="btn-acao btn-qrcode"
-                                onClick={() => handleVerQRCode(reserva)}
-                              >
-                                <MdQrCode />
-                              </button>
-                              <button
-                                className="btn-acao btn-detalhes"
-                                onClick={() => handleVerDetalhes(reserva)}
-                              >
-                                <MdInfo />
-                              </button>
-                              <button
-                                className="btn-acao btn-cancelar"
-                                onClick={() =>
-                                  handleCancelarReserva(reserva.id)
-                                }
-                              >
-                                <MdCancel />
-                              </button>
-                            </>
-                          )}
-
-                          {reserva.statusReserva === "EM_USO" && (
-                            <>
-                              <button
-                                className="btn-acao btn-detalhes"
-                                onClick={() => handleVerDetalhes(reserva)}
-                              >
-                                <MdInfo />
-                              </button>
-                              <button
-                                className="btn-acao btn-estender"
-                                onClick={() => handleEstenderTempo(reserva.id)}
-                              >
-                                <MdMoreTime />
-                              </button>
-                            </>
-                          )}
-
-                          {reserva.statusReserva === "ENCERRADA" && (
-                            <>
-                              {!reserva.avaliacaoFeita && (
-                                <button
-                                  className="btn-acao btn-avaliar"
-                                  onClick={() => handleAvaliar(reserva.id)}
-                                >
-                                  <MdStar />
-                                </button>
-                              )}
-                              <button
-                                className="btn-acao btn-detalhes"
-                                onClick={() => handleVerDetalhes(reserva)}
-                              >
-                                <MdInfo />
-                              </button>
-                            </>
-                          )}
-
-                          {(reserva.statusReserva === "CANCELADA" ||
-                            reserva.statusReserva === "RECUSADA") && (
-                            <>
-                              <button
-                                className="btn-acao btn-detalhes"
-                                onClick={() => handleVerDetalhes(reserva)}
-                              >
-                                <MdInfo />
-                              </button>
-                              {reserva.statusReserva === "CANCELADA" && (
-                                <button
-                                  className="btn-acao btn-reembolso"
-                                  onClick={handleVerPoliticaReembolso}
-                                >
-                                  <MdReceipt />
-                                </button>
-                              )}
-                            </>
-                          )}
                         </div>
                       </td>
                     </tr>
