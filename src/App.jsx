@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './utils/auth.jsx'
 import { Sidebar } from './components/sidebar/Sidebar.jsx'
+import { SidebarDono } from './components/sidebar/SidebarDono.jsx'
 import { Login } from './pages/auth/Login.jsx';
+import { Signup } from './pages/auth/Signup.jsx';
 import Dashboard from './pages/dashboard/Dashboard.jsx';
 import Estacionamentos from './pages/estacionamentos/Estacionamentos.jsx'
 import MinhasReservas from './pages/reservas/MinhasReservas.jsx'
@@ -13,14 +15,24 @@ import ConfirmacaoPagamento from './pages/pagamentos/ConfirmacaoPagamento.jsx'
 import Avaliacao from './pages/avaliacoes/Avaliacao.jsx'
 import MeuPerfil from './pages/perfil/MeuPerfil.jsx'
 import MeusCarros from './pages/perfil/MeusCarros.jsx'
+// Importações das páginas do dono
+import DashboardDono from './pages/dono/DashboardDono.jsx'
+import EstacionamentosDono from './pages/dono/EstacionamentosDono.jsx'
+import ReservasDono from './pages/dono/ReservasDono.jsx'
+import VagasDono from './pages/dono/VagasDono.jsx'
+import FinanceiroDono from './pages/dono/FinanceiroDono.jsx'
+import RelatoriosDono from './pages/dono/RelatoriosDono.jsx'
+import PerfilDono from './pages/dono/PerfilDono.jsx'
+import ConfiguracoesDono from './pages/dono/ConfiguracoesDono.jsx'
 import './App.css'
 
 function AppContent() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, role } = useAuth();
 
   console.log('🔍 AppContent - Estado atual:');
   console.log('  - isAuthenticated:', isAuthenticated);
   console.log('  - loading:', loading);
+  console.log('  - role:', role);
 
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
@@ -39,13 +51,41 @@ function AppContent() {
     );
   }
 
-  // Se não estiver autenticado, mostra apenas o login
+  // Se não estiver autenticado, mostra apenas o login ou signup
   if (!isAuthenticated) {
-    console.log('🔒 Usuário não autenticado - mostrando tela de login');
-    return <Login />;
+    console.log('🔒 Usuário não autenticado - mostrando tela de login/signup');
+    return (
+      <Routes>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="*" element={<Login />} />
+      </Routes>
+    );
   }
 
-  // Se estiver autenticado, mostra o app completo com sidebar e dashboard
+  // Se for DONO, mostra interface do proprietário
+  if (role === 'DONO') {
+    console.log('👔 Usuário DONO - mostrando interface do proprietário');
+    return (
+      <div className="app-container">
+        <SidebarDono />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<DashboardDono />} />
+            <Route path="/dono" element={<DashboardDono />} />
+            <Route path="/dono/estacionamentos" element={<EstacionamentosDono />} />
+            <Route path="/dono/reservas" element={<ReservasDono />} />
+            <Route path="/dono/vagas" element={<VagasDono />} />
+            <Route path="/dono/financeiro" element={<FinanceiroDono />} />
+            <Route path="/dono/relatorios" element={<RelatoriosDono />} />
+            <Route path="/dono/perfil" element={<PerfilDono />} />
+            <Route path="/dono/configuracoes" element={<ConfiguracoesDono />} />
+          </Routes>
+        </main>
+      </div>
+    );
+  }
+
+  // Se for usuário comum, mostra o app completo com sidebar de cliente
   console.log('✅ Usuário autenticado - mostrando app completo');
   return (
     <div className="app-container">
