@@ -298,38 +298,31 @@
   text-transform: uppercase;
 }
 
-/* Status Badge */
-.minhas-reservas-page .status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  font-size: 13px;
+/* Status Text */
+.minhas-reservas-page .status-text {
+  font-weight: 600;
+  font-size: 14px;
   white-space: nowrap;
 }
 
-.minhas-reservas-page .status-badge svg {
-  font-size: 14px;
-}
-
-.minhas-reservas-page .status-badge.pendente {
+.minhas-reservas-page .status-text.status-pendente {
   color: #f59e0b;
 }
 
-.minhas-reservas-page .status-badge.aceita {
+.minhas-reservas-page .status-text.status-aceita {
   color: #10b981;
 }
 
-.minhas-reservas-page .status-badge.em-uso {
+.minhas-reservas-page .status-text.status-em-uso {
   color: #3b82f6;
 }
 
-.minhas-reservas-page .status-badge.encerrada {
+.minhas-reservas-page .status-text.status-encerrada {
   color: #6b7280;
 }
 
-.minhas-reservas-page .status-badge.cancelada,
-.minhas-reservas-page .status-badge.recusada {
+.minhas-reservas-page .status-text.status-cancelada,
+.minhas-reservas-page .status-text.status-recusada {
   color: #ef4444;
 }
 
@@ -473,8 +466,8 @@
     font-size: 12px;
   }
 
-  .minhas-reservas-page .status-badge {
-    font-size: 10px;
+  .minhas-reservas-page .status-text {
+    font-size: 12px;
   }
 }
 
