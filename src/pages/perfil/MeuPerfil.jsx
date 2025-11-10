@@ -6,7 +6,8 @@ import {
   MdSave, 
   MdCancel,
   MdEmail,
-  MdPhone
+  MdPhone,
+  MdBadge
 } from 'react-icons/md';
 import { Toast } from '../../components/shared';
 import './MeuPerfil.css';
@@ -145,13 +146,16 @@ const MeuPerfil = () => {
               <div className="form-group">
                 <label htmlFor="nome">Nome Completo *</label>
                 {editingSection === 'dadosPersonais' ? (
-                  <input
-                    type="text"
-                    id="nome"
-                    value={dadosPersonais.nome}
-                    onChange={(e) => setDadosPersonais(prev => ({ ...prev, nome: e.target.value }))}
-                    placeholder="Seu nome completo"
-                  />
+                  <div className="input-with-icon">
+                    <MdBadge className="input-icon" />
+                    <input
+                      type="text"
+                      id="nome"
+                      value={dadosPersonais.nome}
+                      onChange={(e) => setDadosPersonais(prev => ({ ...prev, nome: e.target.value }))}
+                      placeholder="Seu nome completo"
+                    />
+                  </div>
                 ) : (
                   <div className="display-value">{dadosPersonais.nome || 'Não informado'}</div>
                 )}
