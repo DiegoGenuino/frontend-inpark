@@ -10,11 +10,13 @@
 /* Loading */
 .loading-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 60vh;
   font-size: 16px;
   color: #6b7280;
+  gap: 1rem;
 }
 
 /* Container Principal */
