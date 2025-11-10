@@ -153,13 +153,6 @@ body {
   background: linear-gradient(338deg, #c2fe00 0%, #ffffff 56%);
 }
 
-.stat-card:hover {
-  background: linear-gradient(
-    338deg,
-    rgba(194, 254, 0, 1) 0%,
-    rgba(255, 255, 255, 1) 70%
-  );
-}
 
 .stat-icon {
   width: 48px;
