@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../utils/auth";
 import InparkLogo from "../../assets/inpark-logo.svg";
 import "./Login.css";
@@ -20,11 +21,20 @@ export const Login = () => {
     }));
   };
 
-  // Função para preencher credenciais de teste rapidamente
+  // Função para preencher credenciais de teste rapidamente - CLIENTE
   const handleFillTestCredentials = () => {
     setCredentials({
       email: "demo@inpark.com",
       senha: "demo123"
+    });
+    setError(""); // Limpar erros
+  };
+
+  // Função para preencher credenciais de teste - DONO
+  const handleFillDonoCredentials = () => {
+    setCredentials({
+      email: "dono@inpark.com",
+      senha: "dono123"
     });
     setError(""); // Limpar erros
   };
@@ -100,36 +110,72 @@ export const Login = () => {
           color: '#2e7d32'
         }}>
           <strong>💡 Teste sem backend:</strong><br />
-          Email: <code style={{ 
-            backgroundColor: '#fff',
-            padding: '2px 6px',
-            borderRadius: '4px',
-            fontFamily: 'monospace'
-          }}>demo@inpark.com</code><br />
-          Senha: <code style={{ 
-            backgroundColor: '#fff',
-            padding: '2px 6px',
-            borderRadius: '4px',
-            fontFamily: 'monospace'
-          }}>demo123</code>
-          <button 
-            type="button"
-            onClick={handleFillTestCredentials}
-            style={{
-              marginTop: '8px',
-              padding: '6px 12px',
-              backgroundColor: '#4caf50',
-              color: 'white',
-              border: 'none',
+          <div style={{ marginTop: '8px' }}>
+            <strong>Cliente:</strong><br />
+            Email: <code style={{ 
+              backgroundColor: '#fff',
+              padding: '2px 6px',
               borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: '600',
-              width: '100%'
-            }}
-          >
-            ⚡ Preencher credenciais de teste
-          </button>
+              fontFamily: 'monospace'
+            }}>demo@inpark.com</code><br />
+            Senha: <code style={{ 
+              backgroundColor: '#fff',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontFamily: 'monospace'
+            }}>demo123</code>
+            <button 
+              type="button"
+              onClick={handleFillTestCredentials}
+              style={{
+                marginTop: '6px',
+                padding: '6px 12px',
+                backgroundColor: '#4caf50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: '600',
+                width: '100%'
+              }}
+            >
+              ⚡ Login como Cliente
+            </button>
+          </div>
+          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #4caf50' }}>
+            <strong>Proprietário:</strong><br />
+            Email: <code style={{ 
+              backgroundColor: '#fff',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontFamily: 'monospace'
+            }}>dono@inpark.com</code><br />
+            Senha: <code style={{ 
+              backgroundColor: '#fff',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontFamily: 'monospace'
+            }}>dono123</code>
+            <button 
+              type="button"
+              onClick={handleFillDonoCredentials}
+              style={{
+                marginTop: '6px',
+                padding: '6px 12px',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: '600',
+                width: '100%'
+              }}
+            >
+              👔 Login como Proprietário
+            </button>
+          </div>
         </div>
         
         <div className="form-group">
@@ -179,6 +225,10 @@ export const Login = () => {
         <button type="submit" className="login-button" disabled={loading}>
           {loading ? "Entrando..." : "Entrar"}
         </button>
+
+        <div className="signup-link">
+          Ainda não tem conta? <Link to="/signup">Cadastre-se!</Link>
+        </div>
       </form>
     </div>
   );
