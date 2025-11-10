@@ -61,6 +61,8 @@ export const AuthProvider = ({ children }) => {
     // Credenciais padrão para teste quando backend está offline
     const DEFAULT_EMAIL = 'demo@inpark.com';
     const DEFAULT_PASSWORD = 'demo123';
+    const DONO_EMAIL = 'dono@inpark.com';
+    const DONO_PASSWORD = 'dono123';
     
     try {
       // Fazer login no backend
@@ -122,8 +124,9 @@ export const AuthProvider = ({ children }) => {
       
       // Verificar se é erro de rede E se está usando credenciais padrão
       if (error.message.includes('Failed to fetch') || error.message === 'Network request failed') {
+        // Login como CLIENTE
         if (email === DEFAULT_EMAIL && senha === DEFAULT_PASSWORD) {
-          console.log('🔌 Backend offline detectado - usando usuário padrão para teste');
+          console.log('🔌 Backend offline detectado - usando usuário CLIENTE padrão para teste');
           
           // Criar token mock
           const mockToken = btoa(JSON.stringify({
@@ -144,12 +147,39 @@ export const AuthProvider = ({ children }) => {
             name: 'Diego Genuino'
           });
           
-          console.log('✅ Login mock concluído com sucesso!');
+          console.log('✅ Login mock CLIENTE concluído com sucesso!');
           return { success: true, role: 'CLIENTE', isMock: true };
-        } else {
+        } 
+        // Login como DONO
+        else if (email === DONO_EMAIL && senha === DONO_PASSWORD) {
+          console.log('🔌 Backend offline detectado - usando usuário DONO padrão para teste');
+          
+          // Criar token mock para dono
+          const mockToken = btoa(JSON.stringify({
+            sub: DONO_EMAIL,
+            role: 'DONO',
+            name: 'Proprietário InPark',
+            exp: Date.now() + 86400000 // 24 horas
+          }));
+          
+          localStorage.setItem('token', `mock.${mockToken}`);
+          
+          // Atualizar estado com dados mock
+          setIsAuthenticated(true);
+          setRole('DONO');
+          setUser({
+            email: DONO_EMAIL,
+            role: 'DONO',
+            name: 'Proprietário InPark'
+          });
+          
+          console.log('✅ Login mock DONO concluído com sucesso!');
+          return { success: true, role: 'DONO', isMock: true };
+        } 
+        else {
           return { 
             success: false, 
-            error: 'Backend offline. Use as credenciais padrão (demo@inpark.com / demo123) para testar.' 
+            error: 'Backend offline. Use as credenciais padrão para testar:\nCliente: demo@inpark.com / demo123\nDono: dono@inpark.com / dono123' 
           };
         }
       }
