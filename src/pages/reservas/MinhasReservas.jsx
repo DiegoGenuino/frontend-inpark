@@ -2,12 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MdSearch,
-  MdAccessTime,
-  MdDirectionsCar,
   MdAttachMoney,
-  MdStar,
   MdLocalParking,
-  MdCancel,
 } from "react-icons/md";
 import { useAuth } from "../../utils/auth";
 import "./MinhasReservas.css";
@@ -73,39 +69,27 @@ const MinhasReservas = () => {
     const statusMap = {
       PENDENTE: {
         label: "Pendente",
-        className: "pendente",
-        color: "#FFA726",
-        icon: <MdAccessTime size={16} />,
+        className: "status-pendente",
       },
       ACEITA: {
         label: "Aceita",
-        className: "aceita",
-        color: "#C2FE00",
-        icon: <MdLocalParking size={16} />,
+        className: "status-aceita",
       },
       EM_USO: {
         label: "Em Uso",
-        className: "em-uso",
-        color: "#2196F3",
-        icon: <MdDirectionsCar size={16} />,
+        className: "status-em-uso",
       },
       ENCERRADA: {
         label: "Encerrada",
-        className: "encerrada",
-        color: "#4CAF50",
-        icon: <MdStar size={16} />,
+        className: "status-encerrada",
       },
       CANCELADA: {
         label: "Cancelada",
-        className: "cancelada",
-        color: "#F44336",
-        icon: <MdCancel size={16} />,
+        className: "status-cancelada",
       },
       RECUSADA: {
         label: "Recusada",
-        className: "recusada",
-        color: "#FF5722",
-        icon: <MdCancel size={16} />,
+        className: "status-recusada",
       },
     };
     return statusMap[status] || statusMap["PENDENTE"];
@@ -272,12 +256,9 @@ const MinhasReservas = () => {
                         </div>
                       </td>
                       <td>
-                        <div
-                          className={`status-badge ${statusInfo.className}`}
-                          style={{ backgroundColor: statusInfo.color }}
-                        >
-                          <span>{statusInfo.label}</span>
-                        </div>
+                        <span className={`status-text ${statusInfo.className}`}>
+                          {statusInfo.label}
+                        </span>
                       </td>
                       <td>
                         <div className="valor-info">
