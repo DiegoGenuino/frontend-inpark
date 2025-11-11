@@ -6,6 +6,7 @@ import {
   MdLocalParking,
 } from "react-icons/md";
 import { useAuth } from "../../utils/auth";
+import { reservaService, usuarioService } from "../../utils/services";
 import "./MinhasReservas.css";
 
 const MinhasReservas = () => {
@@ -13,41 +14,37 @@ const MinhasReservas = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [tabFilter, setTabFilter] = useState("ativas"); // 'ativas' ou 'historico'
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reservas, setReservas] = useState([]);
 
-  const [reservas, setReservas] = useState([
-    {
-      id: 1,
-      estacionamento: {
-        nome: "Shopping Norte",
-        endereco: "Av. Norte, 987",
-      },
-      placaVeiculo: "GHI9J01",
-      tipoVaga: "Comum",
-      dataInicio: "2024-01-10T10:00:00",
-      dataFim: "2024-01-10T16:00:00",
-      valorTotal: 20.0,
-      statusReserva: "RECUSADA",
-      motivo: "Estacionamento lotado no horário solicitado",
-      avaliacaoFeita: false,
-    },
-    {
-         id: 2,
-      estacionamento: {
-        nome: "Shopping Norte",
-        endereco: "Av. Norte, 987",
-      },
-      placaVeiculo: "GHI9J01",
-      tipoVaga: "Comum",
-      dataInicio: "2024-01-10T10:00:00",
-      dataFim: "2024-02-10T16:00:00",
-      valorTotal: 20.0,
-      statusReserva: "ACEITA",
-      motivo: "Estacionamento lotado no horário solicitado",
-      avaliacaoFeita: false
-    }
-  ]);
+  // Buscar reservas do backend ao montar o componente
+  useEffect(() => {
+    const fetchReservas = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        // 1. Buscar dados do usuário logado para obter o ID
+        const userData = await usuarioService.getMe();
+        const clienteId = userData?.id;
+        
+        if (!clienteId) {
+          throw new Error('Não foi possível identificar o usuário');
+        }
+        
+        // 2. Buscar todas as reservas e filtrar pelo clienteId
+        const minhasReservas = await reservaService.getMinhasReservas(clienteId);
+        setReservas(minhasReservas);
+      } catch (e) {
+        console.error('Erro ao carregar reservas:', e);
+        setError(e.message || 'Erro ao carregar reservas');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReservas();
+  }, []);
 
   // Função para formatar data e hora
   const formatDateTime = (isoString) => {
@@ -101,22 +98,27 @@ const MinhasReservas = () => {
 
     // Filtro por aba (ativas/historico)
     if (tabFilter === "ativas") {
-      filtered = filtered.filter((reserva) =>
-        ["PENDENTE", "ACEITA", "EM_USO"].includes(reserva.statusReserva)
-      );
+      filtered = filtered.filter((reserva) => {
+        const status = (reserva.statusReserva || reserva.status || '').toUpperCase();
+        return ["PENDENTE", "ACEITA", "EM_USO"].includes(status);
+      });
     } else {
-      filtered = filtered.filter((reserva) =>
-        ["ENCERRADA", "CANCELADA", "RECUSADA"].includes(reserva.statusReserva)
-      );
+      filtered = filtered.filter((reserva) => {
+        const status = (reserva.statusReserva || reserva.status || '').toUpperCase();
+        return ["ENCERRADA", "CANCELADA", "RECUSADA"].includes(status);
+      });
     }
 
     // Filtro por busca
     if (searchTerm) {
       const termo = searchTerm.toLowerCase();
       filtered = filtered.filter(
-        (reserva) =>
-          reserva.estacionamento.nome.toLowerCase().includes(termo) ||
-          reserva.placaVeiculo.toLowerCase().includes(termo)
+        (reserva) => {
+          const nomeEstacionamento = reserva.estacionamento?.nome || reserva.estacionamentoNome || '';
+          const placa = reserva.placaVeiculo || reserva.veiculo?.placa || '';
+          return nomeEstacionamento.toLowerCase().includes(termo) ||
+                 placa.toLowerCase().includes(termo);
+        }
       );
     }
 
@@ -125,12 +127,14 @@ const MinhasReservas = () => {
 
   // Contadores para as abas
   const contadores = useMemo(() => {
-    const ativas = reservas.filter((r) =>
-      ["PENDENTE", "ACEITA", "EM_USO"].includes(r.statusReserva)
-    ).length;
-    const historico = reservas.filter((r) =>
-      ["ENCERRADA", "CANCELADA", "RECUSADA"].includes(r.statusReserva)
-    ).length;
+    const ativas = reservas.filter((r) => {
+      const status = (r.statusReserva || r.status || '').toUpperCase();
+      return ["PENDENTE", "ACEITA", "EM_USO"].includes(status);
+    }).length;
+    const historico = reservas.filter((r) => {
+      const status = (r.statusReserva || r.status || '').toUpperCase();
+      return ["ENCERRADA", "CANCELADA", "RECUSADA"].includes(status);
+    }).length;
     return { ativas, historico };
   }, [reservas]);
 
@@ -224,9 +228,19 @@ const MinhasReservas = () => {
               </thead>
               <tbody>
                 {filteredReservas.map((reserva) => {
-                  const statusInfo = getStatusInfo(reserva.statusReserva);
-                  const inicio = formatDateTime(reserva.dataInicio);
-                  const fim = formatDateTime(reserva.dataFim);
+                  const status = reserva.statusReserva || reserva.status || 'PENDENTE';
+                  const statusInfo = getStatusInfo(status);
+                  
+                  // Formato backend pode ser dataDaReserva + horaDaReserva, ou dataInicio/dataFim
+                  const dataInicio = reserva.dataInicio || `${reserva.dataDaReserva}T${reserva.horaDaReserva || '00:00:00'}`;
+                  const dataFim = reserva.dataFim || dataInicio;
+                  
+                  const inicio = formatDateTime(dataInicio);
+                  const fim = formatDateTime(dataFim);
+                  
+                  const nomeEstacionamento = reserva.estacionamento?.nome || reserva.estacionamentoNome || '—';
+                  const placa = reserva.placaVeiculo || reserva.veiculo?.placa || reserva.carro?.placa || '—';
+                  const valor = reserva.valorTotal ?? reserva.valor ?? 0;
 
                   return (
                     <tr key={reserva.id}>
@@ -236,7 +250,7 @@ const MinhasReservas = () => {
                         </span>
                       </td>
                       <td>
-                        <span>{reserva.estacionamento.nome}</span>
+                        <span>{nomeEstacionamento}</span>
                       </td>
                       <td>
                         <div className="datetime-info">
@@ -244,15 +258,17 @@ const MinhasReservas = () => {
                             <div>
                               {inicio.date} às {inicio.time}
                             </div>
-                            <div className="data-fim">
-                              {fim.date} às {fim.time}
-                            </div>
+                            {dataInicio !== dataFim && (
+                              <div className="data-fim">
+                                {fim.date} às {fim.time}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
                       <td>
                         <div className="placa-info">
-                          <span>{reserva.placaVeiculo}</span>
+                          <span>{placa}</span>
                         </div>
                       </td>
                       <td>
@@ -263,7 +279,7 @@ const MinhasReservas = () => {
                       <td>
                         <div className="valor-info">
                           <MdAttachMoney size={16} />
-                          <span>R$ {reserva.valorTotal.toFixed(2)}</span>
+                          <span>R$ {Number(valor).toFixed(2)}</span>
                         </div>
                       </td>
                     </tr>
