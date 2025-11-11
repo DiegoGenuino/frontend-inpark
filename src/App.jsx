@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './utils/auth.jsx'
 import { Sidebar } from './components/sidebar/Sidebar.jsx'
 import { SidebarDono } from './components/sidebar/SidebarDono.jsx'
@@ -29,14 +29,8 @@ import './App.css'
 function AppContent() {
   const { isAuthenticated, loading, role } = useAuth();
 
-  console.log('🔍 AppContent - Estado atual:');
-  console.log('  - isAuthenticated:', isAuthenticated);
-  console.log('  - loading:', loading);
-  console.log('  - role:', role);
-
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
-    console.log('⏳ Mostrando tela de carregamento...');
     return (
       <div style={{ 
         display: 'flex', 
@@ -53,7 +47,6 @@ function AppContent() {
 
   // Se não estiver autenticado, mostra apenas o login ou signup
   if (!isAuthenticated) {
-    console.log('🔒 Usuário não autenticado - mostrando tela de login/signup');
     return (
       <Routes>
         <Route path="/signup" element={<Signup />} />
@@ -64,7 +57,6 @@ function AppContent() {
 
   // Se for DONO, mostra interface do proprietário
   if (role === 'DONO') {
-    console.log('👔 Usuário DONO - mostrando interface do proprietário');
     return (
       <div className="app-container">
         <SidebarDono />
@@ -86,7 +78,6 @@ function AppContent() {
   }
 
   // Se for usuário comum, mostra o app completo com sidebar de cliente
-  console.log('✅ Usuário autenticado - mostrando app completo');
   return (
     <div className="app-container">
       <Sidebar/>
@@ -107,6 +98,8 @@ function AppContent() {
           <Route path="/reservas" element={<div>Reservas</div>} />
           <Route path="/vagas" element={<div>Vagas</div>} />
           <Route path="/historico" element={<div>Histórico</div>} />
+          {/* Guard para impedir acesso a rotas /dono/* por usuários não-DONO */}
+          <Route path="/dono/*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>
