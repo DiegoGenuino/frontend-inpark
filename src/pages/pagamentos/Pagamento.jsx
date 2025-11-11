@@ -144,59 +144,32 @@ const Pagamento = () => {
   const handleFinalizarPagamento = async () => {
     setError(null)
     
-    // Validações baseadas no método de pagamento
+    // Validações básicas
     if (!metodoPagamento) {
       setError('Selecione um método de pagamento')
       return
     }
 
-    if (metodoPagamento === 'cartao') {
-      const erros = validarFormularioCartao()
-      if (erros.length > 0) {
-        setError(erros.join(', '))
-        return
-      }
-    }
-
     setProcessandoPagamento(true)
     
     try {
-      // Simular processamento do pagamento
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      // ⚠️ PAGAMENTO SIMULADO - Não envia dados reais
+      // Simular processamento do pagamento (2 segundos)
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
-      // Aqui seria feita a chamada real para a API de pagamento
-      const headers = {
-        'Content-Type': 'application/json',
-        ...getAuthHeaders()
-      }
-
-      const dadosPagamento = {
-        reservaId: dadosReserva.id,
-        metodoPagamento,
-        valorTotal: dadosReserva.valorTotal,
-        ...(metodoPagamento === 'cartao' ? { dadosCartao } : {}),
-        ...(metodoPagamento === 'pix' ? { pixCodigo: dadosPix.codigo } : {})
-      }
-
-      // Simular resposta da API
-      const sucesso = Math.random() > 0.1 // 90% de sucesso
-
-      if (sucesso) {
-        // Redirecionar para confirmação de pagamento
-        navigate('/pagamento/confirmacao', {
-          state: {
-            reserva: dadosReserva,
-            metodoPagamento,
-            transacaoId: `TXN${Date.now()}`,
-            valorPago: dadosReserva.valorTotal
-          }
-        })
-      } else {
-        throw new Error('Falha no processamento do pagamento. Tente novamente.')
-      }
+      // Sucesso garantido (pagamento simulado)
+      navigate('/pagamento/confirmacao', {
+        state: {
+          reserva: dadosReserva,
+          metodoPagamento,
+          transacaoId: `TXN${Date.now()}`,
+          valorPago: dadosReserva.valorTotal,
+          simulado: true
+        }
+      })
       
     } catch (err) {
-      setError(err.message || 'Erro ao processar pagamento')
+      setError('Erro ao processar pagamento simulado')
     } finally {
       setProcessandoPagamento(false)
     }
@@ -231,6 +204,26 @@ const Pagamento = () => {
           Voltar
         </button>
         <h1>Finalizar Pagamento</h1>
+      </div>
+
+      {/* Aviso de pagamento simulado */}
+      <div className="info-message" style={{ 
+        background: '#e0f2fe', 
+        border: '1px solid #0ea5e9', 
+        padding: '1rem', 
+        borderRadius: '8px', 
+        marginBottom: '1rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '.5rem'
+      }}>
+        <MdInfo style={{ color: '#0ea5e9', fontSize: '24px' }} />
+        <div>
+          <strong style={{ color: '#0369a1' }}>Modo de Demonstração</strong>
+          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#075985' }}>
+            Este é um pagamento simulado. Nenhum valor real será cobrado.
+          </p>
+        </div>
       </div>
 
       {error && (
