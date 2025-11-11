@@ -1,6 +1,8 @@
 // Configuração centralizada da API
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// Em desenvolvimento, usa '' (vazio) para aproveitar o proxy do Vite
+// Em produção, deve usar a URL completa do backend
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 /**
  * Decodifica um JWT sem verificar a assinatura (apenas para ler os dados)
@@ -9,12 +11,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
  */
 export const decodeJWT = (token) => {
   try {
-    console.log('🔓 Decodificando JWT...');
-    console.log('📝 Token (primeiros 50 chars):', token.substring(0, 50) + '...');
-    
     const base64Url = token.split('.')[1];
     if (!base64Url) {
-      console.error('❌ Token inválido - formato incorreto');
+      console.error('Token inválido - formato incorreto');
       return null;
     }
     
@@ -27,10 +26,9 @@ export const decodeJWT = (token) => {
     );
     
     const decoded = JSON.parse(jsonPayload);
-    console.log('✅ JWT decodificado com sucesso:', decoded);
     return decoded;
   } catch (error) {
-    console.error('❌ Erro ao decodificar JWT:', error);
+    console.error('Erro ao decodificar JWT:', error);
     return null;
   }
 };
@@ -47,15 +45,8 @@ export const getToken = () => {
  * Remove o token e dados do usuário, fazendo logout completo
  */
 export const clearAuthData = () => {
-  console.log('🗑️ Limpando dados de autenticação...');
-  
-  // Remover token
   localStorage.removeItem('token');
-  
-  // Remover outros dados relacionados ao usuário
   localStorage.removeItem('user');
-  
-  console.log('✅ Dados de autenticação removidos');
 };
 
 /**
@@ -76,12 +67,9 @@ export const getAuthHeaders = () => {
   if (token) {
     return {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
     };
   }
-  return {
-    'Content-Type': 'application/json',
-  };
+  return {};
 };
 
 /**
@@ -104,17 +92,19 @@ export const apiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, config);
     
-    // Se não autorizado, limpar dados e redirecionar para login
-    if (response.status === 401 || response.status === 403) {
-      console.warn('⚠️ Acesso não autorizado - removendo token e redirecionando');
-      
-      // Limpar todos os dados de autenticação usando função centralizada
+    // Tratamento de autenticação/autorização
+    if (response.status === 401) {
+      // 401: token inválido/expirado -> limpar sessão e redirecionar
+      console.warn('Sessão expirada ou não autenticado (401)');
       clearAuthData();
-      
-      // Redirecionar para login
       window.location.href = '/login';
-      
-      throw new Error('Sessão expirada ou não autorizada');
+      throw new Error('Sessão expirada. Faça login novamente.');
+    }
+    if (response.status === 403) {
+      // 403: proibido (sem permissão). Não deve forçar logout/redirecionar.
+      const errorData = await response.json().catch(() => ({}));
+      const message = errorData.message || 'Acesso negado (403)';
+      throw new Error(message);
     }
 
     // Se não for OK, lançar erro
@@ -131,7 +121,7 @@ export const apiRequest = async (endpoint, options = {}) => {
     
     return response;
   } catch (error) {
-    console.error('❌ Erro na requisição:', error);
+    console.error('Erro na requisição:', error);
     throw error;
   }
 };
@@ -147,6 +137,10 @@ export const api = {
     apiRequest(endpoint, {
       ...options,
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
       body: JSON.stringify(data),
     }),
   
@@ -154,6 +148,10 @@ export const api = {
     apiRequest(endpoint, {
       ...options,
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
       body: JSON.stringify(data),
     }),
   
@@ -161,6 +159,10 @@ export const api = {
     apiRequest(endpoint, {
       ...options,
       method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
       body: JSON.stringify(data),
     }),
   
