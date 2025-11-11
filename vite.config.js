@@ -18,7 +18,22 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/reserva': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
       '/reservas': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/valor': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/dono': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
