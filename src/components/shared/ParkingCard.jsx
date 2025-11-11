@@ -87,17 +87,9 @@ export const ParkingCard = ({
           <Button 
             variant="primary" 
             size="sm" 
-            onClick={() => onReserve(parking)}
-            icon={<MdLocalParking />}
-          >
-            Reservar
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
             onClick={() => onViewDetails(parking)}
           >
-            Detalhes
+            Ver Detalhes
           </Button>
         </div>
       </CardFooter>
