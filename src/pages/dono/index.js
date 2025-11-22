@@ -6,3 +6,4 @@ export { default as FinanceiroDono } from './FinanceiroDono';
 export { default as RelatoriosDono } from './RelatoriosDono';
 export { default as PerfilDono } from './PerfilDono';
 export { default as ConfiguracoesDono } from './ConfiguracoesDono';
+export { default as AcessosDono } from './AcessosDono';
