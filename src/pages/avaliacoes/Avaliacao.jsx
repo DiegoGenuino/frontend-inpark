@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MdStar, MdStarBorder, MdArrowBack, MdCheckCircle } from 'react-icons/md';
+import { reservaService, estacionamentoService, avaliacaoService, usuarioService } from '../../utils/services';
+import { Toast } from '../../components/shared';
 import './Avaliacao.css';
 
 const Avaliacao = () => {
@@ -19,7 +21,11 @@ const Avaliacao = () => {
   });
   
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [estacionamento, setEstacionamento] = useState(null);
+  const [reserva, setReserva] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [error, setError] = useState('');
 
   // Opções para detalhes da experiência
   const opcoes = [
@@ -34,30 +40,63 @@ const Avaliacao = () => {
   ];
 
   useEffect(() => {
-    // Buscar dados do estacionamento da reserva
     const buscarDadosReserva = async () => {
+      setLoadingData(true);
+      setError('');
+      
       try {
-        if (reservaData) {
-          setEstacionamento(reservaData.estacionamento);
-        } else {
-          // Simular busca de dados da reserva
-          const mockReserva = {
-            id: reservaId,
-            estacionamento: {
-              id: 1,
-              nome: 'Shopping Center Norte',
-              endereco: 'Av. Paulista, 1000'
-            }
-          };
-          setEstacionamento(mockReserva.estacionamento);
+        // 1. Buscar dados do usuário logado
+        const userData = await usuarioService.getMe();
+        const clienteEmail = userData?.email;
+        
+        if (!clienteEmail) {
+          throw new Error('Não foi possível identificar o usuário');
         }
-      } catch (error) {
-        console.error('Erro ao buscar dados da reserva:', error);
+
+        // 2. Buscar todas as reservas do cliente
+        const minhasReservas = await reservaService.getMinhasReservas(clienteEmail);
+        
+        // 3. Encontrar a reserva específica
+        const reservaEncontrada = minhasReservas.find(r => r.id === parseInt(reservaId));
+        
+        if (!reservaEncontrada) {
+          throw new Error('Reserva não encontrada ou você não tem permissão para avaliá-la');
+        }
+
+        // 4. Verificar se a reserva está ACEITA ou ENCERRADA
+        const status = reservaEncontrada.statusReserva || reservaEncontrada.status;
+        if (!['ACEITA', 'ENCERRADA', 'EM_USO'].includes(status)) {
+          throw new Error('Apenas reservas aceitas ou finalizadas podem ser avaliadas');
+        }
+
+        setReserva(reservaEncontrada);
+
+        // 5. Buscar dados do estacionamento
+        const estacionamentoId = reservaEncontrada.estacionamento?.id || 
+                                 reservaEncontrada.estacionamentoId || 
+                                 reservaEncontrada.idEstacionamento;
+        
+        if (!estacionamentoId) {
+          throw new Error('Estacionamento não identificado nesta reserva');
+        }
+
+        const estacionamentoData = await estacionamentoService.getById(estacionamentoId);
+        setEstacionamento(estacionamentoData);
+
+      } catch (e) {
+        console.error('Erro ao buscar dados da reserva:', e);
+        setError(e.message || 'Erro ao carregar dados da reserva');
+        setToast({ 
+          message: e.message || 'Erro ao carregar dados', 
+          type: 'error' 
+        });
+      } finally {
+        setLoadingData(false);
       }
     };
 
     buscarDadosReserva();
-  }, [reservaId, reservaData]);
+  }, [reservaId]);
 
   const handleStarClick = (nota) => {
     setAvaliacao(prev => ({
@@ -98,27 +137,49 @@ const Avaliacao = () => {
 
   const handleEnviarAvaliacao = async () => {
     if (avaliacao.nota === 0) {
-      alert('Por favor, selecione uma nota de 1 a 5 estrelas.');
+      setToast({ 
+        message: 'Por favor, selecione uma nota de 1 a 5 estrelas', 
+        type: 'error' 
+      });
       return;
     }
 
     setLoading(true);
     try {
-      // Aqui seria feita a integração com a API real
-      console.log('Enviando avaliação:', {
-        reservaId,
-        estacionamentoId: estacionamento?.id,
-        ...avaliacao
+      // Buscar dados do usuário para pegar o ID do cliente
+      const userData = await usuarioService.getMe();
+      
+      // Preparar payload para o backend
+      const avaliacaoPayload = {
+        nota: avaliacao.nota,
+        comentario: avaliacao.comentario || null,
+        recomendaria: avaliacao.recomendaria,
+        detalhesExperiencia: avaliacao.detalhesExperiencia.length > 0 
+          ? avaliacao.detalhesExperiencia 
+          : null,
+        clienteId: userData.id,
+        estacionamentoId: estacionamento.id,
+        reservaId: parseInt(reservaId)
+      };
+
+      await avaliacaoService.create(avaliacaoPayload);
+      
+      setToast({ 
+        message: 'Avaliação enviada com sucesso! Obrigado pelo seu feedback.', 
+        type: 'success' 
       });
 
-      // Simular envio
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      alert('Avaliação enviada com sucesso! Obrigado pelo seu feedback.');
-      navigate('/minhas-reservas');
-    } catch (error) {
-      console.error('Erro ao enviar avaliação:', error);
-      alert('Erro ao enviar avaliação. Tente novamente.');
+      // Aguardar um pouco para mostrar o toast antes de redirecionar
+      setTimeout(() => {
+        navigate('/minhas-avaliacoes');
+      }, 1500);
+
+    } catch (e) {
+      console.error('Erro ao enviar avaliação:', e);
+      setToast({ 
+        message: e.message || 'Erro ao enviar avaliação. Tente novamente.', 
+        type: 'error' 
+      });
     } finally {
       setLoading(false);
     }
@@ -145,10 +206,27 @@ const Avaliacao = () => {
     return stars;
   };
 
-  if (!estacionamento) {
+  if (loadingData) {
     return (
       <div className="avaliacao-container">
-        <div className="loading">Carregando...</div>
+        <div className="loading">Carregando dados da reserva...</div>
+      </div>
+    );
+  }
+
+  if (error || !estacionamento || !reserva) {
+    return (
+      <div className="avaliacao-container">
+        <div className="error-container">
+          <h2>Erro ao carregar avaliação</h2>
+          <p>{error || 'Não foi possível carregar os dados da reserva'}</p>
+          <button 
+            className="btn-primary" 
+            onClick={() => navigate('/minhas-reservas')}
+          >
+            Voltar para Minhas Reservas
+          </button>
+        </div>
       </div>
     );
   }
@@ -156,16 +234,27 @@ const Avaliacao = () => {
   return (
     <div className="avaliacao-container">
       <div className="avaliacao-header">
-        <button className="back-button" onClick={() => navigate('/minhas-reservas')}>
-          <MdArrowBack />
-        </button>
-        <h1>Avalie sua Experiência</h1>
+        <div className="header-top">
+          <button className="back-button" onClick={() => navigate('/minhas-reservas')}>
+            <MdArrowBack />
+          </button>
+          <h1>
+            <MdStar />
+            Avalie sua Experiência
+          </h1>
+        </div>
+        <p className="header-subtitle">
+          Sua opinião é muito importante para nós e outros usuários
+        </p>
       </div>
 
       <div className="avaliacao-content">
         <div className="estacionamento-info">
           <h2>{estacionamento.nome}</h2>
-          <p>{estacionamento.endereco}</p>
+          <p>{estacionamento.endereco}, {estacionamento.numero}</p>
+          <p className="reserva-info">
+            Reserva #{String(reserva.id).padStart(4, '0')}
+          </p>
         </div>
 
         <form className="avaliacao-form">
@@ -255,6 +344,14 @@ const Avaliacao = () => {
           </button>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
