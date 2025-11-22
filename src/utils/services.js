@@ -22,10 +22,12 @@ export const estacionamentoService = {
   },
 
   /**
-   * Criar novo estacionamento (DONO/GERENTE)
+   * Criar novo estacionamento (DONO)
+   * @param {number} donoId - ID do dono/proprietário
+   * @param {object} data - Dados do estacionamento
    */
-  create: async (data) => {
-    return await api.post('/estacionamento', data);
+  create: async (donoId, data) => {
+    return await api.post(`/estacionamento/${donoId}`, data);
   },
 
   /**
@@ -36,7 +38,8 @@ export const estacionamentoService = {
   },
 
   /**
-   * Deletar estacionamento (DONO)
+   * Desativar estacionamento (DONO)
+   * DELETE retorna 204 No Content
    */
   delete: async (id) => {
     return await api.delete(`/estacionamento/${id}`);
@@ -51,13 +54,16 @@ export const reservaService = {
    * Buscar minhas reservas (CLIENTE)
    * Workaround: busca todas e filtra por clienteId no frontend
    */
-  getMinhasReservas: async (clienteId) => {
+  getMinhasReservas: async (clienteEmailOrId) => {
     const todasReservas = await api.get('/reserva');
     const lista = Array.isArray(todasReservas) ? todasReservas : (todasReservas.content || []);
     
-    // Se foi passado clienteId, filtrar
-    if (clienteId) {
-      return lista.filter(r => r.cliente?.id === clienteId);
+    // Se foi passado clienteEmailOrId, filtrar por ID ou email
+    if (clienteEmailOrId) {
+      return lista.filter(r => {
+        // Tentar filtrar por ID ou email
+        return r.cliente?.id === clienteEmailOrId || r.cliente?.email === clienteEmailOrId;
+      });
     }
     
     return lista;
@@ -124,10 +130,11 @@ export const carroService = {
 export const usuarioService = {
   /**
    * Buscar dados do usuário logado
-   * Como o JWT só tem email, precisamos buscar o cliente pelo email
+   * Como o JWT só tem email, retornamos os dados básicos do token
+   * Para evitar 403 em GET /cliente
    */
   getMe: async () => {
-    // Decodificar token para pegar o email
+    // Decodificar token para pegar o email e role
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Token não encontrado');
@@ -143,19 +150,15 @@ export const usuarioService = {
         .join('')
     );
     const decoded = JSON.parse(jsonPayload);
-    const email = decoded.sub;
     
-    // Buscar cliente por email via GET /cliente
-    // Como não temos endpoint /cliente/email/{email}, vamos buscar todos e filtrar
-    const todosClientes = await api.get('/cliente');
-    const lista = Array.isArray(todosClientes) ? todosClientes : (todosClientes.content || []);
-    const cliente = lista.find(c => c.email === email);
-    
-    if (!cliente) {
-      throw new Error('Cliente não encontrado');
-    }
-    
-    return cliente;
+    // Retornar dados do token (sem fazer chamada ao backend)
+    // O clienteId será o email, já que não temos como buscar o ID real sem permissão
+    return {
+      email: decoded.sub,
+      role: decoded.role,
+      // Para filtrar reservas, usaremos o email em vez do ID
+      emailForFilter: decoded.sub
+    };
   },
 
   /**
@@ -207,14 +210,67 @@ export const avaliacaoService = {
    * Criar avaliação
    */
   create: async (data) => {
-    return await api.post('/avaliacoes', data);
+    return await api.post('/avaliacao', data);
   },
 
   /**
-   * Buscar avaliações de um estacionamento
+   * Buscar todas as avaliações
+   */
+  getAll: async () => {
+    return await api.get('/avaliacao');
+  },
+
+  /**
+   * Buscar avaliação por ID
+   */
+  getById: async (id) => {
+    return await api.get(`/avaliacao/${id}`);
+  },
+
+  /**
+   * Buscar avaliações de um estacionamento (filtrar no frontend)
    */
   getByEstacionamento: async (estacionamentoId) => {
-    return await api.get(`/avaliacoes/estacionamento/${estacionamentoId}`);
+    const todasAvaliacoes = await api.get('/avaliacao');
+    const lista = Array.isArray(todasAvaliacoes) ? todasAvaliacoes : (todasAvaliacoes.content || []);
+    
+    return lista.filter(av => 
+      av.estacionamento?.id === estacionamentoId || 
+      av.estacionamentoId === estacionamentoId ||
+      av.idEstacionamento === estacionamentoId
+    );
+  },
+
+  /**
+   * Buscar avaliações feitas por um cliente (filtrar no frontend)
+   */
+  getMinhasAvaliacoes: async (clienteEmail) => {
+    const todasAvaliacoes = await api.get('/avaliacao');
+    const lista = Array.isArray(todasAvaliacoes) ? todasAvaliacoes : (todasAvaliacoes.content || []);
+    
+    if (clienteEmail) {
+      return lista.filter(av => 
+        av.cliente?.email === clienteEmail || 
+        av.clienteEmail === clienteEmail ||
+        av.emailCliente === clienteEmail
+      );
+    }
+    
+    return lista;
+  },
+
+  /**
+   * Atualizar avaliação
+   */
+  update: async (id, data) => {
+    return await api.put(`/avaliacao/${id}`, data);
+  },
+
+  /**
+   * Deletar avaliação
+   */
+  delete: async (id) => {
+    return await api.delete(`/avaliacao/${id}`);
   },
 };
 
