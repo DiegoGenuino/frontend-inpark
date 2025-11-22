@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth, getAuthHeaders } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdLocationOn, MdAccessTime, MdDirectionsCar, MdMyLocation, MdChevronRight, MdPerson, MdLocalParking, MdCalendarToday, MdTrendingUp } from 'react-icons/md';
+import { MdSearch, MdLocationOn, MdAccessTime, MdDirectionsCar, MdMyLocation, MdChevronRight, MdPerson, MdLocalParking, MdCalendarToday, MdTrendingUp, MdStar } from 'react-icons/md';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -276,6 +276,20 @@ export default function Dashboard() {
                         <div className="quick-action-content">
                             <h3>Minhas reservas</h3>
                             <p>Gerencie suas reservas</p>
+                        </div>
+                        <MdChevronRight className="chevron" />
+                    </button>
+
+                    <button
+                        className="quick-action-item"
+                        onClick={() => navigate('/minhas-avaliacoes')}
+                    >
+                        <div className="quick-action-icon-wrapper">
+                            <MdStar className="quick-action-icon" />
+                        </div>
+                        <div className="quick-action-content">
+                            <h3>Minhas avaliações</h3>
+                            <p>Veja suas avaliações</p>
                         </div>
                         <MdChevronRight className="chevron" />
                     </button>
