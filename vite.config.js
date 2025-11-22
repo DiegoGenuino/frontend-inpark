@@ -38,6 +38,21 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/cliente': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/acesso': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/carro': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
       '/carros': {
         target: 'http://localhost:8080',
         changeOrigin: true,
