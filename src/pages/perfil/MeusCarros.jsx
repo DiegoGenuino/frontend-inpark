@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { MdAdd, MdEdit, MdDelete, MdDirectionsCar, MdInfo, MdUpload, MdClose, MdCheckCircle } from 'react-icons/md';
 import { CarCard } from '../../components/shared';
+import api from '../../utils/api';
+import { usuarioService } from '../../utils/services';
 import './MeusCarros.css';
 
 const MeusCarros = () => {
   const [carros, setCarros] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingCarro, setEditingCarro] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [clienteId, setClienteId] = useState(null);
   const [formData, setFormData] = useState({
     placa: '',
     modelo: '',
@@ -38,28 +42,43 @@ const MeusCarros = () => {
   ];
 
   useEffect(() => {
-    // Simulando dados de carros do usuário
-    const mockCarros = [
-      {
-        id: 1,
-        placa: 'ABC1D23',
-        modelo: 'Chevrolet Onix',
-        cor: 'Prata',
-        apelido: 'Carro do Trabalho',
-        vagaPreferencial: false,
-        principal: true
-      },
-      {
-        id: 2,
-        placa: 'XYZ9A87',
-        modelo: 'Honda City',
-        cor: 'Preto',
-        apelido: '',
-        vagaPreferencial: true,
-        principal: false
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // 1. Buscar clienteId
+        const userData = await usuarioService.getMe();
+        const todosClientes = await api.get('/cliente');
+        const lista = Array.isArray(todosClientes) ? todosClientes : (todosClientes.content || []);
+        const cliente = lista.find(c => c.email === userData.email);
+        
+        if (cliente) {
+          setClienteId(cliente.id);
+          
+          // 2. Buscar carros do cliente
+          const todosCarros = await api.get('/carro');
+          const listaCarros = Array.isArray(todosCarros) ? todosCarros : (todosCarros.content || []);
+          
+          const carrosDoCliente = listaCarros.filter(c => {
+            // Tentar diferentes formas de comparação
+            return (
+              c.cliente?.id === cliente.id ||
+              c.clienteId === cliente.id ||
+              c.cliente === cliente.id ||
+              String(c.cliente?.id) === String(cliente.id) ||
+              String(c.clienteId) === String(cliente.id)
+            );
+          });
+          
+          setCarros(carrosDoCliente);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
-    setCarros(mockCarros);
+    };
+
+    fetchData();
   }, []);
 
   // Validações
@@ -107,33 +126,72 @@ const MeusCarros = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
       return;
     }
-    
-    if (editingCarro) {
-      // Editar carro existente
-      setCarros(prev => prev.map(carro => 
-        carro.id === editingCarro.id 
-          ? { ...carro, ...formData }
-          : carro
-      ));
-      alert('Dados do veículo atualizados com sucesso!');
-    } else {
-      // Adicionar novo carro
-      const novoCarro = {
-        id: Date.now(),
-        ...formData,
-        principal: carros.length === 0
-      };
-      setCarros(prev => [...prev, novoCarro]);
-      alert('Veículo cadastrado com sucesso!');
+
+    if (!clienteId) {
+      alert('Erro: Cliente não identificado. Faça login novamente.');
+      return;
     }
     
-    handleCloseModal();
+    setLoading(true);
+    
+    try {
+      if (editingCarro) {
+        // Editar carro existente
+        const carroData = {
+          clienteId: clienteId,
+          placa: formData.placa.toUpperCase(),
+          modelo: formData.modelo,
+          cor: formData.cor
+        };
+        
+        const carroAtualizado = await api.put(`/carro/${editingCarro.id}`, carroData);
+        
+        setCarros(prev => prev.map(carro => 
+          carro.id === editingCarro.id ? carroAtualizado : carro
+        ));
+        
+        alert('Dados do veículo atualizados com sucesso!');
+      } else {
+        // Adicionar novo carro - ordem exata dos campos
+        const carroData = {
+          clienteId: clienteId,
+          placa: formData.placa.toUpperCase(),
+          modelo: formData.modelo,
+          cor: formData.cor
+        };
+        
+        console.log('Enviando carro:', carroData);
+        
+        const novoCarro = await api.post('/carro', carroData);
+        
+        // Recarregar lista de carros após cadastrar
+        const todosCarros = await api.get('/carro');
+        const listaCarros = Array.isArray(todosCarros) ? todosCarros : (todosCarros.content || []);
+        const carrosDoCliente = listaCarros.filter(c => 
+          c.cliente?.id === clienteId ||
+          c.clienteId === clienteId ||
+          c.cliente === clienteId ||
+          String(c.cliente?.id) === String(clienteId) ||
+          String(c.clienteId) === String(clienteId)
+        );
+        setCarros(carrosDoCliente);
+        
+        alert('Veículo cadastrado com sucesso!');
+      }
+      
+      handleCloseModal();
+    } catch (error) {
+      console.error('Erro ao salvar carro:', error);
+      alert(error.message || 'Erro ao salvar veículo. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (carro) => {
@@ -150,15 +208,24 @@ const MeusCarros = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (carro) => {
+  const handleDelete = async (carro) => {
     const confirmacao = window.confirm(
       `Tem certeza que deseja excluir o veículo "${carro.placa}"?\n\n` +
       'Esta ação não pode ser desfeita e todas as reservas futuras com este veículo serão afetadas.'
     );
     
     if (confirmacao) {
-      setCarros(prev => prev.filter(c => c.id !== carro.id));
-      alert('Veículo excluído com sucesso!');
+      setLoading(true);
+      try {
+        await api.delete(`/carro/${carro.id}`);
+        setCarros(prev => prev.filter(c => c.id !== carro.id));
+        alert('Veículo excluído com sucesso!');
+      } catch (error) {
+        console.error('Erro ao excluir carro:', error);
+        alert(error.message || 'Erro ao excluir veículo. Tente novamente.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
