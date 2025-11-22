@@ -97,7 +97,7 @@ export const apiRequest = async (endpoint, options = {}) => {
       // 401: token inválido/expirado -> limpar sessão e redirecionar
       console.warn('Sessão expirada ou não autenticado (401)');
       clearAuthData();
-      window.location.href = '/login';
+      window.location.href = '/';
       throw new Error('Sessão expirada. Faça login novamente.');
     }
     if (response.status === 403) {
