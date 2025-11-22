@@ -19,6 +19,17 @@ export const AuthProvider = ({ children }) => {
       try {
         const decoded = decodeJWT(token);
         
+        // Verificar se o token está expirado
+        if (decoded && decoded.exp) {
+          const now = Math.floor(Date.now() / 1000); // Timestamp em segundos
+          if (decoded.exp < now) {
+            console.warn('Token expirado, fazendo logout automático');
+            localStorage.removeItem('token');
+            setLoading(false);
+            return;
+          }
+        }
+        
         if (decoded && decoded.role) {
           setIsAuthenticated(true);
           setRole(decoded.role);
