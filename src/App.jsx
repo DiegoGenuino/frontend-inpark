@@ -13,6 +13,7 @@ import CriacaoReserva from './pages/reservas/CriacaoReserva.jsx'
 import Pagamento from './pages/pagamentos/Pagamento.jsx'
 import ConfirmacaoPagamento from './pages/pagamentos/ConfirmacaoPagamento.jsx'
 import Avaliacao from './pages/avaliacoes/Avaliacao.jsx'
+import MinhasAvaliacoes from './pages/avaliacoes/MinhasAvaliacoes.jsx'
 import MeuPerfil from './pages/perfil/MeuPerfil.jsx'
 import MeusCarros from './pages/perfil/MeusCarros.jsx'
 // Importações das páginas do dono
@@ -24,6 +25,7 @@ import FinanceiroDono from './pages/dono/FinanceiroDono.jsx'
 import RelatoriosDono from './pages/dono/RelatoriosDono.jsx'
 import PerfilDono from './pages/dono/PerfilDono.jsx'
 import ConfiguracoesDono from './pages/dono/ConfiguracoesDono.jsx'
+import AcessosDono from './pages/dono/AcessosDono.jsx'
 import './App.css'
 
 function AppContent() {
@@ -67,6 +69,7 @@ function AppContent() {
             <Route path="/dono/estacionamentos" element={<EstacionamentosDono />} />
             <Route path="/dono/reservas" element={<ReservasDono />} />
             <Route path="/dono/vagas" element={<VagasDono />} />
+            <Route path="/dono/acessos" element={<AcessosDono />} />
             <Route path="/dono/financeiro" element={<FinanceiroDono />} />
             <Route path="/dono/relatorios" element={<RelatoriosDono />} />
             <Route path="/dono/perfil" element={<PerfilDono />} />
@@ -90,6 +93,7 @@ function AppContent() {
           <Route path="/pagamento" element={<Pagamento />} />
           <Route path="/pagamento/confirmacao" element={<ConfirmacaoPagamento />} />
           <Route path="/avaliacao/:reservaId" element={<Avaliacao />} />
+          <Route path="/minhas-avaliacoes" element={<MinhasAvaliacoes />} />
           <Route path="/minhas-reservas" element={<MinhasReservas />} />
           <Route path="/meus-carros" element={<MeusCarros />} />
           <Route path="/meu-perfil" element={<MeuPerfil />} />
