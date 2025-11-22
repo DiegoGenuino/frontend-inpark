@@ -17,7 +17,8 @@ import {
     MdHome,
     MdBarChart,
     MdList,
-    MdAddBusiness
+    MdAddBusiness,
+    MdDirectionsCar
 } from 'react-icons/md';
 
 export const SidebarDono = () => {
@@ -78,6 +79,12 @@ export const SidebarDono = () => {
                 <div className="nav-section">
                     <h3 className="section-title">GESTÃO</h3>
                     <ul className="nav-list">
+                        <li className="nav-item">
+                            <Link to="/dono/acessos" className="nav-link">
+                                <MdDirectionsCar className="nav-icon" />
+                                <span>Acessos em Tempo Real</span>
+                            </Link>
+                        </li>
                         <li className="nav-item">
                             <Link to="/dono/vagas" className="nav-link">
                                 <MdList className="nav-icon" />
