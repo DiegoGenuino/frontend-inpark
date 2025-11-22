@@ -4,6 +4,7 @@ import {
   MdSearch,
   MdAttachMoney,
   MdLocalParking,
+  MdStar,
 } from "react-icons/md";
 import { useAuth } from "../../utils/auth";
 import { reservaService, usuarioService } from "../../utils/services";
@@ -24,16 +25,16 @@ const MinhasReservas = () => {
       setLoading(true);
       setError("");
       try {
-        // 1. Buscar dados do usuário logado para obter o ID
+        // 1. Buscar dados do usuário logado (agora retorna dados do JWT)
         const userData = await usuarioService.getMe();
-        const clienteId = userData?.id;
+        const clienteEmail = userData?.emailForFilter || userData?.email;
         
-        if (!clienteId) {
+        if (!clienteEmail) {
           throw new Error('Não foi possível identificar o usuário');
         }
         
-        // 2. Buscar todas as reservas e filtrar pelo clienteId
-        const minhasReservas = await reservaService.getMinhasReservas(clienteId);
+        // 2. Buscar todas as reservas e filtrar pelo email do cliente
+        const minhasReservas = await reservaService.getMinhasReservas(clienteEmail);
         setReservas(minhasReservas);
       } catch (e) {
         console.error('Erro ao carregar reservas:', e);
@@ -224,6 +225,7 @@ const MinhasReservas = () => {
                   <th>Placa</th>
                   <th>Status</th>
                   <th>Valor</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -281,6 +283,18 @@ const MinhasReservas = () => {
                           <MdAttachMoney size={16} />
                           <span>R$ {Number(valor).toFixed(2)}</span>
                         </div>
+                      </td>
+                      <td>
+                        {['ACEITA', 'ENCERRADA', 'EM_USO'].includes(status) && (
+                          <button
+                            className="btn-avaliar"
+                            onClick={() => navigate(`/avaliacao/${reserva.id}`)}
+                            title="Avaliar estacionamento"
+                          >
+                            <MdStar size={18} />
+                            Avaliar
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
