@@ -16,7 +16,8 @@ import {
     MdPerson,
     MdNotifications,
     MdReceiptLong,
-    MdHome
+    MdHome,
+    MdStar
 } from 'react-icons/md';
 
 export const Sidebar = () => {
@@ -69,6 +70,12 @@ export const Sidebar = () => {
                             <Link to="/estacionamentos" className="nav-link">
                                 <MdLocalParking className="nav-icon" />
                                 <span>Estacionamentos</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/minhas-avaliacoes" className="nav-link">
+                                <MdStar className="nav-icon" />
+                                <span>Minhas Avaliações</span>
                             </Link>
                         </li>
                     </ul>
