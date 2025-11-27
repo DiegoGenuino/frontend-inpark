@@ -100,10 +100,13 @@ export const apiRequest = async (endpoint, options = {}) => {
       window.location.href = '/';
       throw new Error('Sessão expirada. Faça login novamente.');
     }
+    
     if (response.status === 403) {
-      // 403: proibido (sem permissão). Não deve forçar logout/redirecionar.
+      // 403: proibido (sem permissão). 
+      // NÃO fazer logout automático - apenas lançar erro
       const errorData = await response.json().catch(() => ({}));
       const message = errorData.message || 'Acesso negado (403)';
+      console.warn(`Acesso negado para ${endpoint}:`, message);
       throw new Error(message);
     }
 
