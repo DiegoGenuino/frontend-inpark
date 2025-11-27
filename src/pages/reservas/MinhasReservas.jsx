@@ -25,16 +25,16 @@ const MinhasReservas = () => {
       setLoading(true);
       setError("");
       try {
-        // 1. Buscar dados do usuário logado (agora retorna dados do JWT)
+        // 1. Buscar dados do usuário logado
         const userData = await usuarioService.getMe();
-        const clienteEmail = userData?.emailForFilter || userData?.email;
+        const clienteId = userData?.id;
         
-        if (!clienteEmail) {
+        if (!clienteId) {
           throw new Error('Não foi possível identificar o usuário');
         }
         
-        // 2. Buscar todas as reservas e filtrar pelo email do cliente
-        const minhasReservas = await reservaService.getMinhasReservas(clienteEmail);
+        // 2. Buscar todas as reservas e filtrar pelo ID do cliente
+        const minhasReservas = await reservaService.getMinhasReservas(clienteId);
         setReservas(minhasReservas);
       } catch (e) {
         console.error('Erro ao carregar reservas:', e);
