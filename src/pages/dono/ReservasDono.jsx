@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { donoService } from '../../utils/services';
-import { Toast, Modal, ModalFooter, ModalActions, Button } from '../../components/shared';
+import { Toast, Modal, ModalFooter, ModalActions, Button, PageHeader } from '../../components/shared';
+import { MdFilterList, MdRefresh } from 'react-icons/md';
 
 const ReservasDono = () => {
   const [reservas, setReservas] = useState([]);
@@ -48,7 +49,13 @@ const ReservasDono = () => {
       // Passar a reserva completa em vez de apenas o ID
       await donoService.aprovarReserva(reserva.id, reserva);
       setToast({ message: 'Reserva aprovada com sucesso', type: 'success' });
-      setReservas(prev => prev.filter(r => r.id !== reserva.id));
+      
+      // Sinalizar mudança para outros componentes
+      window.dispatchEvent(new Event('reservaUpdated'));
+      
+      // Recarregar as reservas para atualizar a lista
+      await fetchReservas();
+      
       setApproveModal({ isOpen: false, reserva: null });
     } catch (e) {
       setToast({ message: e.message || 'Erro ao aprovar reserva', type: 'error' });
@@ -63,7 +70,13 @@ const ReservasDono = () => {
       // Passar a reserva completa em vez de apenas o ID
       await donoService.rejeitarReserva(reserva.id, reserva);
       setToast({ message: 'Reserva recusada', type: 'warning' });
-      setReservas(prev => prev.filter(r => r.id !== reserva.id));
+      
+      // Sinalizar mudança para outros componentes
+      window.dispatchEvent(new Event('reservaUpdated'));
+      
+      // Recarregar as reservas para atualizar a lista
+      await fetchReservas();
+      
       setRejectModal({ isOpen: false, reserva: null });
     } catch (e) {
       setToast({ message: e.message || 'Erro ao recusar reserva', type: 'error' });
@@ -98,25 +111,34 @@ const ReservasDono = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Reservas Recebidas</h1>
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '.5rem' }}>
-  {['PENDENTE', 'ACEITA', 'RECUSADA', 'ENCERRADA'].map(s => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            style={{
-              padding: '.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              background: statusFilter === s ? '#f9fafb' : '#ffffff',
-              cursor: 'pointer',
-              fontSize: '.75rem',
-              fontWeight: 600
-            }}
-          >{s}</button>
-        ))}
-      </div>
+    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+      <PageHeader
+        title="Transações"
+        subtitle="Gerencie as reservas recebidas nos seus estacionamentos"
+        actions={
+          <div style={{ display: 'flex', gap: '.5rem' }}>
+            {['PENDENTE', 'ACEITA', 'RECUSADA', 'ENCERRADA'].map(s => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                style={{
+                  padding: '.5rem 1rem',
+                  borderRadius: '6px',
+                  border: '1px solid #d1d5db',
+                  background: statusFilter === s ? '#111827' : '#ffffff',
+                  color: statusFilter === s ? '#ffffff' : '#374151',
+                  cursor: 'pointer',
+                  fontSize: '.75rem',
+                  fontWeight: 600,
+                  transition: 'all 0.2s'
+                }}
+              >{s}</button>
+            ))}
+          </div>
+        }
+      />
+      
+      <div style={{ padding: '0 2rem 2rem 2rem' }}>
       {loading && <p>Carregando reservas...</p>}
       {error && <p style={{ color: '#dc2626' }}>{error}</p>}
       {!loading && reservas.length === 0 && !error && (
@@ -344,6 +366,7 @@ const ReservasDono = () => {
           </>
         )}
       </Modal>
+      </div>
     </div>
   );
 };
