@@ -97,8 +97,6 @@ function AppContent() {
           <Route path="/minhas-reservas" element={<MinhasReservas />} />
           <Route path="/meus-carros" element={<MeusCarros />} />
           <Route path="/meu-perfil" element={<MeuPerfil />} />
-          {false && <Route path="/notificacoes" element={<div />} />}
-          {false && <Route path="/relatorio-despesas" element={<div />} />}
           <Route path="/reservas" element={<div>Reservas</div>} />
           <Route path="/vagas" element={<div>Vagas</div>} />
           <Route path="/historico" element={<div>Histórico</div>} />
