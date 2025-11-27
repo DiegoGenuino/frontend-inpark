@@ -47,12 +47,9 @@ const MeusCarros = () => {
       try {
         // 1. Buscar clienteId
         const userData = await usuarioService.getMe();
-        const todosClientes = await api.get('/cliente');
-        const lista = Array.isArray(todosClientes) ? todosClientes : (todosClientes.content || []);
-        const cliente = lista.find(c => c.email === userData.email);
         
-        if (cliente) {
-          setClienteId(cliente.id);
+        if (userData && userData.id) {
+          setClienteId(userData.id);
           
           // 2. Buscar carros do cliente
           const todosCarros = await api.get('/carro');
@@ -61,11 +58,11 @@ const MeusCarros = () => {
           const carrosDoCliente = listaCarros.filter(c => {
             // Tentar diferentes formas de comparação
             return (
-              c.cliente?.id === cliente.id ||
-              c.clienteId === cliente.id ||
-              c.cliente === cliente.id ||
-              String(c.cliente?.id) === String(cliente.id) ||
-              String(c.clienteId) === String(cliente.id)
+              c.cliente?.id === userData.id ||
+              c.clienteId === userData.id ||
+              c.cliente === userData.id ||
+              String(c.cliente?.id) === String(userData.id) ||
+              String(c.clienteId) === String(userData.id)
             );
           });
           
