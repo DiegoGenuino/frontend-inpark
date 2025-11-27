@@ -15,9 +15,7 @@ const Avaliacao = () => {
 
   const [avaliacao, setAvaliacao] = useState({
     nota: 0,
-    comentario: '',
-    recomendaria: null,
-    detalhesExperiencia: []
+    comentario: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -27,18 +25,6 @@ const Avaliacao = () => {
   const [toast, setToast] = useState(null);
   const [error, setError] = useState('');
 
-  // Opções para detalhes da experiência
-  const opcoes = [
-    'Atendimento Rápido',
-    'Local Limpo',
-    'Fácil Acesso',
-    'Segurança Adequada',
-    'Preço Justo',
-    'Dificuldade de Vaga',
-    'Local Sujo',
-    'Atendimento Demorado'
-  ];
-
   useEffect(() => {
     const buscarDadosReserva = async () => {
       setLoadingData(true);
@@ -47,14 +33,15 @@ const Avaliacao = () => {
       try {
         // 1. Buscar dados do usuário logado
         const userData = await usuarioService.getMe();
+        const clienteId = userData?.id;
         const clienteEmail = userData?.email;
         
-        if (!clienteEmail) {
+        if (!clienteId && !clienteEmail) {
           throw new Error('Não foi possível identificar o usuário');
         }
-
-        // 2. Buscar todas as reservas do cliente
-        const minhasReservas = await reservaService.getMinhasReservas(clienteEmail);
+        
+        // 2. Buscar todas as reservas do cliente (por ID ou email)
+        const minhasReservas = await reservaService.getMinhasReservas(clienteId || clienteEmail);
         
         // 3. Encontrar a reserva específica
         const reservaEncontrada = minhasReservas.find(r => r.id === parseInt(reservaId));
@@ -115,26 +102,6 @@ const Avaliacao = () => {
     }
   };
 
-  const handleRecomendacaoChange = (valor) => {
-    setAvaliacao(prev => ({
-      ...prev,
-      recomendaria: valor
-    }));
-  };
-
-  const handleDetalheChange = (opcao) => {
-    setAvaliacao(prev => {
-      const detalhes = prev.detalhesExperiencia.includes(opcao)
-        ? prev.detalhesExperiencia.filter(item => item !== opcao)
-        : [...prev.detalhesExperiencia, opcao];
-      
-      return {
-        ...prev,
-        detalhesExperiencia: detalhes
-      };
-    });
-  };
-
   const handleEnviarAvaliacao = async () => {
     if (avaliacao.nota === 0) {
       setToast({ 
@@ -149,18 +116,22 @@ const Avaliacao = () => {
       // Buscar dados do usuário para pegar o ID do cliente
       const userData = await usuarioService.getMe();
       
+      // Tentar pegar o ID do userData ou da reserva como fallback
+      const clienteId = userData.id || reserva?.cliente?.id;
+      
+      if (!clienteId) {
+        throw new Error('Não foi possível identificar o cliente');
+      }
+      
       // Preparar payload para o backend
       const avaliacaoPayload = {
+        clienteId: clienteId,
+        estacionamentoId: estacionamento.id,
         nota: avaliacao.nota,
         comentario: avaliacao.comentario || null,
-        recomendaria: avaliacao.recomendaria,
-        detalhesExperiencia: avaliacao.detalhesExperiencia.length > 0 
-          ? avaliacao.detalhesExperiencia 
-          : null,
-        clienteId: userData.id,
-        estacionamentoId: estacionamento.id,
-        reservaId: parseInt(reservaId)
+        dataDeAvaliacao: new Date().toISOString()
       };
+
 
       await avaliacaoService.create(avaliacaoPayload);
       
@@ -253,7 +224,7 @@ const Avaliacao = () => {
           <h2>{estacionamento.nome}</h2>
           <p>{estacionamento.endereco}, {estacionamento.numero}</p>
           <p className="reserva-info">
-            Reserva #{String(reserva.id).padStart(4, '0')}
+            Reserva #{String(reserva.id).padStart(4, '0')} - {new Date(reserva.dataDaReserva).toLocaleDateString('pt-BR')}
           </p>
         </div>
 
@@ -282,46 +253,6 @@ const Avaliacao = () => {
               rows={4}
             />
             <span className="char-count">{avaliacao.comentario.length}/500</span>
-          </div>
-
-          {/* Recomendação */}
-          <div className="form-group">
-            <label>Você recomendaria este estacionamento aos seus amigos?</label>
-            <div className="recommendation-buttons">
-              <button
-                type="button"
-                className={`rec-button ${avaliacao.recomendaria === true ? 'active' : ''}`}
-                onClick={() => handleRecomendacaoChange(true)}
-              >
-                <MdCheckCircle />
-                Sim
-              </button>
-              <button
-                type="button"
-                className={`rec-button ${avaliacao.recomendaria === false ? 'active' : ''}`}
-                onClick={() => handleRecomendacaoChange(false)}
-              >
-                Não
-              </button>
-            </div>
-          </div>
-
-          {/* Detalhes da Experiência */}
-          <div className="form-group">
-            <label>Detalhes da sua experiência (opcional)</label>
-            <div className="experience-options">
-              {opcoes.map((opcao) => (
-                <label key={opcao} className="checkbox-option">
-                  <input
-                    type="checkbox"
-                    checked={avaliacao.detalhesExperiencia.includes(opcao)}
-                    onChange={() => handleDetalheChange(opcao)}
-                  />
-                  <span className="checkmark"></span>
-                  {opcao}
-                </label>
-              ))}
-            </div>
           </div>
         </form>
 
