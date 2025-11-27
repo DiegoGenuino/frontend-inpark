@@ -30,9 +30,9 @@ const MinhasAvaliacoes = () => {
     setError('');
     try {
       const userData = await usuarioService.getMe();
-      const clienteEmail = userData.email;
+      const clienteId = userData.id;
       
-      const minhasAvaliacoes = await avaliacaoService.getMinhasAvaliacoes(clienteEmail);
+      const minhasAvaliacoes = await avaliacaoService.getMinhasAvaliacoes(clienteId);
       setAvaliacoes(minhasAvaliacoes);
     } catch (e) {
       console.error('Erro ao carregar avaliações:', e);
@@ -172,7 +172,7 @@ const MinhasAvaliacoes = () => {
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: '.875rem', color: '#6b7280' }}>
                   <MdCalendarToday size={16} />
-                  <span>{formatDate(avaliacao.data || avaliacao.createdAt)}</span>
+                  <span>{formatDate(avaliacao.dataDeAvaliacao || avaliacao.data || avaliacao.createdAt)}</span>
                 </div>
               </div>
 
