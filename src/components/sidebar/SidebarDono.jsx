@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../utils/auth";
 import InparkLogo from "../../assets/inpark.svg"
 import './Sidebar.css'
@@ -18,12 +18,24 @@ import {
     MdBarChart,
     MdList,
     MdAddBusiness,
-    MdDirectionsCar
+    MdDirectionsCar,
+    MdMenu,
+    MdClose
 } from 'react-icons/md';
 
 export const SidebarDono = () => {
     const { role, user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+
+    const closeMobileMenu = () => {
+        setIsMobileMenuOpen(false);
+    };
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -44,31 +56,42 @@ export const SidebarDono = () => {
     const firstName = user?.nome ? user.nome.split(' ')[0] : 'Dono';
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar-header">
-                <div className="brand-name">
-                    <img src={InparkLogo} alt="Inpark" className="inpark-logo-img" />
+        <>
+            {/* Botão Hambúrguer Mobile */}
+            <button className="mobile-menu-toggle" onClick={toggleMobileMenu} aria-label="Menu">
+                {isMobileMenuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+            </button>
+
+            {/* Overlay para fechar menu ao clicar fora */}
+            {isMobileMenuOpen && (
+                <div className="mobile-menu-overlay" onClick={closeMobileMenu}></div>
+            )}
+
+            <aside className={`sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+                <div className="sidebar-header">
+                    <div className="brand-name">
+                        <img src={InparkLogo} alt="Inpark" className="inpark-logo-img" />
+                    </div>
                 </div>
-            </div>
             
             <nav className="sidebar-nav">
                 <div className="nav-section">
                     <h3 className="section-title">PRINCIPAL</h3>
                     <ul className="nav-list">
                         <li className="nav-item">
-                            <Link to="/dono" className="nav-link">
+                            <Link to="/dono" className="nav-link" onClick={closeMobileMenu}>
                                 <MdHome className="nav-icon" />
                                 <span>Dashboard</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/dono/estacionamentos" className="nav-link">
+                            <Link to="/dono/estacionamentos" className="nav-link" onClick={closeMobileMenu}>
                                 <MdLocalParking className="nav-icon" />
                                 <span>Meus Estacionamentos</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/dono/reservas" className="nav-link">
+                            <Link to="/dono/reservas" className="nav-link" onClick={closeMobileMenu}>
                                 <MdEventNote className="nav-icon" />
                                 <span>Reservas Recebidas</span>
                             </Link>
@@ -80,25 +103,25 @@ export const SidebarDono = () => {
                     <h3 className="section-title">GESTÃO</h3>
                     <ul className="nav-list">
                         <li className="nav-item">
-                            <Link to="/dono/acessos" className="nav-link">
+                            <Link to="/dono/acessos" className="nav-link" onClick={closeMobileMenu}>
                                 <MdDirectionsCar className="nav-icon" />
                                 <span>Acessos em Tempo Real</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/dono/vagas" className="nav-link">
+                            <Link to="/dono/vagas" className="nav-link" onClick={closeMobileMenu}>
                                 <MdList className="nav-icon" />
                                 <span>Gerenciar Vagas</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/dono/financeiro" className="nav-link">
+                            <Link to="/dono/financeiro" className="nav-link" onClick={closeMobileMenu}>
                                 <MdAttachMoney className="nav-icon" />
                                 <span>Financeiro</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/dono/relatorios" className="nav-link">
+                            <Link to="/dono/relatorios" className="nav-link" onClick={closeMobileMenu}>
                                 <MdBarChart className="nav-icon" />
                                 <span>Relatórios</span>
                             </Link>
@@ -110,13 +133,13 @@ export const SidebarDono = () => {
                     <h3 className="section-title">MINHA CONTA</h3>
                     <ul className="nav-list">
                         <li className="nav-item">
-                            <Link to="/dono/perfil" className="nav-link">
+                            <Link to="/dono/perfil" className="nav-link" onClick={closeMobileMenu}>
                                 <MdPerson className="nav-icon" />
                                 <span>Meu Perfil</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/dono/configuracoes" className="nav-link">
+                            <Link to="/dono/configuracoes" className="nav-link" onClick={closeMobileMenu}>
                                 <MdSettings className="nav-icon" />
                                 <span>Configurações</span>
                             </Link>
@@ -144,5 +167,6 @@ export const SidebarDono = () => {
                 </div>
             </div>
         </aside>
+        </>
     )
 }
