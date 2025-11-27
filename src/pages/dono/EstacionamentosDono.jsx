@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { estacionamentoService } from '../../utils/services';
-import { Toast, Modal, ModalBody, ModalFooter, ModalActions, Button } from '../../components/shared';
+import { Toast, Modal, ModalBody, ModalFooter, ModalActions, Button, PageHeader } from '../../components/shared';
 import api from '../../utils/api';
 import { 
   MdLocationOn, 
@@ -15,7 +15,8 @@ import {
   MdDelete,
   MdClose,
   MdSave,
-  MdImage
+  MdImage,
+  MdRefresh
 } from 'react-icons/md';
 
 const EstacionamentosDono = () => {
@@ -26,6 +27,7 @@ const EstacionamentosDono = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingEstacionamento, setEditingEstacionamento] = useState(null);
   const [donoId, setDonoId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
     endereco: '',
@@ -42,8 +44,12 @@ const EstacionamentosDono = () => {
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const fetchData = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     setError('');
     try {
       const data = await estacionamentoService.getAll();
@@ -89,16 +95,42 @@ const EstacionamentosDono = () => {
           }
         }
       }
+      
+      if (isRefresh) {
+        setToast({ message: 'Dados atualizados com sucesso', type: 'success' });
+      }
     } catch (e) {
       setError(e.message || 'Erro ao carregar estacionamentos');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [donoId]);
 
   useEffect(() => {
     fetchData();
+    
+    // Auto-refresh a cada 30 segundos
+    const interval = setInterval(() => {
+      fetchData(true);
+    }, 30000);
+    
+    // Listener para atualizar quando reservas forem modificadas
+    const handleReservaUpdate = () => {
+      fetchData(true);
+    };
+    
+    window.addEventListener('reservaUpdated', handleReservaUpdate);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('reservaUpdated', handleReservaUpdate);
+    };
   }, [fetchData]);
+
+  const handleManualRefresh = () => {
+    fetchData(true);
+  };
 
   // Calcula estatísticas de um estacionamento
   const calcularEstatisticas = (est) => {
@@ -373,40 +405,59 @@ const EstacionamentosDono = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', background: '#f9fafb', minHeight: '100vh' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ margin: '0 0 .5rem 0', fontSize: '1.875rem', fontWeight: '700', color: '#111827' }}>
-            Meus Estacionamentos
-          </h1>
-          <p style={{ margin: 0, color: '#6b7280', fontSize: '.875rem' }}>
-            Gerencie seus estacionamentos, visualize estatísticas e acompanhe reservas
-          </p>
-        </div>
-        
-        <button
-          onClick={() => handleOpenModal()}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '.5rem',
-            padding: '.75rem 1.5rem',
-            background: '#3b82f6',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '.875rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = '#2563eb'}
-          onMouseLeave={(e) => e.currentTarget.style.background = '#3b82f6'}
-        >
-          <MdAdd size={20} />
-          Novo Estacionamento
-        </button>
-      </div>
+    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+      <PageHeader
+        title="Produtos"
+        subtitle="Gerencie seus estacionamentos, visualize estatísticas e acompanhe reservas"
+        actions={
+          <div style={{ display: 'flex', gap: '.75rem' }}>
+            <button
+              onClick={handleManualRefresh}
+              disabled={refreshing}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '.5rem',
+                padding: '.75rem 1.25rem',
+                background: refreshing ? '#e5e7eb' : '#ffffff',
+                color: refreshing ? '#9ca3af' : '#374151',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                fontSize: '.875rem',
+                fontWeight: '600',
+                cursor: refreshing ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              <MdRefresh size={20} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+              {refreshing ? 'Atualizando...' : 'Atualizar'}
+            </button>
+            
+            <button
+              onClick={() => handleOpenModal()}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '.5rem',
+                padding: '.75rem 1.5rem',
+                background: '#111827',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              <MdAdd size={20} />
+              Novo Estacionamento
+            </button>
+          </div>
+        }
+      />
+      
+      <div style={{ padding: '0 2rem 2rem 2rem' }}>
 
       {error && (
         <div style={{ 
@@ -1001,6 +1052,14 @@ const EstacionamentosDono = () => {
           onClose={() => setToast(null)}
         />
       )}
+      
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+      </div>
     </div>
   );
 };
