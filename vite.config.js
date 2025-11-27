@@ -68,7 +68,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-      '/avaliacoes': {
+      '/avaliacao': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
