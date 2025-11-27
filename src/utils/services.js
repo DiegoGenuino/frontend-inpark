@@ -54,15 +54,17 @@ export const reservaService = {
    * Buscar minhas reservas (CLIENTE)
    * Workaround: busca todas e filtra por clienteId no frontend
    */
-  getMinhasReservas: async (clienteEmailOrId) => {
+  getMinhasReservas: async (clienteIdOrEmail) => {
     const todasReservas = await api.get('/reserva');
     const lista = Array.isArray(todasReservas) ? todasReservas : (todasReservas.content || []);
     
-    // Se foi passado clienteEmailOrId, filtrar por ID ou email
-    if (clienteEmailOrId) {
+    // Se foi passado clienteIdOrEmail, filtrar por ID ou email
+    if (clienteIdOrEmail) {
       return lista.filter(r => {
         // Tentar filtrar por ID ou email
-        return r.cliente?.id === clienteEmailOrId || r.cliente?.email === clienteEmailOrId;
+        return r.cliente?.id === clienteIdOrEmail || 
+               r.cliente?.email === clienteIdOrEmail ||
+               r.clienteId === clienteIdOrEmail;
       });
     }
     
@@ -130,35 +132,50 @@ export const carroService = {
 export const usuarioService = {
   /**
    * Buscar dados do usuário logado
-   * Como o JWT só tem email, retornamos os dados básicos do token
-   * Para evitar 403 em GET /cliente
+   * Utiliza o endpoint POST /auth/me que retorna os dados completos do usuário
    */
   getMe: async () => {
-    // Decodificar token para pegar o email e role
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Token não encontrado');
+    try {
+      // Fazer requisição POST para /auth/me
+      const userData = await api.post('/auth/me', {});
+      return userData;
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário via API:', error);
+      
+      // Fallback: se der erro 403 ou qualquer outro, tentar extrair dados do token
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token não encontrado');
+        }
+        
+        // Decodificar token para pegar dados básicos
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        const decoded = JSON.parse(jsonPayload);
+        
+        console.warn('Usando dados do token como fallback');
+        
+        // Retornar estrutura básica do token
+        // IMPORTANTE: id será undefined, então componentes que usam devem ter fallback
+        return {
+          email: decoded.sub,
+          role: decoded.role,
+          id: decoded.userId || decoded.id || null, // Tentar pegar id do token se existir
+          // Campos adicionais que podem existir no token
+          nome: decoded.name || decoded.nome || null,
+        };
+      } catch (tokenError) {
+        console.error('Erro ao extrair dados do token:', tokenError);
+        throw new Error('Não foi possível obter dados do usuário');
+      }
     }
-    
-    // Importar decodeJWT localmente para evitar circular dependency
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    const decoded = JSON.parse(jsonPayload);
-    
-    // Retornar dados do token (sem fazer chamada ao backend)
-    // O clienteId será o email, já que não temos como buscar o ID real sem permissão
-    return {
-      email: decoded.sub,
-      role: decoded.role,
-      // Para filtrar reservas, usaremos o email em vez do ID
-      emailForFilter: decoded.sub
-    };
   },
 
   /**
@@ -244,15 +261,14 @@ export const avaliacaoService = {
   /**
    * Buscar avaliações feitas por um cliente (filtrar no frontend)
    */
-  getMinhasAvaliacoes: async (clienteEmail) => {
+  getMinhasAvaliacoes: async (clienteId) => {
     const todasAvaliacoes = await api.get('/avaliacao');
     const lista = Array.isArray(todasAvaliacoes) ? todasAvaliacoes : (todasAvaliacoes.content || []);
     
-    if (clienteEmail) {
+    if (clienteId) {
       return lista.filter(av => 
-        av.cliente?.email === clienteEmail || 
-        av.clienteEmail === clienteEmail ||
-        av.emailCliente === clienteEmail
+        av.cliente?.id === clienteId || 
+        av.clienteId === clienteId
       );
     }
     
