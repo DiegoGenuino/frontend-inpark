@@ -229,26 +229,16 @@ const CriacaoReserva = () => {
     setLoading(true)
 
     try {
-      // 1. Buscar clienteId do backend via email
+      // 1. Buscar clienteId do backend
       const userData = await usuarioService.getMe();
-      const clienteEmail = userData.email;
       
-      if (!clienteEmail) {
-        throw new Error('Email não encontrado. Faça login novamente.');
-      }
-
-      // Buscar todos os clientes e filtrar por email
-      const todosClientes = await api.get('/cliente');
-      const lista = Array.isArray(todosClientes) ? todosClientes : (todosClientes.content || []);
-      const cliente = lista.find(c => c.email === clienteEmail);
-      
-      if (!cliente) {
-        throw new Error('Cliente não encontrado no sistema.');
+      if (!userData || !userData.id) {
+        throw new Error('Usuário não encontrado. Faça login novamente.');
       }
 
       // 2. Preparar dados da reserva com clienteId (número)
       const reservaData = {
-        clienteId: cliente.id,
+        clienteId: userData.id,
         estacioId: estacionamento.id,
         dataDaReserva: formData.dataInicio, // Formato: "2023-12-25"
         horaDaReserva: formData.horaInicio + ':00', // Formato: "14:30:00"
