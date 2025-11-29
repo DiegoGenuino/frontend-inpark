@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdAdd, MdEdit, MdDelete, MdDirectionsCar, MdInfo, MdUpload, MdClose, MdCheckCircle } from 'react-icons/md';
-import { CarCard } from '../../components/shared';
+import { CarCard, Header } from '../../components/shared';
 import api from '../../utils/api';
 import { usuarioService } from '../../utils/services';
 import './MeusCarros.css';
@@ -286,12 +286,10 @@ const MeusCarros = () => {
 
   return (
     <div className="meus-carros-container">
-      <div className="page-header">
-        <div className="header-text">
-        <p>Gerencie os veículos cadastrados em sua conta para facilitar suas reservas</p>
-        <h1>Meus Carros</h1>
-        </div>
-      </div>
+      <Header 
+        title="Meus Carros"
+        subtitle="Gerencie os veículos cadastrados em sua conta para facilitar suas reservas"
+      />
 
       {/* Botão Adicionar Novo Carro */}
       <div className="add-car-section">
