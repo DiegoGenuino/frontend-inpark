@@ -20,9 +20,6 @@ import MeusCarros from './pages/perfil/MeusCarros.jsx'
 import DashboardDono from './pages/dono/DashboardDono.jsx'
 import EstacionamentosDono from './pages/dono/EstacionamentosDono.jsx'
 import ReservasDono from './pages/dono/ReservasDono.jsx'
-import VagasDono from './pages/dono/VagasDono.jsx'
-import FinanceiroDono from './pages/dono/FinanceiroDono.jsx'
-import RelatoriosDono from './pages/dono/RelatoriosDono.jsx'
 import PerfilDono from './pages/dono/PerfilDono.jsx'
 import ConfiguracoesDono from './pages/dono/ConfiguracoesDono.jsx'
 import AcessosDono from './pages/dono/AcessosDono.jsx'
@@ -68,10 +65,7 @@ function AppContent() {
             <Route path="/dono" element={<DashboardDono />} />
             <Route path="/dono/estacionamentos" element={<EstacionamentosDono />} />
             <Route path="/dono/reservas" element={<ReservasDono />} />
-            <Route path="/dono/vagas" element={<VagasDono />} />
             <Route path="/dono/acessos" element={<AcessosDono />} />
-            <Route path="/dono/financeiro" element={<FinanceiroDono />} />
-            <Route path="/dono/relatorios" element={<RelatoriosDono />} />
             <Route path="/dono/perfil" element={<PerfilDono />} />
             <Route path="/dono/configuracoes" element={<ConfiguracoesDono />} />
           </Routes>
