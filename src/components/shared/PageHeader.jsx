@@ -11,8 +11,8 @@ const PageHeader = ({
     <div className="page-header-container">
       <div className="page-header-content">
         <div className="page-header-text">
-          <h1 className="page-header-title">{title}</h1>
           {subtitle && <p className="page-header-subtitle">{subtitle}</p>}
+          <h1 className="page-header-title">{title}</h1>
         </div>
         
         {actions && (
