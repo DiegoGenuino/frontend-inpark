@@ -1,0 +1,209 @@
+.reservas-table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.reservas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.reservas-table thead {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.reservas-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.reservas-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.reservas-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.reservas-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.reservas-table td {
+  padding: 0.75rem 1rem;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.reservas-table .td-id {
+  color: #6b7280;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+}
+
+.reservas-table .td-valor {
+  font-weight: 600;
+  color: #059669;
+}
+
+.reservas-table .status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.reservas-table .status-pendente {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.reservas-table .status-aceita {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.reservas-table .status-recusada {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.reservas-table .status-encerrada {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.reservas-table .status-cancelada {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.reservas-table .status-default {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.reservas-table .td-actions {
+  white-space: nowrap;
+}
+
+.reservas-table .action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.reservas-table .btn-accept,
+.reservas-table .btn-reject {
+  padding: 0.5rem 0.875rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.reservas-table .btn-accept {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.reservas-table .btn-accept:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.reservas-table .btn-reject {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.reservas-table .btn-reject:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.reservas-table .btn-accept:disabled,
+.reservas-table .btn-reject:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reservas-table .no-action {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.reservas-table-loading,
+.reservas-table-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+/* Modo Compacto */
+.reservas-table-container.compact .reservas-table th,
+.reservas-table-container.compact .reservas-table td {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.reservas-table-container.compact .reservas-table .btn-accept,
+.reservas-table-container.compact .reservas-table .btn-reject {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.6875rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .reservas-table {
+    font-size: 0.8125rem;
+  }
+
+  .reservas-table th,
+  .reservas-table td {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .reservas-table .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .reservas-table .btn-accept,
+  .reservas-table .btn-reject {
+    width: 100%;
+    padding: 0.375rem 0.625rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reservas-table th,
+  .reservas-table td {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .reservas-table th {
+    font-size: 0.6875rem;
+  }
+}
