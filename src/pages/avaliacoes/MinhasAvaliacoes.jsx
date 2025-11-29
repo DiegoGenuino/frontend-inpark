@@ -11,7 +11,7 @@ import {
   MdThumbDown
 } from 'react-icons/md';
 import { avaliacaoService, usuarioService } from '../../utils/services';
-import { Toast } from '../../components/shared';
+import { Toast, Header } from '../../components/shared';
 import './MinhasAvaliacoes.css';
 
 const MinhasAvaliacoes = () => {
@@ -94,12 +94,10 @@ const MinhasAvaliacoes = () => {
 
   return (
     <div className="minhas-avaliacoes-page">
-      <div className="page-header">
-        <div className="header-text">
-          <h1>Minhas Avaliações</h1>
-          <p>Veja todas as avaliações que você fez sobre estacionamentos</p>
-        </div>
-      </div>
+      <Header 
+        title="Minhas Avaliações"
+        subtitle="Veja todas as avaliações que você fez sobre estacionamentos"
+      />
 
       {error && (
         <div className="error-container" style={{
