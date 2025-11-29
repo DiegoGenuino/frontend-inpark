@@ -51,11 +51,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, senha) => {
     const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
     
-    const DEFAULT_EMAIL = 'demo@inpark.com';
-    const DEFAULT_PASSWORD = 'demo123';
-    const DONO_EMAIL = 'dono@inpark.com';
-    const DONO_PASSWORD = 'dono123';
-    
     try {
       const loginResponse = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
@@ -94,56 +89,6 @@ export const AuthProvider = ({ children }) => {
       return { success: true, role: decoded.role };
     } catch (error) {
       console.error('Erro no login:', error);
-      
-      if (error.message.includes('Failed to fetch') || error.message === 'Network request failed') {
-        if (email === DEFAULT_EMAIL && senha === DEFAULT_PASSWORD) {
-          const mockToken = btoa(JSON.stringify({
-            sub: DEFAULT_EMAIL,
-            role: 'CLIENTE',
-            name: 'Diego Genuino',
-            exp: Date.now() + 86400000
-          }));
-          
-          localStorage.setItem('token', `mock.${mockToken}`);
-          
-          setIsAuthenticated(true);
-          setRole('CLIENTE');
-          setUser({
-            email: DEFAULT_EMAIL,
-            role: 'CLIENTE',
-            name: 'Diego Genuino'
-          });
-          
-          return { success: true, role: 'CLIENTE', isMock: true };
-        } 
-        else if (email === DONO_EMAIL && senha === DONO_PASSWORD) {
-          const mockToken = btoa(JSON.stringify({
-            sub: DONO_EMAIL,
-            role: 'DONO',
-            name: 'Proprietário InPark',
-            exp: Date.now() + 86400000
-          }));
-          
-          localStorage.setItem('token', `mock.${mockToken}`);
-          
-          setIsAuthenticated(true);
-          setRole('DONO');
-          setUser({
-            email: DONO_EMAIL,
-            role: 'DONO',
-            name: 'Proprietário InPark'
-          });
-          
-          return { success: true, role: 'DONO', isMock: true };
-        } 
-        else {
-          return { 
-            success: false, 
-            error: 'Backend offline. Use as credenciais padrão para testar:\nCliente: demo@inpark.com / demo123\nDono: dono@inpark.com / dono123' 
-          };
-        }
-      }
-      
       return { success: false, error: error.message };
     }
   };
