@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MdStar, MdStarBorder, MdArrowBack, MdCheckCircle } from 'react-icons/md';
 import { reservaService, estacionamentoService, avaliacaoService, usuarioService } from '../../utils/services';
-import { Toast } from '../../components/shared';
+import { Toast, Header } from '../../components/shared';
 import './Avaliacao.css';
 
 const Avaliacao = () => {
@@ -204,19 +204,18 @@ const Avaliacao = () => {
 
   return (
     <div className="avaliacao-container">
+      <Header 
+        title="Avalie sua Experiência"
+        subtitle="Sua opinião é muito importante para nós e outros usuários"
+      />
+
       <div className="avaliacao-header">
         <div className="header-top">
           <button className="back-button" onClick={() => navigate('/minhas-reservas')}>
             <MdArrowBack />
+            Voltar
           </button>
-          <h1>
-            <MdStar />
-            Avalie sua Experiência
-          </h1>
         </div>
-        <p className="header-subtitle">
-          Sua opinião é muito importante para nós e outros usuários
-        </p>
       </div>
 
       <div className="avaliacao-content">
