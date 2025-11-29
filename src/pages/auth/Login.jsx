@@ -1,17 +1,29 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/auth";
 import InparkLogo from "../../assets/inpark-logo.svg";
 import "./Login.css";
 
 export const Login = () => {
+  const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     email: "",
     senha: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login, role } = useAuth();
+
+  // Redirecionar se já estiver autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (role === 'DONO') {
+        navigate('/dono');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [isAuthenticated, role, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,24 +31,6 @@ export const Login = () => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  // Função para preencher credenciais de teste rapidamente - CLIENTE
-  const handleFillTestCredentials = () => {
-    setCredentials({
-      email: "demo@inpark.com",
-      senha: "demo123"
-    });
-    setError(""); // Limpar erros
-  };
-
-  // Função para preencher credenciais de teste - DONO
-  const handleFillDonoCredentials = () => {
-    setCredentials({
-      email: "dono@inpark.com",
-      senha: "dono123"
-    });
-    setError(""); // Limpar erros
   };
 
   const handleSubmit = async (e) => {
@@ -50,8 +44,14 @@ export const Login = () => {
 
       if (!result.success) {
         setError(result.error || "Email ou senha incorretos");
+      } else {
+        // Login bem-sucedido - redirecionar baseado no role
+        if (result.role === 'DONO') {
+          navigate('/dono');
+        } else {
+          navigate('/');
+        }
       }
-      // Se success=true, o AuthProvider já atualizou o estado e o usuário será redirecionado
     } catch (error) {
       console.error('Erro no login:', error);
       setError("Erro ao fazer login. Verifique sua conexão e tente novamente.");
@@ -98,85 +98,6 @@ export const Login = () => {
         />
         
         <h2>Acesse sua conta</h2>
-        
-        {/* Mensagem informativa sobre credenciais de teste */}
-        <div style={{
-          backgroundColor: '#e8f5e9',
-          border: '1px solid #4caf50',
-          borderRadius: '8px',
-          padding: '12px',
-          marginBottom: '20px',
-          fontSize: '13px',
-          color: '#2e7d32'
-        }}>
-          <strong>💡 Teste sem backend:</strong><br />
-          <div style={{ marginTop: '8px' }}>
-            <strong>Cliente:</strong><br />
-            Email: <code style={{ 
-              backgroundColor: '#fff',
-              padding: '2px 6px',
-              borderRadius: '4px',
-              fontFamily: 'monospace'
-            }}>demo@inpark.com</code><br />
-            Senha: <code style={{ 
-              backgroundColor: '#fff',
-              padding: '2px 6px',
-              borderRadius: '4px',
-              fontFamily: 'monospace'
-            }}>demo123</code>
-            <button 
-              type="button"
-              onClick={handleFillTestCredentials}
-              style={{
-                marginTop: '6px',
-                padding: '6px 12px',
-                backgroundColor: '#4caf50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: '600',
-                width: '100%'
-              }}
-            >
-              ⚡ Login como Cliente
-            </button>
-          </div>
-          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #4caf50' }}>
-            <strong>Proprietário:</strong><br />
-            Email: <code style={{ 
-              backgroundColor: '#fff',
-              padding: '2px 6px',
-              borderRadius: '4px',
-              fontFamily: 'monospace'
-            }}>dono@inpark.com</code><br />
-            Senha: <code style={{ 
-              backgroundColor: '#fff',
-              padding: '2px 6px',
-              borderRadius: '4px',
-              fontFamily: 'monospace'
-            }}>dono123</code>
-            <button 
-              type="button"
-              onClick={handleFillDonoCredentials}
-              style={{
-                marginTop: '6px',
-                padding: '6px 12px',
-                backgroundColor: '#1976d2',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: '600',
-                width: '100%'
-              }}
-            >
-              👔 Login como Proprietário
-            </button>
-          </div>
-        </div>
         
         <div className="form-group">
           <label htmlFor="email">Email</label>
