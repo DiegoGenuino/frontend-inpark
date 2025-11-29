@@ -108,24 +108,6 @@ export const SidebarDono = () => {
                                 <span>Acessos em Tempo Real</span>
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link to="/dono/vagas" className="nav-link" onClick={closeMobileMenu}>
-                                <MdList className="nav-icon" />
-                                <span>Gerenciar Vagas</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/dono/financeiro" className="nav-link" onClick={closeMobileMenu}>
-                                <MdAttachMoney className="nav-icon" />
-                                <span>Financeiro</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/dono/relatorios" className="nav-link" onClick={closeMobileMenu}>
-                                <MdBarChart className="nav-icon" />
-                                <span>Relatórios</span>
-                            </Link>
-                        </li>
                     </ul>
                 </div>
 
