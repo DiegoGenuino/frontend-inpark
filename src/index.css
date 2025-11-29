@@ -41,12 +41,6 @@ h1, h2, h3, h4, h5, h6, .font-display {
         padding: 0.625rem 1rem !important;
     }
 
-    /* Cards e containers */
-    .card, .container, [class*="container"] {
-        margin: 0.5rem !important;
-        padding: 1rem !important;
-    }
-
     /* Grids responsivos */
     [style*="display: grid"] {
         grid-template-columns: 1fr !important;
