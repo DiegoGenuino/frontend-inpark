@@ -6,6 +6,7 @@ import {
   MdLocalParking,
   MdStar,
 } from "react-icons/md";
+import { Header } from '../../components/shared';
 import { useAuth } from "../../utils/auth";
 import { reservaService, usuarioService } from "../../utils/services";
 import "./MinhasReservas.css";
@@ -152,12 +153,10 @@ const MinhasReservas = () => {
 
   return (
     <div className="minhas-reservas-page">
-      <div className="page-header">
-        <div className="header-text">
-        <p>Gerencie todas as suas reservas de estacionamento</p>
-        <h1>Minhas Reservas</h1>
-        </div>
-      </div>
+      <Header 
+        title="Minhas Reservas"
+        subtitle="Gerencie todas as suas reservas de estacionamento"
+      />
 
       {error && <div className="error-container">{error}</div>}
 
