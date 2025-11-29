@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useAuth, getAuthHeaders } from '../../utils/auth'
 import { useNavigate } from 'react-router-dom'
 import { MdSearch, MdLocationOn, MdAccessTime, MdLocalParking, MdStar, MdClose, MdPhone, MdEmail, MdAttachMoney, MdSecurity, MdWifi, MdAccessibleForward, MdDirectionsCar, MdCalendarToday, MdPerson } from 'react-icons/md'
-import { ParkingCard, Modal, ModalBody, ModalFooter, ModalActions, Button, Badge } from '../../components/shared'
+import { ParkingCard, Modal, ModalBody, ModalFooter, ModalActions, Button, Badge, Header } from '../../components/shared'
 import './Estacionamentos.css'
 
 // Componente do Modal de Reserva
@@ -373,12 +373,10 @@ export const Estacionamentos = () => {
 
   return (
     <div className="estacionamentos-page">
-      <div className="page-header">
-        <div className="header-text">
-        <p>Encontre o melhor estacionamento para você</p>
-        <h1>Estacionamentos</h1>
-        </div>
-      </div>
+      <Header 
+        title="Estacionamentos"
+        subtitle="Encontre o melhor estacionamento para você"
+      />
 
       <div className="search-section">
         <div className="search-bar">
