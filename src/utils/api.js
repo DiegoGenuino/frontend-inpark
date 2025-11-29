@@ -80,6 +80,7 @@ export const getAuthHeaders = () => {
  */
 export const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
+  const token = getToken();
   
   const config = {
     ...options,
@@ -89,13 +90,27 @@ export const apiRequest = async (endpoint, options = {}) => {
     },
   };
 
+  // Log detalhado para debug
+  if (token) {
+    const decoded = decodeJWT(token);
+    console.log(`[API] Requisição para ${endpoint}:`, {
+      url,
+      method: config.method || 'GET',
+      hasToken: !!token,
+      tokenPrefix: token?.substring(0, 20) + '...',
+      decodedRole: decoded?.role,
+      decodedAuthorities: decoded?.authorities,
+      decodedExp: decoded?.exp ? new Date(decoded.exp * 1000).toISOString() : 'N/A'
+    });
+  }
+
   try {
     const response = await fetch(url, config);
     
     // Tratamento de autenticação/autorização
     if (response.status === 401) {
       // 401: token inválido/expirado -> limpar sessão e redirecionar
-      console.warn('Sessão expirada ou não autenticado (401)');
+      console.error('[API] Erro 401: Sessão expirada ou não autenticado');
       clearAuthData();
       window.location.href = '/';
       throw new Error('Sessão expirada. Faça login novamente.');
@@ -103,11 +118,17 @@ export const apiRequest = async (endpoint, options = {}) => {
     
     if (response.status === 403) {
       // 403: proibido (sem permissão). 
-      // NÃO fazer logout automático - apenas lançar erro
       const errorData = await response.json().catch(() => ({}));
-      const message = errorData.message || 'Acesso negado (403)';
-      console.warn(`Acesso negado para ${endpoint}:`, message);
-      throw new Error(message);
+      const message = errorData.message || errorData.error || 'Acesso negado';
+      
+      console.error(`[API] Erro 403 para ${endpoint}:`, {
+        message,
+        errorData,
+        tokenRole: decodeJWT(token)?.role,
+        requiredRole: 'DONO, GERENTE ou ADMIN'
+      });
+      
+      throw new Error(`Acesso negado: ${message}`);
     }
 
     // Se não for OK, lançar erro
