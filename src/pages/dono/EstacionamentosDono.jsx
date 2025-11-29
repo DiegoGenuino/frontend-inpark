@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { estacionamentoService } from '../../utils/services';
-import { Toast, Modal, ModalBody, ModalFooter, ModalActions, Button, PageHeader } from '../../components/shared';
+import { Toast, Modal, ModalBody, ModalFooter, ModalActions, Button, Header } from '../../components/shared';
 import api from '../../utils/api';
 import { 
   MdLocationOn, 
@@ -59,39 +59,23 @@ const EstacionamentosDono = () => {
       // Buscar donoId do usuário logado
       if (!donoId) {
         try {
-          const token = localStorage.getItem('token');
-          if (token) {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(
-              atob(base64)
-                .split('')
-                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                .join('')
-            );
-            const decoded = JSON.parse(jsonPayload);
-            const email = decoded.sub;
-            
-            // Buscar dono por email
-            const todosDonos = await api.get('/dono');
-            const listaDonos = Array.isArray(todosDonos) ? todosDonos : (todosDonos.content || []);
-            const dono = listaDonos.find(d => d.email === email);
-            
-            if (dono) {
-              setDonoId(dono.id);
-              console.log('DonoId encontrado:', dono.id);
-            } else {
-              console.error('Dono não encontrado com email:', email);
-              setError('Não foi possível identificar o proprietário. Verifique suas permissões.');
-            }
+          // Usar rota /auth/me do backend para buscar dados do usuário logado
+          const userData = await api.post('/auth/me');
+          
+          if (userData && userData.id) {
+            setDonoId(userData.id);
+            console.log('DonoId encontrado via /auth/me:', userData.id);
+          } else {
+            console.error('Dados do usuário não retornaram ID');
+            setError('Não foi possível identificar o proprietário. Verifique suas permissões.');
           }
         } catch (e) {
-          console.error('Erro ao buscar donoId:', e);
+          console.error('Erro ao buscar dados do usuário:', e);
           // Se der erro, tentar extrair dos estacionamentos como fallback
           if (lista.length > 0 && lista[0].dono) {
             const idDono = lista[0].dono.id || lista[0].dono;
             setDonoId(idDono);
-            console.log('DonoId extraído dos estacionamentos:', idDono);
+            console.log('DonoId extraído dos estacionamentos (fallback):', idDono);
           }
         }
       }
@@ -406,7 +390,7 @@ const EstacionamentosDono = () => {
 
   return (
     <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
-      <PageHeader
+      <Header
         title="Produtos"
         subtitle="Gerencie seus estacionamentos, visualize estatísticas e acompanhe reservas"
         actions={
