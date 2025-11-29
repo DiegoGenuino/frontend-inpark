@@ -1,20 +1,20 @@
 .sidebar {
-  width: 200px;
-  min-width: 200px;
+  width: 240px;
+  min-width: 240px;
   height: 100vh;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #f1f3f4;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
 }
 
 .sidebar-header {
-  padding: 24px 20px;
+  padding: 20px 16px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  border-bottom: 1px solid #0000001b;
+  border-bottom: 1px solid #f3f4f6;
   background-color: #ffffff;
 }
 
@@ -50,36 +50,51 @@
 
 .brand-name {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  padding-left: 4px;
 }
 
 .inpark-logo-img {
-  height: 32px;
+  height: 28px;
   width: auto;
-  max-width: 120px;
+  max-width: 140px;
 }
 
 .user-greeting {
   font-size: 16px;
   font-weight: 400;
-  color: #8e959d;
+  color: #6b7280;
   margin: 0;
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 24px 0;
+  padding: 16px 0;
   overflow-y: auto;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
 }
 
 .sidebar-nav::-webkit-scrollbar {
-  display: none;
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background-color: #d1d5db;
 }
 
 .nav-section {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .nav-section:last-child {
@@ -89,73 +104,72 @@
 .section-title {
   font-size: 11px;
   font-weight: 700;
-  color: #8e959d;
+  color: #6b7280;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 0 0 16px 24px;
+  letter-spacing: 1px;
+  margin: 0 0 12px 20px;
   padding: 0;
+  line-height: 1.2;
 }
 
 .nav-list {
   list-style: none;
-  padding: 12px;
+  padding: 0 12px;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 2px;
 }
 
 .nav-link {
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 0.8rem;
-  color: #000000;
+  padding: 10px 12px;
+  color: #4b5563;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s ease;
   border-radius: 8px;
-  background-color: #edffd6;
+  background-color: transparent;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
 }
 
 .nav-link:hover {
-  background-color: #63636320;
-  color: #202124;
-  transform: translateX(2px);
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 .nav-link.active {
-  background-color: #f7ffe6;
-  color: #6a8c00;
+  background-color: #d1fae5;
+  color: #065f46;
   font-weight: 600;
 }
 
-.nav-link.active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 20px;
-  background-color: #c2fe00;
-  border-radius: 0 2px 2px 0;
-}
-
 .nav-icon {
-  margin-right: 16px;
+  margin-right: 12px;
   font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 20px;
   color: inherit;
-  opacity: 0.9;
+  opacity: 0.85;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover .nav-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.nav-link.active .nav-icon {
+  opacity: 1;
 }
 
 .nav-link span {
@@ -164,57 +178,39 @@
   white-space: nowrap;
 }
 
-.nav-link.active .nav-icon {
-  opacity: 1;
-}
-
 .exit-link {
-  color: #ea4335 !important;
+  color: #dc2626 !important;
   background-color: transparent !important;
 }
 
 .exit-link:hover {
-  background-color: #fce8e6 !important;
-  color: #d33b2c !important;
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+.exit-link .nav-icon {
+  opacity: 1;
 }
 
 .sidebar-footer {
-  padding: 20px 24px;
-  border-top: 1px solid #f1f3f4;
+  padding: 16px 20px;
+  border-top: 1px solid #f3f4f6;
   margin-top: auto;
   background-color: #fafbfc;
 }
 
 .version-info {
-  font-size: 12px;
-  color: #8e959d;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.version-subtitle {
-  color: #bdc1c6;
   font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.5;
+  text-align: left;
   font-weight: 500;
 }
 
-/* Estados especiais */
-.nav-link[data-active="true"] {
-  background-color: #f7ffe6;
-  color: #6a8c00;
-  font-weight: 600;
-}
-
-.nav-link[data-active="true"]::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 20px;
-  background-color: #c2fe00;
-  border-radius: 0 2px 2px 0;
+.version-subtitle {
+  color: #d1d5db;
+  font-size: 10px;
+  font-weight: 400;
 }
 
 /* Responsividade */
