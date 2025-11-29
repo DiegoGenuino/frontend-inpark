@@ -10,6 +10,7 @@ import {
   MdCheckCircle,
   MdRadioButtonChecked
 } from 'react-icons/md';
+import { Header } from '../../components/shared';
 import api from '../../utils/api';
 
 const AcessosDono = () => {
@@ -101,19 +102,11 @@ const AcessosDono = () => {
   }
 
   return (
-    <div style={{ padding: '2rem', background: '#f9fafb', minHeight: '100vh' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <div>
-            <h1 style={{ margin: '0 0 .5rem 0', fontSize: '1.875rem', fontWeight: '700', color: '#111827' }}>
-              Acessos em Tempo Real
-            </h1>
-            <p style={{ margin: 0, color: '#6b7280', fontSize: '.875rem' }}>
-              Monitore entradas e saídas dos estacionamentos
-            </p>
-          </div>
-          
+    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+      <Header 
+        title="Acessos em Tempo Real"
+        subtitle="Monitore entradas e saídas dos estacionamentos"
+        actions={
           <div style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>
             {/* Toggle Auto-refresh */}
             <button
@@ -158,13 +151,14 @@ const AcessosDono = () => {
               Atualizar
             </button>
           </div>
-        </div>
-
+        }
+      />
+      
+      <div style={{ padding: '0 1.5rem 2rem 1.5rem' }}>
         {/* Última atualização */}
-        <div style={{ fontSize: '.75rem', color: '#9ca3af' }}>
+        <div style={{ fontSize: '.75rem', color: '#9ca3af', marginBottom: '1.5rem' }}>
           Última atualização: {ultimaAtualizacao.toLocaleTimeString('pt-BR')}
         </div>
-      </div>
 
       {/* KPIs */}
       <div style={{ 
@@ -450,6 +444,7 @@ const AcessosDono = () => {
           50% { opacity: 0.5; }
         }
       `}</style>
+      </div>
     </div>
   );
 };
