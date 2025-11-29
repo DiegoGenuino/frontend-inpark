@@ -12,6 +12,7 @@ import {
 } from 'react-icons/md';
 import api from '../../utils/api';
 import { donoService } from '../../utils/services';
+import { Header, ReservasTable } from '../../components/shared';
 import './DashboardDono.css';
 
 const DashboardDono = () => {
@@ -126,12 +127,10 @@ const DashboardDono = () => {
 
   return (
     <div className="dashboard-dono-container">
-      <div className="page-header">
-        <div className="header-text">
-          <h1>Dashboard do Proprietário</h1>
-          <p>Visão geral do seu negócio de estacionamentos</p>
-        </div>
-      </div>
+      <Header 
+        title="Dashboard do Proprietário"
+        subtitle="Visão geral do seu negócio de estacionamentos"
+      />
 
       {/* Cards de Estatísticas */}
       <div className="stats-grid">
@@ -243,47 +242,12 @@ const DashboardDono = () => {
             Ver todas
           </button>
         </div>
-        <div className="table-container">
-          <table className="reservas-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Estacionamento</th>
-                <th>Vaga</th>
-                <th>Data/Hora</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reservasRecentes.map((reserva) => (
-                <tr key={reserva.id}>
-                  <td>#{reserva.id.toString().padStart(4, '0')}</td>
-                  <td>{reserva.cliente?.nome || 'N/A'}</td>
-                  <td>-</td>
-                  <td><span className="vaga-badge">-</span></td>
-                  <td>{new Date(reserva.dataDaReserva).toLocaleDateString('pt-BR')} {reserva.horaDaReserva?.substring(0, 5)}</td>
-                  <td>R$ 0,00</td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(reserva.statusReserva)}`}>
-                      {getStatusLabel(reserva.statusReserva)}
-                    </span>
-                  </td>
-                  <td>
-                    {reserva.statusReserva === 'PENDENTE' && (
-                      <div className="action-buttons">
-                        <button className="btn-accept" onClick={() => navigate('/dono/reservas')}>Aceitar</button>
-                        <button className="btn-reject" onClick={() => navigate('/dono/reservas')}>Recusar</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReservasTable 
+          reservas={reservasRecentes}
+          onAceitar={() => navigate('/dono/reservas')}
+          onRecusar={() => navigate('/dono/reservas')}
+          compact={true}
+        />
       </div>
     </div>
   );
