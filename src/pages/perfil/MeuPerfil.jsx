@@ -88,11 +88,15 @@ const MeuPerfil = () => {
     }
 
     try {
+      // IMPORTANTE: A senha aqui NÃO deve ser usada para alterar a senha do usuário!
+      // O backend deve verificar se a senha está correta (autenticação)
+      // mas NÃO deve atualizar o campo senha no banco de dados.
+      // Apenas nome, email e dataNascimento devem ser atualizados.
       const dataToSend = {
         nome: formData.nome,
         email: formData.email,
-        dataNascimento: formData.dataNascimento ? new Date(formData.dataNascimento).toISOString() : null,
-        senha: senha
+        senha: senha, // Apenas para validação de identidade
+        dataNascimento: formData.dataNascimento ? new Date(formData.dataNascimento).toISOString() : null
       };
 
       await api.put(`/cliente/${userData.id}`, dataToSend);

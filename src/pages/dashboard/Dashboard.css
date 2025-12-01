@@ -7,11 +7,10 @@ body {
   overflow-x: hidden;
 }
 
-/* ============================================
-   DASHBOARD PAGE - WRAPPER COM ESCOPO
+/* 
    Todas as classes são prefixadas com .dashboard
    para evitar conflitos com outras páginas
-   ============================================ */
+ */
 
 .dashboard {
   padding: 0;

@@ -132,15 +132,6 @@ const DetalhesEstacionamento = () => {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="detalhes-loading">
-        <div className="loading-spinner"></div>
-        <p>Carregando detalhes do estacionamento...</p>
-      </div>
-    )
-  }
-
   if (error || !estacionamento) {
     return (
       <div className="detalhes-error">

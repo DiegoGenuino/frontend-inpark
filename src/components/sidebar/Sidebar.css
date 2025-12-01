@@ -311,11 +311,22 @@
 /* Desktop - esconder botão hambúrguer */
 @media (min-width: 769px) {
   .mobile-menu-toggle {
-    display: none;
+    display: none !important;
   }
 
   .mobile-menu-overlay {
-    display: none;
+    display: none !important;
+  }
+}
+
+/* Garantir que overlay não apareça em desktop */
+.mobile-menu-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-overlay {
+    display: block;
   }
 }
 

@@ -1,5 +1,4 @@
 .criacao-reserva {
-  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;
@@ -65,7 +64,7 @@
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
   border: 1px solid #e5e7eb;
 }
 
@@ -190,7 +189,7 @@
 .form-input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+
 }
 
 .campo-hint {
@@ -398,7 +397,7 @@
 
 .btn-confirmar:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+
 }
 
 .btn-confirmar:disabled {

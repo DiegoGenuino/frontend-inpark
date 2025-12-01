@@ -183,13 +183,7 @@ const Pagamento = () => {
   }
 
   if (!dadosReserva) {
-    return (
-      <div className="pagamento-page">
-        <div className="loading-container">
-          <p>Redirecionando...</p>
-        </div>
-      </div>
-    )
+    return null;
   }
 
   const inicio = formatDateTime(dadosReserva.dataInicio)
@@ -208,8 +202,8 @@ const Pagamento = () => {
 
       {/* Aviso de pagamento simulado */}
       <div className="info-message" style={{ 
-        background: '#e0f2fe', 
-        border: '1px solid #0ea5e9', 
+        background: '#c2fe00ff', 
+        border: '1px solid #000000ff', 
         padding: '1rem', 
         borderRadius: '8px', 
         marginBottom: '1rem',
@@ -217,10 +211,10 @@ const Pagamento = () => {
         alignItems: 'center',
         gap: '.5rem'
       }}>
-        <MdInfo style={{ color: '#0ea5e9', fontSize: '24px' }} />
+        <MdInfo style={{ color: '#000000ff', fontSize: '24px' }} />
         <div>
-          <strong style={{ color: '#0369a1' }}>Modo de Demonstração</strong>
-          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#075985' }}>
+          <strong style={{ color: '#000000ff' }}>Modo de Demonstração</strong>
+          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#000000ff' }}>
             Este é um pagamento simulado. Nenhum valor real será cobrado.
           </p>
         </div>

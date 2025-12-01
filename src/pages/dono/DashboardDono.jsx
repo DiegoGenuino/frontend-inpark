@@ -115,16 +115,6 @@ const DashboardDono = () => {
     return statusMap[status] || status;
   };
 
-  if (loading) {
-    return (
-      <div className="dashboard-dono-container">
-        <div className="loading-container">
-          <p>Carregando dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="dashboard-dono-container">
       <Header 

@@ -100,12 +100,14 @@
 
 .reservas-table .td-actions {
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 .reservas-table .action-buttons {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .reservas-table .btn-accept,

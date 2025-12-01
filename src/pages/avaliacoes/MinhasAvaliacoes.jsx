@@ -81,16 +81,7 @@ const MinhasAvaliacoes = () => {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="minhas-avaliacoes-page">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Carregando suas avaliações...</p>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="minhas-avaliacoes-page">

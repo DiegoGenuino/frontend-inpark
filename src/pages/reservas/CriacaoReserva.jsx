@@ -75,51 +75,32 @@ const CriacaoReserva = () => {
 
   const fetchVeiculos = async () => {
     try {
-      const headers = {
-        'Content-Type': 'application/json',
-        ...getAuthHeaders()
+      // Buscar dados do usuário logado
+      const userData = await usuarioService.getMe();
+      
+      if (!userData || !userData.id) {
+        throw new Error('Usuário não encontrado');
       }
 
-      const response = await fetch(`/api/usuarios/${user?.id}/veiculos`, {
-        method: 'GET',
-        headers
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setVeiculos(data)
-        if (data.length > 0) {
-          setFormData(prev => ({ ...prev, veiculoSelecionado: data[0].id }))
-        }
+      // Buscar carros do cliente usando o endpoint correto
+      const carros = await api.get('/carro');
+      
+      // Filtrar apenas os carros do cliente logado
+      const carrosDoCliente = Array.isArray(carros) 
+        ? carros.filter(carro => carro.clienteId === userData.id || carro.cliente?.id === userData.id)
+        : [];
+      
+      console.log('Carros do cliente:', carrosDoCliente);
+      
+      setVeiculos(carrosDoCliente);
+      
+      if (carrosDoCliente.length > 0) {
+        setFormData(prev => ({ ...prev, veiculoSelecionado: carrosDoCliente[0].id }));
       }
     } catch (err) {
-      console.log('Erro ao carregar veículos, usando mock:', err)
-      // Mock data para veículos
-      const mockVeiculos = [
-        {
-          id: 1,
-          placa: 'ABC-1234',
-          modelo: 'Honda Civic',
-          cor: 'Prata',
-          tipo: 'comum'
-        },
-        {
-          id: 2,
-          placa: 'XYZ-5678',
-          modelo: 'Toyota Corolla',
-          cor: 'Branco',
-          tipo: 'comum'
-        },
-        {
-          id: 3,
-          placa: 'DEF-9999',
-          modelo: 'Adaptado PCD',
-          cor: 'Azul',
-          tipo: 'preferencial'
-        }
-      ]
-      setVeiculos(mockVeiculos)
-      setFormData(prev => ({ ...prev, veiculoSelecionado: mockVeiculos[0].id }))
+      console.error('Erro ao carregar veículos:', err);
+      setVeiculos([]);
+      setError('Erro ao carregar seus veículos. Por favor, cadastre um veículo antes de fazer uma reserva.');
     }
   }
 
@@ -236,29 +217,38 @@ const CriacaoReserva = () => {
         throw new Error('Usuário não encontrado. Faça login novamente.');
       }
 
-      // 2. Preparar dados da reserva com clienteId (número)
+      // 2. Buscar placa do veículo selecionado
+      const veiculoSelecionado = veiculos.find(v => v.id === formData.veiculoSelecionado);
+      
+      if (!veiculoSelecionado) {
+        throw new Error('Veículo não encontrado. Por favor, selecione um veículo válido.');
+      }
+
+      // 3. Preparar dados da reserva com clienteId (número) e placa
       const reservaData = {
         clienteId: userData.id,
         estacioId: estacionamento.id,
         dataDaReserva: formData.dataInicio, // Formato: "2023-12-25"
         horaDaReserva: formData.horaInicio + ':00', // Formato: "14:30:00"
+        placaVeiculo: veiculoSelecionado.placa, // Placa do veículo
+        tipoVaga: formData.tipoVaga, // Tipo de vaga (comum ou preferencial)
+        valorTotal: precos.total, // Valor total calculado
         statusReserva: 'PENDENTE'
       }
 
       console.log('Enviando reserva:', reservaData);
 
-      // 3. Fazer POST para criar a reserva
+      // 4. Fazer POST para criar a reserva
       const reservaCriada = await api.post('/reserva', reservaData);
       
       console.log('Reserva criada:', reservaCriada);
 
-      // 4. Preparar dados para o pagamento
-      const veiculoSelecionado = veiculos.find(v => v.id === formData.veiculoSelecionado);
+      // 5. Preparar dados para o pagamento (reutilizar veiculoSelecionado já buscado)
       const dadosReserva = {
         id: reservaCriada.id,
         dataInicio: formData.dataInicio + 'T' + formData.horaInicio + ':00.000Z',
         dataFim: calcularDataFim(),
-        placaVeiculo: veiculoSelecionado?.placa || 'N/A',
+        placaVeiculo: veiculoSelecionado.placa,
         tipoVaga: formData.tipoVaga,
         valorTotal: precos.total,
         estacionamento: {
@@ -268,7 +258,7 @@ const CriacaoReserva = () => {
         }
       }
       
-      // 5. Navegar para a página de pagamento
+      // 6. Navegar para a página de pagamento
       navigate('/pagamento', { 
         state: { reserva: dadosReserva } 
       })

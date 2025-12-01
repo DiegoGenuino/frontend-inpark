@@ -394,13 +394,6 @@ export const Estacionamentos = () => {
         </div>
       </div>
 
-      {loading && (
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Carregando estacionamentos...</p>
-        </div>
-      )}
-
       {error && !loading && (
         <div className="error-container">
           <p>⚠️ Erro ao carregar: {error}</p>

@@ -1,6 +1,6 @@
 /* Página Principal */
 .pagamento-page {
-  max-width: 1200px;
+
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;
@@ -169,7 +169,7 @@
 }
 
 .valor-total {
-  color: #059669;
+  color: rgb(0, 0, 0);
   font-size: 24px;
 }
 
@@ -547,8 +547,8 @@
   justify-content: center;
   gap: 8px;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: white;
+  background-color: #c2fe00ff;
+  color: rgb(0, 0, 0);
   border: none;
   border-radius: 12px;
   font-size: 16px;
@@ -596,8 +596,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .seguranca-info {
@@ -632,37 +637,37 @@
   .pagamento-page {
     padding: 16px;
   }
-  
+
   .pagamento-header h1 {
     font-size: 24px;
   }
-  
+
   .pagamento-container {
     grid-template-columns: 1fr;
     gap: 24px;
   }
-  
+
   .pagamento-sidebar {
     position: static;
     order: -1;
   }
-  
+
   .metodos-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .pix-container {
     grid-template-columns: 1fr;
   }
-  
+
   .campo-grupo {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .codigo-container {
     flex-direction: column;
   }
-  
+
   .btn-copiar {
     align-self: stretch;
     justify-content: center;
@@ -673,23 +678,24 @@
   .metodo-card {
     padding: 16px;
   }
-  
+
   .metodo-content {
     flex-direction: column;
     gap: 12px;
     text-align: center;
   }
-  
+
   .metodo-card input[type="radio"] {
     position: static;
     margin-bottom: 8px;
   }
-  
+
   .campo-grupo {
     grid-template-columns: 1fr;
   }
-  
+
   .form-input {
-    font-size: 16px; /* Evita zoom no iOS */
+    font-size: 16px;
+    /* Evita zoom no iOS */
   }
 }
