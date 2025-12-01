@@ -46,12 +46,12 @@
 
 /* Variantes */
 .btn--primary {
-  background: #111827;
-  color: #ffffff;
+  background: #c2fe00ff;
+  color: #000000;
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #1f2937;
+  background: rgba(195, 254, 0, 0.822);
   transform: translateY(-1px);
 }
 
