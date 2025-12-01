@@ -23,3 +23,26 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('authCliente', () => {
+  cy.session('cliente', () => {
+    cy.request('POST', 'http://localhost:8080/auth/login', {
+      email: 'vinicius@gmail.com',
+      senha: 'Senha_123!'
+    }).then((response) => {
+      const token = response.body.token;
+      window.localStorage.setItem('token', token);
+    });
+  });
+});
+Cypress.Commands.add('authDono', () => {
+  cy.session('dono', () => {
+    cy.request('POST', 'http://localhost:8080/auth/login', {
+      email: 'carol@gmail.com',
+      senha: 'Dono_123!'
+    }).then((response) => {
+        const token = response.body.token;
+        window.localStorage.setItem('token', token);
+    });
+  });
+});
