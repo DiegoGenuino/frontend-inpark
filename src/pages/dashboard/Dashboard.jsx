@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth, getAuthHeaders } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdLocationOn, MdAccessTime, MdDirectionsCar, MdMyLocation, MdChevronRight, MdPerson, MdLocalParking, MdCalendarToday, MdTrendingUp } from 'react-icons/md';
+import { MdSearch, MdLocationOn, MdAccessTime, MdDirectionsCar, MdMyLocation, MdChevronRight, MdPerson, MdLocalParking, MdCalendarToday, MdTrendingUp, MdStar } from 'react-icons/md';
+import { Header } from '../../components/shared';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -47,6 +48,9 @@ export default function Dashboard() {
         const mesesDestaque = [1, 3, 4, 5, 6, 9]; // Meses com cor verde forte
         const valores = [1.5, 6.5, 2.5, 10.5, 9, 8, 7, 3.5, 4, 9.5, 7, 6.5];
         
+        // Ajustar barThickness baseado no tamanho da tela
+        const barThickness = windowWidth <= 480 ? 12 : windowWidth <= 768 ? 16 : 24;
+        
         return {
             labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
             datasets: [
@@ -60,12 +64,13 @@ export default function Dashboard() {
                         mesesDestaque.includes(index) ? '#00FF00' : 'rgba(0, 255, 0, 0.3)'
                     ),
                     borderWidth: 0,
-                    borderRadius: 8,
-                    barThickness: 40,
+                    borderRadius: 6,
+                    barThickness: barThickness,
+                    maxBarThickness: barThickness,
                 }
             ]
         };
-    }, []);
+    }, [windowWidth]);
 
     // Opções do gráfico responsivas
     const chartOptions = useMemo(() => ({
@@ -213,24 +218,19 @@ export default function Dashboard() {
 
     return (
         <div className="dashboard">
-            {/* Header Principal da Dashboard */}
-            <div className="dashboard-main-header">
-                <div className="header-content">
-                    <div className="header-text">
-                        <p className="dashboard-label">Dashboard</p>
-                        <h1 className="dashboard-title">
-                            Olá, {user?.nome?.split(' ')[0] || user?.email?.split('@')[0] || 'Diego'}!
-                        </h1>
-                    </div>
+            <Header 
+                title={`Olá, ${user?.nome?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário'}!`}
+                subtitle="Bem-vindo ao seu painel de controle"
+                actions={
                     <div className="card-user-info">
                         <MdPerson className="user-icon" />
                         <div className="info-user">
-                            <span className="user-name">{user?.nome || user?.email || 'Diego Genuino'}</span>
+                            <span className="user-name">{user?.nome || user?.email || 'Usuário'}</span>
                             <span className="user-role">{getRoleLabel(role)}</span>
                         </div>
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             {/* Opções Rápidas */}
             <div className="quick-actions-section">
@@ -276,6 +276,20 @@ export default function Dashboard() {
                         <div className="quick-action-content">
                             <h3>Minhas reservas</h3>
                             <p>Gerencie suas reservas</p>
+                        </div>
+                        <MdChevronRight className="chevron" />
+                    </button>
+
+                    <button
+                        className="quick-action-item"
+                        onClick={() => navigate('/minhas-avaliacoes')}
+                    >
+                        <div className="quick-action-icon-wrapper">
+                            <MdStar className="quick-action-icon" />
+                        </div>
+                        <div className="quick-action-content">
+                            <h3>Minhas avaliações</h3>
+                            <p>Veja suas avaliações</p>
                         </div>
                         <MdChevronRight className="chevron" />
                     </button>

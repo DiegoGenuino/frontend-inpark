@@ -1,32 +1,32 @@
 /* Variáveis CSS - Sistema de Cores INPARK */
 :root {
   /* Cores Principais */
-  --primary-color: #C2FE00;
-  --primary-dark: #8BB800;
-  --primary-darker: #6A8C00;
-  --primary-light: #E8FF66;
-  --primary-lighter: #F7FFE6;
-  
+  --primary-color: #c2fe00;
+  --primary-dark: #8bb800;
+  --primary-darker: #6a8c00;
+  --primary-light: #e8ff66;
+  --primary-lighter: #f7ffe6;
+
   /* Cores de Fundo */
   --bg-primary: #f7ffe6;
   --bg-primary-hover: #f0ff99;
   --bg-white: #ffffff;
   --bg-gray-light: #f8f9fa;
   --bg-gray: #f5f5f5;
-  
+
   /* Cores de Texto */
   --text-primary: #1a1a1a;
   --text-secondary: #4b5563;
   --text-muted: #6b7280;
   --text-light: #8e959d;
   --text-on-primary: #1a1a1a;
-  
+
   /* Cores de Borda */
-  --border-primary: #C2FE00;
-  --border-primary-dark: #8BB800;
+  --border-primary: #c2fe00;
+  --border-primary-dark: #8bb800;
   --border-light: #e5e7eb;
   --border-gray: #d1d5db;
-  
+
   /* Cores de Status */
   --success: #10b981;
   --success-light: #d1fae5;
@@ -36,30 +36,40 @@
   --error-light: #fee2e2;
   --info: #3b82f6;
   --info-light: #dbeafe;
-  
+
   /* Sombras */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-primary: 0 4px 15px rgba(194, 254, 0, 0.3);
-  
+
   /* Gradientes */
-  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-  --gradient-primary-reverse: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
-  
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-dark) 100%
+  );
+  --gradient-primary-reverse: linear-gradient(
+    135deg,
+    var(--primary-dark) 0%,
+    var(--primary-darker) 100%
+  );
+
   /* Raios de Borda */
   --radius-sm: 4px;
   --radius: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
-  
+
   /* Transições */
   --transition-fast: all 0.15s ease;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: all 0.3s ease;
-  
+
   /* Espaçamentos */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -70,13 +80,27 @@
 }
 
 /* Classes Utilitárias */
-.text-primary { color: var(--primary-dark) !important; }
-.text-on-primary { color: var(--text-on-primary) !important; }
-.bg-primary { background-color: var(--primary-color) !important; }
-.bg-primary-dark { background-color: var(--primary-dark) !important; }
-.bg-primary-light { background-color: var(--primary-lighter) !important; }
-.border-primary { border-color: var(--primary-color) !important; }
-.gradient-primary { background: var(--gradient-primary) !important; }
+.text-primary {
+  color: var(--primary-dark) !important;
+}
+.text-on-primary {
+  color: var(--text-on-primary) !important;
+}
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+.bg-primary-dark {
+  background-color: var(--primary-dark) !important;
+}
+.bg-primary-light {
+  background-color: var(--primary-lighter) !important;
+}
+.border-primary {
+  border-color: var(--primary-color) !important;
+}
+.gradient-primary {
+  background: var(--gradient-primary) !important;
+}
 
 /* Estados de Hover Globais */
 .btn-primary {

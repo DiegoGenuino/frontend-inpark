@@ -14,7 +14,7 @@
   align-items: center;
   flex-direction: column;
   background: white;
-  background: linear-gradient(322deg, #c2fe00, #ffffff);
+  background: linear-gradient(322deg, #000000, #0040ff);
 }
 
 .signup-form {
@@ -61,41 +61,95 @@
   width: auto;
 }
 
-.form-group input {
-  width: 100%;
-  height: 4rem;
-  padding: 1.4rem;
-  border: 1px solid #4c4c4c;
-  border-radius: 0.5rem;
-  font-size: 16px;
-  transition: border-color 0.15s ease;
-  background: #1a1a1a;
-  color: #ffffff;
+.signup-form .form-group input {
+  width: 100% !important;
+  height: 4rem !important;
+  padding: 1.4rem !important;
+  border: 1px solid #4c4c4c !important;
+  border-radius: 0.5rem !important;
+  font-size: 16px !important;
+  transition: all 0.2s ease !important;
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  box-sizing: border-box !important;
 }
 
-.form-group input::placeholder {
-  color: #666;
+.signup-form .form-group input::placeholder {
+  color: #666666 !important;
+  opacity: 1 !important;
 }
 
-.form-group input:focus {
-  outline: none;
-  border: 1px solid #0040ff;
+.signup-form .form-group input:hover:not(:focus):not(:disabled) {
+  border-color: #666666 !important;
 }
 
-.form-group input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.signup-form .form-group input:focus {
+  outline: none !important;
+  border-color: #0040ff !important;
+  box-shadow: 0 0 0 3px rgba(0, 64, 255, 0.1) !important;
+}
+
+.signup-form .form-group input:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  border-color: #4c4c4c !important;
+}
+
+/* Estilo específico para input de data */
+.signup-form .form-group input[type="date"] {
+  color: #ffffff !important;
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
+  color-scheme: dark !important;
+}
+
+.signup-form .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) !important;
+  cursor: pointer !important;
 }
 
 /* Input de senha com ícone de mostrar/ocultar */
-.password-input-wrapper {
+.signup-form .password-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.password-input-wrapper input {
-  padding-right: 3rem;
+.signup-form .password-input-wrapper input {
+  padding-right: 3rem !important;
+  width: 100% !important;
+  height: 4rem !important;
+  padding-left: 1.4rem !important;
+  border: 1px solid #4c4c4c !important;
+  border-radius: 0.5rem !important;
+  font-size: 16px !important;
+  transition: all 0.2s ease !important;
+  background: #1a1a1a !important;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  box-sizing: border-box !important;
+}
+
+.signup-form .password-input-wrapper input::placeholder {
+  color: #666666 !important;
+  opacity: 1 !important;
+}
+
+.signup-form .password-input-wrapper input:hover:not(:focus):not(:disabled) {
+  border-color: #666666 !important;
+}
+
+.signup-form .password-input-wrapper input:focus {
+  outline: none !important;
+  border-color: #0040ff !important;
+  box-shadow: 0 0 0 3px rgba(0, 64, 255, 0.1) !important;
+}
+
+.signup-form .password-input-wrapper input:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  border-color: #4c4c4c !important;
 }
 
 .password-toggle-btn {

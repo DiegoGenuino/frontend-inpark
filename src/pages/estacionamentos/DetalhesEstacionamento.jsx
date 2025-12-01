@@ -9,6 +9,7 @@ import {
   MdSchedule,
   MdChevronLeft
 } from 'react-icons/md'
+import { Header } from '../../components/shared'
 import './DetalhesEstacionamento.css'
 
 const DetalhesEstacionamento = () => {
@@ -157,13 +158,17 @@ const DetalhesEstacionamento = () => {
 
   return (
     <div className="detalhes-estacionamento">
+      <Header 
+        title="Detalhes do Estacionamento"
+        subtitle="Veja todas as informações sobre este estacionamento"
+      />
+
       {/* Header com volta */}
       <div className="detalhes-header">
         <button onClick={() => navigate('/estacionamentos')} className="btn-voltar">
           <MdChevronLeft />
           Voltar
         </button>
-        <h1>Detalhes do Estacionamento</h1>
       </div>
 
       {/* 1. Identificação e Local */}

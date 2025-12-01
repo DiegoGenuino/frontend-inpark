@@ -10,6 +10,9 @@ import {
   MdCancel,
   MdPeople
 } from 'react-icons/md';
+import api from '../../utils/api';
+import { donoService } from '../../utils/services';
+import { Header, ReservasTable } from '../../components/shared';
 import './DashboardDono.css';
 
 const DashboardDono = () => {
@@ -29,57 +32,74 @@ const DashboardDono = () => {
   const [reservasRecentes, setReservasRecentes] = useState([]);
 
   useEffect(() => {
-    // Simular carregamento de dados
-    setTimeout(() => {
-      setStats({
-        estacionamentos: 3,
-        vagasDisponiveis: 45,
-        reservasHoje: 12,
-        receitaMensal: 15420.50,
-        reservasPendentes: 8,
-        reservasAceitas: 156,
-        reservasCanceladas: 12,
-        taxaOcupacao: 78.5
-      });
+    const fetchDashboardData = async () => {
+      try {
+        // 1. Buscar estacionamentos do dono
+        const estacionamentos = await donoService.getMeusEstacionamentos();
+        const lista = Array.isArray(estacionamentos) ? estacionamentos : (estacionamentos.content || []);
+        
+        // 2. Filtrar apenas estacionamentos ativos
+        const estacionamentosAtivos = lista.filter(e => e.status === true);
+        
+        // 3. Calcular total de vagas (soma do maximoDeVagas de todos os estacionamentos ativos)
+        const totalVagas = estacionamentosAtivos.reduce((sum, e) => sum + (e.maximoDeVagas || 0), 0);
+        
+        // 4. Contar vagas disponíveis (totalVagas - acessos ativos)
+        const acessosAtivos = estacionamentosAtivos.reduce((sum, e) => {
+          const acessosAbertos = (e.acessos || []).filter(a => !a.horaDeSaida);
+          return sum + acessosAbertos.length;
+        }, 0);
+        const vagasDisponiveis = totalVagas - acessosAtivos;
+        
+        // 5. Contar reservas por status
+        let todasReservas = [];
+        estacionamentosAtivos.forEach(e => {
+          if (e.reservas && Array.isArray(e.reservas)) {
+            todasReservas = [...todasReservas, ...e.reservas];
+          }
+        });
+        
+        const reservasPendentes = todasReservas.filter(r => r.statusReserva === 'PENDENTE').length;
+        const reservasAceitas = todasReservas.filter(r => r.statusReserva === 'ACEITA').length;
+        const reservasCanceladas = todasReservas.filter(r => r.statusReserva === 'RECUSADA' || r.statusReserva === 'CANCELADA').length;
+        
+        // 6. Calcular taxa de ocupação
+        const taxaOcupacao = totalVagas > 0 ? ((acessosAtivos / totalVagas) * 100).toFixed(1) : 0;
+        
+        // 7. Atualizar stats
+        setStats({
+          estacionamentos: estacionamentosAtivos.length,
+          vagasDisponiveis: vagasDisponiveis,
+          reservasHoje: todasReservas.length,
+          receitaMensal: 0, // TODO: calcular da API de valores
+          reservasPendentes: reservasPendentes,
+          reservasAceitas: reservasAceitas,
+          reservasCanceladas: reservasCanceladas,
+          taxaOcupacao: parseFloat(taxaOcupacao)
+        });
+        
+        // 8. Pegar últimas 3 reservas
+        const reservasOrdenadas = todasReservas
+          .sort((a, b) => new Date(b.dataDaReserva) - new Date(a.dataDaReserva))
+          .slice(0, 3);
+        
+        setReservasRecentes(reservasOrdenadas);
+        
+      } catch (error) {
+        console.error('Erro ao carregar dashboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      setReservasRecentes([
-        {
-          id: 1,
-          cliente: 'João Silva',
-          estacionamento: 'Estacionamento Centro',
-          vaga: 'A-15',
-          dataHora: '2024-11-10 14:30',
-          valor: 25.00,
-          status: 'PENDENTE'
-        },
-        {
-          id: 2,
-          cliente: 'Maria Santos',
-          estacionamento: 'Estacionamento Shopping',
-          vaga: 'B-08',
-          dataHora: '2024-11-10 15:00',
-          valor: 30.00,
-          status: 'ACEITA'
-        },
-        {
-          id: 3,
-          cliente: 'Pedro Oliveira',
-          estacionamento: 'Estacionamento Centro',
-          vaga: 'C-22',
-          dataHora: '2024-11-10 16:30',
-          valor: 20.00,
-          status: 'PENDENTE'
-        }
-      ]);
-
-      setLoading(false);
-    }, 1000);
+    fetchDashboardData();
   }, []);
 
   const getStatusClass = (status) => {
     const statusMap = {
       PENDENTE: 'status-pendente',
       ACEITA: 'status-aceita',
+      RECUSADA: 'status-cancelada',
       CANCELADA: 'status-cancelada'
     };
     return statusMap[status] || '';
@@ -89,6 +109,7 @@ const DashboardDono = () => {
     const statusMap = {
       PENDENTE: 'Pendente',
       ACEITA: 'Aceita',
+      RECUSADA: 'Recusada',
       CANCELADA: 'Cancelada'
     };
     return statusMap[status] || status;
@@ -106,12 +127,10 @@ const DashboardDono = () => {
 
   return (
     <div className="dashboard-dono-container">
-      <div className="page-header">
-        <div className="header-text">
-          <h1>Dashboard do Proprietário</h1>
-          <p>Visão geral do seu negócio de estacionamentos</p>
-        </div>
-      </div>
+      <Header 
+        title="Dashboard do Proprietário"
+        subtitle="Visão geral do seu negócio de estacionamentos"
+      />
 
       {/* Cards de Estatísticas */}
       <div className="stats-grid">
@@ -223,47 +242,12 @@ const DashboardDono = () => {
             Ver todas
           </button>
         </div>
-        <div className="table-container">
-          <table className="reservas-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Estacionamento</th>
-                <th>Vaga</th>
-                <th>Data/Hora</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reservasRecentes.map((reserva) => (
-                <tr key={reserva.id}>
-                  <td>#{reserva.id.toString().padStart(4, '0')}</td>
-                  <td>{reserva.cliente}</td>
-                  <td>{reserva.estacionamento}</td>
-                  <td><span className="vaga-badge">{reserva.vaga}</span></td>
-                  <td>{reserva.dataHora}</td>
-                  <td>R$ {reserva.valor.toFixed(2)}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(reserva.status)}`}>
-                      {getStatusLabel(reserva.status)}
-                    </span>
-                  </td>
-                  <td>
-                    {reserva.status === 'PENDENTE' && (
-                      <div className="action-buttons">
-                        <button className="btn-accept">Aceitar</button>
-                        <button className="btn-reject">Recusar</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReservasTable 
+          reservas={reservasRecentes}
+          onAceitar={() => navigate('/dono/reservas')}
+          onRecusar={() => navigate('/dono/reservas')}
+          compact={true}
+        />
       </div>
     </div>
   );

@@ -22,10 +22,12 @@ export const estacionamentoService = {
   },
 
   /**
-   * Criar novo estacionamento (DONO/GERENTE)
+   * Criar novo estacionamento (DONO)
+   * @param {number} donoId - ID do dono/proprietário
+   * @param {object} data - Dados do estacionamento
    */
-  create: async (data) => {
-    return await api.post('/estacionamento', data);
+  create: async (donoId, data) => {
+    return await api.post(`/estacionamento/${donoId}`, data);
   },
 
   /**
@@ -36,7 +38,8 @@ export const estacionamentoService = {
   },
 
   /**
-   * Deletar estacionamento (DONO)
+   * Desativar estacionamento (DONO)
+   * DELETE retorna 204 No Content
    */
   delete: async (id) => {
     return await api.delete(`/estacionamento/${id}`);
@@ -51,13 +54,18 @@ export const reservaService = {
    * Buscar minhas reservas (CLIENTE)
    * Workaround: busca todas e filtra por clienteId no frontend
    */
-  getMinhasReservas: async (clienteId) => {
+  getMinhasReservas: async (clienteIdOrEmail) => {
     const todasReservas = await api.get('/reserva');
     const lista = Array.isArray(todasReservas) ? todasReservas : (todasReservas.content || []);
     
-    // Se foi passado clienteId, filtrar
-    if (clienteId) {
-      return lista.filter(r => r.cliente?.id === clienteId);
+    // Se foi passado clienteIdOrEmail, filtrar por ID ou email
+    if (clienteIdOrEmail) {
+      return lista.filter(r => {
+        // Tentar filtrar por ID ou email
+        return r.cliente?.id === clienteIdOrEmail || 
+               r.cliente?.email === clienteIdOrEmail ||
+               r.clienteId === clienteIdOrEmail;
+      });
     }
     
     return lista;
@@ -124,38 +132,50 @@ export const carroService = {
 export const usuarioService = {
   /**
    * Buscar dados do usuário logado
-   * Como o JWT só tem email, precisamos buscar o cliente pelo email
+   * Utiliza o endpoint POST /auth/me que retorna os dados completos do usuário
    */
   getMe: async () => {
-    // Decodificar token para pegar o email
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Token não encontrado');
+    try {
+      // Fazer requisição POST para /auth/me
+      const userData = await api.post('/auth/me', {});
+      return userData;
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário via API:', error);
+      
+      // Fallback: se der erro 403 ou qualquer outro, tentar extrair dados do token
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token não encontrado');
+        }
+        
+        // Decodificar token para pegar dados básicos
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        const decoded = JSON.parse(jsonPayload);
+        
+        console.warn('Usando dados do token como fallback');
+        
+        // Retornar estrutura básica do token
+        // IMPORTANTE: id será undefined, então componentes que usam devem ter fallback
+        return {
+          email: decoded.sub,
+          role: decoded.role,
+          id: decoded.userId || decoded.id || null, // Tentar pegar id do token se existir
+          // Campos adicionais que podem existir no token
+          nome: decoded.name || decoded.nome || null,
+        };
+      } catch (tokenError) {
+        console.error('Erro ao extrair dados do token:', tokenError);
+        throw new Error('Não foi possível obter dados do usuário');
+      }
     }
-    
-    // Importar decodeJWT localmente para evitar circular dependency
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    const decoded = JSON.parse(jsonPayload);
-    const email = decoded.sub;
-    
-    // Buscar cliente por email via GET /cliente
-    // Como não temos endpoint /cliente/email/{email}, vamos buscar todos e filtrar
-    const todosClientes = await api.get('/cliente');
-    const lista = Array.isArray(todosClientes) ? todosClientes : (todosClientes.content || []);
-    const cliente = lista.find(c => c.email === email);
-    
-    if (!cliente) {
-      throw new Error('Cliente não encontrado');
-    }
-    
-    return cliente;
   },
 
   /**
@@ -207,14 +227,66 @@ export const avaliacaoService = {
    * Criar avaliação
    */
   create: async (data) => {
-    return await api.post('/avaliacoes', data);
+    return await api.post('/avaliacao', data);
   },
 
   /**
-   * Buscar avaliações de um estacionamento
+   * Buscar todas as avaliações
+   */
+  getAll: async () => {
+    return await api.get('/avaliacao');
+  },
+
+  /**
+   * Buscar avaliação por ID
+   */
+  getById: async (id) => {
+    return await api.get(`/avaliacao/${id}`);
+  },
+
+  /**
+   * Buscar avaliações de um estacionamento (filtrar no frontend)
    */
   getByEstacionamento: async (estacionamentoId) => {
-    return await api.get(`/avaliacoes/estacionamento/${estacionamentoId}`);
+    const todasAvaliacoes = await api.get('/avaliacao');
+    const lista = Array.isArray(todasAvaliacoes) ? todasAvaliacoes : (todasAvaliacoes.content || []);
+    
+    return lista.filter(av => 
+      av.estacionamento?.id === estacionamentoId || 
+      av.estacionamentoId === estacionamentoId ||
+      av.idEstacionamento === estacionamentoId
+    );
+  },
+
+  /**
+   * Buscar avaliações feitas por um cliente (filtrar no frontend)
+   */
+  getMinhasAvaliacoes: async (clienteId) => {
+    const todasAvaliacoes = await api.get('/avaliacao');
+    const lista = Array.isArray(todasAvaliacoes) ? todasAvaliacoes : (todasAvaliacoes.content || []);
+    
+    if (clienteId) {
+      return lista.filter(av => 
+        av.cliente?.id === clienteId || 
+        av.clienteId === clienteId
+      );
+    }
+    
+    return lista;
+  },
+
+  /**
+   * Atualizar avaliação
+   */
+  update: async (id, data) => {
+    return await api.put(`/avaliacao/${id}`, data);
+  },
+
+  /**
+   * Deletar avaliação
+   */
+  delete: async (id) => {
+    return await api.delete(`/avaliacao/${id}`);
   },
 };
 

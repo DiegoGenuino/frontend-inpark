@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { donoService } from '../../utils/services';
-import { Toast, Modal, ModalFooter, ModalActions, Button } from '../../components/shared';
+import { Toast, Modal, ModalFooter, ModalActions, Button, Header, ReservasTable } from '../../components/shared';
+import { MdFilterList, MdRefresh } from 'react-icons/md';
 
 const ReservasDono = () => {
   const [reservas, setReservas] = useState([]);
@@ -48,7 +49,13 @@ const ReservasDono = () => {
       // Passar a reserva completa em vez de apenas o ID
       await donoService.aprovarReserva(reserva.id, reserva);
       setToast({ message: 'Reserva aprovada com sucesso', type: 'success' });
-      setReservas(prev => prev.filter(r => r.id !== reserva.id));
+      
+      // Sinalizar mudança para outros componentes
+      window.dispatchEvent(new Event('reservaUpdated'));
+      
+      // Recarregar as reservas para atualizar a lista
+      await fetchReservas();
+      
       setApproveModal({ isOpen: false, reserva: null });
     } catch (e) {
       setToast({ message: e.message || 'Erro ao aprovar reserva', type: 'error' });
@@ -63,7 +70,13 @@ const ReservasDono = () => {
       // Passar a reserva completa em vez de apenas o ID
       await donoService.rejeitarReserva(reserva.id, reserva);
       setToast({ message: 'Reserva recusada', type: 'warning' });
-      setReservas(prev => prev.filter(r => r.id !== reserva.id));
+      
+      // Sinalizar mudança para outros componentes
+      window.dispatchEvent(new Event('reservaUpdated'));
+      
+      // Recarregar as reservas para atualizar a lista
+      await fetchReservas();
+      
       setRejectModal({ isOpen: false, reserva: null });
     } catch (e) {
       setToast({ message: e.message || 'Erro ao recusar reserva', type: 'error' });
@@ -98,102 +111,42 @@ const ReservasDono = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Reservas Recebidas</h1>
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '.5rem' }}>
-  {['PENDENTE', 'ACEITA', 'RECUSADA', 'ENCERRADA'].map(s => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            style={{
-              padding: '.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              background: statusFilter === s ? '#f9fafb' : '#ffffff',
-              cursor: 'pointer',
-              fontSize: '.75rem',
-              fontWeight: 600
-            }}
-          >{s}</button>
-        ))}
-      </div>
-      {loading && <p>Carregando reservas...</p>}
-      {error && <p style={{ color: '#dc2626' }}>{error}</p>}
-      {!loading && reservas.length === 0 && !error && (
-        <p>Nenhuma reserva encontrada para o filtro selecionado.</p>
-      )}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-          <thead>
-            <tr style={{ background: '#f9fafb' }}>
-              {['ID', 'Cliente', 'Estacionamento', 'Vaga', 'Data', 'Hora', 'Valor', 'Status', 'Ações'].map(h => (
-                <th key={h} style={{ padding: '.75rem', textAlign: 'left', borderBottom: '1px solid #e5e7eb', fontSize: '11px', letterSpacing: '.05em', textTransform: 'uppercase', color: '#6b7280' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {reservas.map(r => (
-              <tr key={r.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <td style={{ padding: '.75rem', color: '#6b7280' }}>#{String(r.id).padStart(4,'0')}</td>
-                <td style={{ padding: '.75rem' }}>{r.cliente?.nome || r.clienteNome || '—'}</td>
-                <td style={{ padding: '.75rem' }}>{r.estacionamento?.nome || r.estacionamentoNome || '—'}</td>
-                <td style={{ padding: '.75rem' }}>{r.vagaCodigo || r.vaga || '—'}</td>
-                <td style={{ padding: '.75rem' }}>{r.dataDaReserva || '—'}</td>
-                <td style={{ padding: '.75rem' }}>{r.horaDaReserva || '—'}</td>
-                <td style={{ padding: '.75rem' }}>{typeof r.valorTotal === 'number' ? `R$ ${r.valorTotal.toFixed(2)}` : (r.valor ? `R$ ${Number(r.valor).toFixed(2)}` : '—')}</td>
-                <td style={{ padding: '.75rem' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '.35rem .6rem',
-                    borderRadius: '6px',
-                    background: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    color: statusClasses[(r.statusReserva || r.status)] || '#374151',
-                    fontWeight: 600,
-                    fontSize: '.65rem'
-                  }}>{r.statusReserva || r.status}</span>
-                </td>
-                <td style={{ padding: '.75rem' }}>
-                  {(r.statusReserva || r.status) === 'PENDENTE' ? (
-                    <div style={{ display: 'flex', gap: '.5rem' }}>
-                      <button
-                        onClick={() => openApproveModal(r)}
-                        disabled={actionLoading === r.id}
-                        style={{
-                          padding: '.5rem .75rem',
-                          background: '#10b981',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '6px',
-                          fontSize: '.65rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          opacity: actionLoading === r.id ? .6 : 1
-                        }}>Aceitar</button>
-                      <button
-                        onClick={() => openRejectModal(r)}
-                        disabled={actionLoading === r.id}
-                        style={{
-                          padding: '.5rem .75rem',
-                          background: '#ef4444',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '6px',
-                          fontSize: '.65rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          opacity: actionLoading === r.id ? .6 : 1
-                        }}>Recusar</button>
-                    </div>
-                  ) : (
-                    <span style={{ fontSize: '.65rem', color: '#6b7280' }}>—</span>
-                  )}
-                </td>
-              </tr>
+    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+      <Header
+        title="Transações"
+        subtitle="Gerencie as reservas recebidas nos seus estacionamentos"
+        actions={
+          <div style={{ display: 'flex', gap: '.5rem' }}>
+            {['PENDENTE', 'ACEITA', 'RECUSADA', 'ENCERRADA'].map(s => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                style={{
+                  padding: '.5rem 1rem',
+                  borderRadius: '6px',
+                  border: '1px solid #d1d5db',
+                  background: statusFilter === s ? '#111827' : '#ffffff',
+                  color: statusFilter === s ? '#ffffff' : '#374151',
+                  cursor: 'pointer',
+                  fontSize: '.75rem',
+                  fontWeight: 600,
+                  transition: 'all 0.2s'
+                }}
+              >{s}</button>
             ))}
-          </tbody>
-        </table>
+          </div>
+        }
+      />
+      
+      <div style={{ padding: '0 2rem 2rem 2rem' }}>
+        <ReservasTable 
+          reservas={reservas}
+          loading={loading}
+          onAceitar={openApproveModal}
+          onRecusar={openRejectModal}
+        />
       </div>
+      
       {toast && (
         <Toast
           message={toast.message}

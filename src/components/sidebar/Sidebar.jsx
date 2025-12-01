@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../utils/auth";
 import InparkLogo from "../../assets/inpark.svg"
 import './Sidebar.css'
@@ -16,12 +16,25 @@ import {
     MdPerson,
     MdNotifications,
     MdReceiptLong,
-    MdHome
+    MdHome,
+    MdStar,
+    MdMenu,
+    MdClose
 } from 'react-icons/md';
 
 export const Sidebar = () => {
     const { role, user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+
+    const closeMobileMenu = () => {
+        setIsMobileMenuOpen(false);
+    };
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -42,33 +55,50 @@ export const Sidebar = () => {
     const firstName = user?.nome ? user.nome.split(' ')[0] : 'Usuário';
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar-header">
-                        <div className="brand-name">
-                            <img src={InparkLogo} alt="Inpark" className="inpark-logo-img" />
+        <>
+            {/* Botão Hambúrguer Mobile */}
+            <button className="mobile-menu-toggle" onClick={toggleMobileMenu} aria-label="Menu">
+                {isMobileMenuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+            </button>
+
+            {/* Overlay para fechar menu ao clicar fora */}
+            {isMobileMenuOpen && (
+                <div className="mobile-menu-overlay" onClick={closeMobileMenu}></div>
+            )}
+
+            <aside className={`sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+                <div className="sidebar-header">
+                    <div className="brand-name">
+                        <img src={InparkLogo} alt="Inpark" className="inpark-logo-img" />
+                    </div>
                 </div>
-            </div>
             
             <nav className="sidebar-nav">
                 <div className="nav-section">
                     <h3 className="section-title">PRINCIPAL</h3>
                     <ul className="nav-list">
                         <li className="nav-item">
-                            <Link to="/" className="nav-link">
+                            <Link to="/" className="nav-link" onClick={closeMobileMenu}>
                                 <MdHome className="nav-icon" />
                                 <span>Dashboard</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/minhas-reservas" className="nav-link">
+                            <Link to="/minhas-reservas" className="nav-link" onClick={closeMobileMenu}>
                                 <MdBookmarks className="nav-icon" />
                                 <span>Minhas Reservas</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/estacionamentos" className="nav-link">
+                            <Link to="/estacionamentos" className="nav-link" onClick={closeMobileMenu}>
                                 <MdLocalParking className="nav-icon" />
                                 <span>Estacionamentos</span>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/minhas-avaliacoes" className="nav-link" onClick={closeMobileMenu}>
+                                <MdStar className="nav-icon" />
+                                <span>Minhas Avaliações</span>
                             </Link>
                         </li>
                     </ul>
@@ -78,13 +108,13 @@ export const Sidebar = () => {
                     <h3 className="section-title">MINHA CONTA</h3>
                     <ul className="nav-list">
                         <li className="nav-item">
-                            <Link to="/meus-carros" className="nav-link">
+                            <Link to="/meus-carros" className="nav-link" onClick={closeMobileMenu}>
                                 <MdDirectionsCar className="nav-icon" />
                                 <span>Meus Carros</span>
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/meu-perfil" className="nav-link">
+                            <Link to="/meu-perfil" className="nav-link" onClick={closeMobileMenu}>
                                 <MdPerson className="nav-icon" />
                                 <span>Meu Perfil</span>
                             </Link>
@@ -128,5 +158,6 @@ export const Sidebar = () => {
                 </div>
             </div>
         </aside>
+        </>
     )
 }

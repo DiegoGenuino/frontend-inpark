@@ -4,7 +4,9 @@ import {
   MdSearch,
   MdAttachMoney,
   MdLocalParking,
+  MdStar,
 } from "react-icons/md";
+import { Header } from '../../components/shared';
 import { useAuth } from "../../utils/auth";
 import { reservaService, usuarioService } from "../../utils/services";
 import "./MinhasReservas.css";
@@ -24,7 +26,7 @@ const MinhasReservas = () => {
       setLoading(true);
       setError("");
       try {
-        // 1. Buscar dados do usuário logado para obter o ID
+        // 1. Buscar dados do usuário logado
         const userData = await usuarioService.getMe();
         const clienteId = userData?.id;
         
@@ -32,7 +34,7 @@ const MinhasReservas = () => {
           throw new Error('Não foi possível identificar o usuário');
         }
         
-        // 2. Buscar todas as reservas e filtrar pelo clienteId
+        // 2. Buscar todas as reservas e filtrar pelo ID do cliente
         const minhasReservas = await reservaService.getMinhasReservas(clienteId);
         setReservas(minhasReservas);
       } catch (e) {
@@ -151,12 +153,10 @@ const MinhasReservas = () => {
 
   return (
     <div className="minhas-reservas-page">
-      <div className="page-header">
-        <div className="header-text">
-        <p>Gerencie todas as suas reservas de estacionamento</p>
-        <h1>Minhas Reservas</h1>
-        </div>
-      </div>
+      <Header 
+        title="Minhas Reservas"
+        subtitle="Gerencie todas as suas reservas de estacionamento"
+      />
 
       {error && <div className="error-container">{error}</div>}
 
@@ -224,6 +224,7 @@ const MinhasReservas = () => {
                   <th>Placa</th>
                   <th>Status</th>
                   <th>Valor</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -281,6 +282,18 @@ const MinhasReservas = () => {
                           <MdAttachMoney size={16} />
                           <span>R$ {Number(valor).toFixed(2)}</span>
                         </div>
+                      </td>
+                      <td>
+                        {['ACEITA', 'ENCERRADA', 'EM_USO'].includes(status) && (
+                          <button
+                            className="btn-avaliar"
+                            onClick={() => navigate(`/avaliacao/${reserva.id}`)}
+                            title="Avaliar estacionamento"
+                          >
+                            <MdStar size={18} />
+                            Avaliar
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );

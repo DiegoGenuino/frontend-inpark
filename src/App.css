@@ -12,4 +12,28 @@
 .main-content {
   flex: 1;
   background-color: #ffffff;
+  max-height: 100vh;
+  overflow: auto;
+  scrollbar-width: thin;
 }
+
+/* Responsividade do layout principal */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .main-content {
+    width: 100%;
+    max-height: none;
+    min-height: 100vh;
+  }
+}
+
+/* Ajuste para conteúdo com padding em mobile */
+@media (max-width: 768px) {
+  .main-content > div {
+ 
+  }
+}
+

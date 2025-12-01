@@ -2,7 +2,69 @@
 @import './variables.css';
 
 * {
-    font-family: "Poppins", sans-serif;
+    font-family: Poppins;
     font-weight: 400;
     font-style: normal;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: Poppins, sans-serif;
+    text-transform: uppercase;
+}
+
+/* Estilos responsivos globais */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    h3 {
+        font-size: 1.1rem !important;
+    }
+
+    /* Tabelas responsivas */
+    table {
+        font-size: 12px !important;
+    }
+
+    th, td {
+        padding: 0.5rem !important;
+    }
+
+    /* Botões em mobile */
+    button {
+        font-size: 14px !important;
+        padding: 0.625rem 1rem !important;
+    }
+
+    /* Grids responsivos */
+    [style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Overflow horizontal em tabelas */
+    .table-container, [class*="table"] {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    h1 {
+        font-size: 1.75rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important;
+    }
+
+    /* Grids para tablets */
+    [style*="grid-template-columns"] {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    }
 }

@@ -2,18 +2,17 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import InparkLogo from "../../assets/inpark-logo.svg";
+import api from "../../utils/api";
 import "./Signup.css";
 
 export const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nomeCompleto: "",
+    nome: "",
     dataNascimento: "",
     email: "",
     senha: "",
-    fotoPerfil: null,
   });
-  const [fotoPreview, setFotoPreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -27,42 +26,12 @@ export const Signup = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validar tamanho (máximo 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        setError("A foto deve ter no máximo 2MB");
-        return;
-      }
-
-      // Validar tipo
-      if (!file.type.startsWith("image/")) {
-        setError("Apenas arquivos de imagem são permitidos");
-        return;
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        fotoPerfil: file,
-      }));
-
-      // Criar preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFotoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-      setError("");
-    }
-  };
-
   // Validações em tempo real
   const getNomeCompletoFeedback = () => {
-    if (!formData.nomeCompleto) {
+    if (!formData.nome) {
       return { text: "Digite seu nome completo", type: "neutral" };
     }
-    const nomes = formData.nomeCompleto.trim().split(" ");
+    const nomes = formData.nome.trim().split(" ");
     if (nomes.length < 2 || nomes.some((n) => n.length < 2)) {
       return { text: "Digite seu nome e sobrenome", type: "warning" };
     }
@@ -99,15 +68,12 @@ export const Signup = () => {
 
   const getSenhaFeedback = () => {
     if (!formData.senha) {
-      return { text: "Crie uma senha segura", type: "neutral" };
+      return { text: "Digite sua senha", type: "neutral" };
     }
     if (formData.senha.length < 6) {
       return { text: "Senha deve ter pelo menos 6 caracteres", type: "warning" };
     }
-    if (formData.senha.length < 8) {
-      return { text: "Senha aceitável, mas recomendamos 8+ caracteres", type: "warning" };
-    }
-    return { text: "✓ Senha forte", type: "valid" };
+    return { text: "✓ Senha válida", type: "valid" };
   };
 
   const handleSubmit = async (e) => {
@@ -142,14 +108,22 @@ export const Signup = () => {
     }
 
     try {
-      // Aqui você faria a chamada para a API de cadastro
-      // Por enquanto, vamos simular um cadastro bem-sucedido
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Converter data para formato ISO
+      const dataFormatada = new Date(formData.dataNascimento).toISOString();
+      
+      const payload = {
+        nome: formData.nome,
+        email: formData.email,
+        senha: formData.senha,
+        dataNascimento: dataFormatada
+      };
 
-      console.log("Dados do cadastro:", {
-        ...formData,
-        fotoPerfil: formData.fotoPerfil ? formData.fotoPerfil.name : null,
-      });
+      console.log("Enviando cadastro:", payload);
+
+      // Cadastrar como cliente
+      const response = await api.post('/cliente', payload);
+
+      console.log("Cadastro bem-sucedido:", response);
 
       setSuccess("Conta criada com sucesso! Redirecionando...");
       
@@ -159,7 +133,18 @@ export const Signup = () => {
       }, 2000);
     } catch (error) {
       console.error("Erro no cadastro:", error);
-      setError("Erro ao criar conta. Tente novamente.");
+      
+      let errorMessage = "Erro ao criar conta. Tente novamente.";
+      
+      if (error.message.includes("409")) {
+        errorMessage = "Este email já está cadastrado.";
+      } else if (error.message.includes("400")) {
+        errorMessage = "Dados inválidos. Verifique as informações.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -185,14 +170,14 @@ export const Signup = () => {
         {success && <div className="success-message">{success}</div>}
 
         <div className="form-group">
-          <label htmlFor="nomeCompleto">Nome completo</label>
+          <label htmlFor="nome">Nome completo</label>
           <input
             type="text"
-            id="nomeCompleto"
-            name="nomeCompleto"
-            value={formData.nomeCompleto}
+            id="nome"
+            name="nome"
+            value={formData.nome}
             onChange={handleInputChange}
-            placeholder="Placeholder"
+            placeholder="Ex: João Silva"
             required
             disabled={loading}
           />
@@ -214,7 +199,6 @@ export const Signup = () => {
             name="dataNascimento"
             value={formData.dataNascimento}
             onChange={handleInputChange}
-            placeholder="Placeholder"
             required
             disabled={loading}
             max={new Date().toISOString().split("T")[0]}
@@ -238,7 +222,7 @@ export const Signup = () => {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            placeholder="Placeholder"
+            placeholder="seuemail@exemplo.com"
             required
             disabled={loading}
           />
@@ -261,7 +245,7 @@ export const Signup = () => {
               name="senha"
               value={formData.senha}
               onChange={handleInputChange}
-              placeholder="Placeholder"
+              placeholder="Senha123"
               required
               disabled={loading}
             />
@@ -282,29 +266,6 @@ export const Signup = () => {
           >
             {getSenhaFeedback().text}
           </span>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="fotoPerfil">Foto de perfil (opcional)</label>
-          <label htmlFor="fotoPerfil" className="photo-upload-area">
-            <input
-              type="file"
-              id="fotoPerfil"
-              accept="image/png, image/jpeg"
-              onChange={handleFileChange}
-              disabled={loading}
-            />
-            {fotoPreview ? (
-              <img src={fotoPreview} alt="Preview" className="photo-preview" />
-            ) : (
-              <>
-                <p className="upload-text">
-                  Clique para fazer o upload da sua foto
-                </p>
-                <p className="file-info">JPG ou PNG, máximo 2MB</p>
-              </>
-            )}
-          </label>
         </div>
 
         <button type="submit" className="signup-button" disabled={loading}>

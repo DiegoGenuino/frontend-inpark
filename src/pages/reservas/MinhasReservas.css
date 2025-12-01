@@ -250,6 +250,29 @@
   font-size: 14px;
 }
 
+/* Botão Avaliar */
+.minhas-reservas-page .btn-avaliar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.minhas-reservas-page .btn-avaliar:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+}
+
 /* ===== CÉLULAS ESPECÍFICAS ===== */
 
 /* ID da Reserva */

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth, getAuthHeaders } from '../../utils/auth'
+import { useAuth } from '../../utils/auth'
+import api from '../../utils/api'
+import { usuarioService } from '../../utils/services'
 import { 
   MdLocationOn, 
   MdCalendarToday, 
@@ -227,113 +229,52 @@ const CriacaoReserva = () => {
     setLoading(true)
 
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || ''
-      const headers = {
-        'Content-Type': 'application/json',
-        ...getAuthHeaders()
+      // 1. Buscar clienteId do backend
+      const userData = await usuarioService.getMe();
+      
+      if (!userData || !userData.id) {
+        throw new Error('Usuário não encontrado. Faça login novamente.');
       }
 
+      // 2. Preparar dados da reserva com clienteId (número)
       const reservaData = {
-        clienteId: user?.id || 1,
+        clienteId: userData.id,
         estacioId: estacionamento.id,
-        dataDaReserva: new Date(formData.dataInicio).toISOString(),
-        horaDaReserva: formData.horaInicio + ':00',
-        statusReserva: 'PENDENTE',
-        veiculoId: formData.veiculoSelecionado,
-        tipoVaga: formData.tipoVaga,
-        duracaoHoras: formData.duracaoHoras,
-        valorTotal: precos.total
+        dataDaReserva: formData.dataInicio, // Formato: "2023-12-25"
+        horaDaReserva: formData.horaInicio + ':00', // Formato: "14:30:00"
+        statusReserva: 'PENDENTE'
       }
 
-      const response = await fetch(`${API_BASE}/reservas`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(reservaData)
+      console.log('Enviando reserva:', reservaData);
+
+      // 3. Fazer POST para criar a reserva
+      const reservaCriada = await api.post('/reserva', reservaData);
+      
+      console.log('Reserva criada:', reservaCriada);
+
+      // 4. Preparar dados para o pagamento
+      const veiculoSelecionado = veiculos.find(v => v.id === formData.veiculoSelecionado);
+      const dadosReserva = {
+        id: reservaCriada.id,
+        dataInicio: formData.dataInicio + 'T' + formData.horaInicio + ':00.000Z',
+        dataFim: calcularDataFim(),
+        placaVeiculo: veiculoSelecionado?.placa || 'N/A',
+        tipoVaga: formData.tipoVaga,
+        valorTotal: precos.total,
+        estacionamento: {
+          id: estacionamento.id,
+          nome: estacionamento.nome,
+          endereco: estacionamento.endereco
+        }
+      }
+      
+      // 5. Navegar para a página de pagamento
+      navigate('/pagamento', { 
+        state: { reserva: dadosReserva } 
       })
 
-      if (response.ok) {
-        let reservaCriada = {}
-        
-        // Verificar se a resposta tem conteúdo JSON
-        const contentType = response.headers.get('content-type')
-        if (contentType && contentType.includes('application/json')) {
-          const responseText = await response.text()
-          if (responseText.trim()) {
-            try {
-              reservaCriada = JSON.parse(responseText)
-            } catch (parseError) {
-              console.warn('Erro ao fazer parse do JSON:', parseError)
-              // Continuar com objeto vazio
-            }
-          }
-        }
-        
-        // Preparar dados para o pagamento
-        const dadosReserva = {
-          id: reservaCriada.id || Math.floor(Math.random() * 1000) + 1,
-          dataInicio: formData.dataInicio + 'T' + formData.horaInicio + ':00.000Z',
-          dataFim: calcularDataFim(),
-          placaVeiculo: veiculoSelecionado.placa,
-          tipoVaga: formData.tipoVaga,
-          valorTotal: precos.total,
-          estacionamento: {
-            id: estacionamento.id,
-            nome: estacionamento.nome,
-            endereco: estacionamento.endereco
-          }
-        }
-        
-        // Navegar para a página de pagamento
-        navigate('/pagamento', { 
-          state: { reserva: dadosReserva } 
-        })
-      } else {
-        let errorData = { message: 'Erro ao criar reserva' }
-        
-        // Tentar ler a resposta de erro
-        try {
-          const contentType = response.headers.get('content-type')
-          if (contentType && contentType.includes('application/json')) {
-            const errorText = await response.text()
-            if (errorText.trim()) {
-              errorData = JSON.parse(errorText)
-            }
-          }
-        } catch (parseError) {
-          console.warn('Erro ao fazer parse da resposta de erro:', parseError)
-        }
-        
-        throw new Error(errorData.message || `Erro ${response.status}: ${response.statusText}`)
-      }
     } catch (err) {
       console.error('Erro ao criar reserva:', err)
-      
-      // Se a API não está disponível, vamos simular o sucesso para demonstração
-      if (err.message.includes('fetch') || err.name === 'TypeError') {
-        console.log('API não disponível, simulando sucesso...')
-        
-        // Simular dados da reserva para demonstração
-        const dadosReserva = {
-          id: Math.floor(Math.random() * 1000) + 1,
-          dataInicio: formData.dataInicio + 'T' + formData.horaInicio + ':00.000Z',
-          dataFim: calcularDataFim(),
-          placaVeiculo: veiculoSelecionado.placa,
-          tipoVaga: formData.tipoVaga,
-          valorTotal: precos.total,
-          estacionamento: {
-            id: estacionamento.id,
-            nome: estacionamento.nome,
-            endereco: estacionamento.endereco
-          }
-        }
-        
-        // Navegar para a página de pagamento
-        navigate('/pagamento', { 
-          state: { reserva: dadosReserva } 
-        })
-        return
-      }
-      
       setError(err.message || 'Erro ao criar reserva. Tente novamente.')
     } finally {
       setLoading(false)

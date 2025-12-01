@@ -48,8 +48,8 @@
 }
 
 .stat-card {
-  background: white;
-  border-radius: 16px;
+  background: #ffffff;
+  border-radius: 1.2rem;
   padding: 1.5rem;
   border: 1px solid #f3f4f6;
   display: flex;
@@ -59,7 +59,7 @@
 }
 
 .stat-card:hover {
-  background-color: #f4f4f4;
+  background-color: #ececec;
   transform: translateY(-1px);
 }
 
