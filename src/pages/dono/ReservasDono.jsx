@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { donoService } from '../../utils/services';
 import { Toast, Modal, ModalFooter, ModalActions, Button, Header, ReservasTable } from '../../components/shared';
 import { MdFilterList, MdRefresh } from 'react-icons/md';
+import './ReservasDono.css';
 
 const ReservasDono = () => {
   const [reservas, setReservas] = useState([]);
@@ -111,34 +112,24 @@ const ReservasDono = () => {
   };
 
   return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+    <div className="reservas-dono-container">
       <Header
-        title="Transações"
+        title="Gerenciar Reservas"
         subtitle="Gerencie as reservas recebidas nos seus estacionamentos"
         actions={
-          <div style={{ display: 'flex', gap: '.5rem' }}>
+          <div className="header-actions">
             {['PENDENTE', 'ACEITA', 'RECUSADA', 'ENCERRADA'].map(s => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                style={{
-                  padding: '.5rem 1rem',
-                  borderRadius: '6px',
-                  border: '1px solid #d1d5db',
-                  background: statusFilter === s ? '#111827' : '#ffffff',
-                  color: statusFilter === s ? '#ffffff' : '#374151',
-                  cursor: 'pointer',
-                  fontSize: '.75rem',
-                  fontWeight: 600,
-                  transition: 'all 0.2s'
-                }}
+                className={`filter-btn ${statusFilter === s ? 'active' : ''}`}
               >{s}</button>
             ))}
           </div>
         }
       />
       
-      <div style={{ padding: '0 2rem 2rem 2rem' }}>
+      <div className="reservas-content">
         <ReservasTable 
           reservas={reservas}
           loading={loading}
@@ -165,37 +156,32 @@ const ReservasDono = () => {
         {approveModal.reserva && (
           <>
             <div style={{ marginBottom: '1.5rem' }}>
-              <p style={{ marginBottom: '1rem', color: '#374151' }}>
+              <p className="modal-confirm-text">
                 Confirma a aprovação desta reserva?
               </p>
               
-              <div style={{ 
-                background: '#f9fafb', 
-                padding: '1rem', 
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'grid', gap: '.75rem', fontSize: '14px' }}>
+              <div className="modal-details-box">
+                <div className="modal-details-grid">
                   <div>
-                    <strong style={{ color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>ID</strong>
-                    <p style={{ margin: '4px 0 0 0', color: '#111827' }}>#{String(approveModal.reserva.id).padStart(4, '0')}</p>
+                    <strong className="detail-label">ID</strong>
+                    <p className="detail-value">#{String(approveModal.reserva.id).padStart(4, '0')}</p>
                   </div>
                   <div>
-                    <strong style={{ color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Cliente</strong>
-                    <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{approveModal.reserva.cliente?.nome || '—'}</p>
+                    <strong className="detail-label">Cliente</strong>
+                    <p className="detail-value">{approveModal.reserva.cliente?.nome || '—'}</p>
                   </div>
                   <div>
-                    <strong style={{ color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Estacionamento</strong>
-                    <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{approveModal.reserva.estacionamento?.nome || '—'}</p>
+                    <strong className="detail-label">Estacionamento</strong>
+                    <p className="detail-value">{approveModal.reserva.estacionamento?.nome || '—'}</p>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="detail-row">
                     <div>
-                      <strong style={{ color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Data</strong>
-                      <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{approveModal.reserva.dataDaReserva || '—'}</p>
+                      <strong className="detail-label">Data</strong>
+                      <p className="detail-value">{approveModal.reserva.dataDaReserva || '—'}</p>
                     </div>
                     <div>
-                      <strong style={{ color: '#6b7280', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Hora</strong>
-                      <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{approveModal.reserva.horaDaReserva || '—'}</p>
+                      <strong className="detail-label">Hora</strong>
+                      <p className="detail-value">{approveModal.reserva.horaDaReserva || '—'}</p>
                     </div>
                   </div>
                 </div>
@@ -215,7 +201,7 @@ const ReservasDono = () => {
                   variant="primary"
                   onClick={() => handleApprove(approveModal.reserva)}
                   disabled={actionLoading === approveModal.reserva.id}
-                  style={{ background: '#10b981', borderColor: '#10b981' }}
+                  className="btn-confirm-approve"
                 >
                   {actionLoading === approveModal.reserva.id ? 'Aprovando...' : 'Confirmar Aprovação'}
                 </Button>
@@ -235,43 +221,38 @@ const ReservasDono = () => {
         {rejectModal.reserva && (
           <>
             <div style={{ marginBottom: '1.5rem' }}>
-              <p style={{ marginBottom: '1rem', color: '#374151' }}>
+              <p className="modal-confirm-text">
                 Confirma a recusa desta reserva?
               </p>
               
-              <div style={{ 
-                background: '#fef2f2', 
-                padding: '1rem', 
-                borderRadius: '8px',
-                border: '1px solid #fecaca'
-              }}>
-                <div style={{ display: 'grid', gap: '.75rem', fontSize: '14px' }}>
+              <div className="modal-details-box reject">
+                <div className="modal-details-grid">
                   <div>
-                    <strong style={{ color: '#991b1b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>ID</strong>
-                    <p style={{ margin: '4px 0 0 0', color: '#111827' }}>#{String(rejectModal.reserva.id).padStart(4, '0')}</p>
+                    <strong className="detail-label reject">ID</strong>
+                    <p className="detail-value">#{String(rejectModal.reserva.id).padStart(4, '0')}</p>
                   </div>
                   <div>
-                    <strong style={{ color: '#991b1b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Cliente</strong>
-                    <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{rejectModal.reserva.cliente?.nome || '—'}</p>
+                    <strong className="detail-label reject">Cliente</strong>
+                    <p className="detail-value">{rejectModal.reserva.cliente?.nome || '—'}</p>
                   </div>
                   <div>
-                    <strong style={{ color: '#991b1b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Estacionamento</strong>
-                    <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{rejectModal.reserva.estacionamento?.nome || '—'}</p>
+                    <strong className="detail-label reject">Estacionamento</strong>
+                    <p className="detail-value">{rejectModal.reserva.estacionamento?.nome || '—'}</p>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="detail-row">
                     <div>
-                      <strong style={{ color: '#991b1b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Data</strong>
-                      <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{rejectModal.reserva.dataDaReserva || '—'}</p>
+                      <strong className="detail-label reject">Data</strong>
+                      <p className="detail-value">{rejectModal.reserva.dataDaReserva || '—'}</p>
                     </div>
                     <div>
-                      <strong style={{ color: '#991b1b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.05em' }}>Hora</strong>
-                      <p style={{ margin: '4px 0 0 0', color: '#111827' }}>{rejectModal.reserva.horaDaReserva || '—'}</p>
+                      <strong className="detail-label reject">Hora</strong>
+                      <p className="detail-value">{rejectModal.reserva.horaDaReserva || '—'}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <p style={{ marginTop: '1rem', fontSize: '13px', color: '#dc2626' }}>
+              <p className="warning-text">
                 Esta ação não pode ser desfeita.
               </p>
             </div>
