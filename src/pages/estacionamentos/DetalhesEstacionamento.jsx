@@ -10,6 +10,7 @@ import {
   MdChevronLeft
 } from 'react-icons/md'
 import { Header } from '../../components/shared'
+import defaultParkingImage from '../../assets/parking-photo-mock.jpg'
 import './DetalhesEstacionamento.css'
 
 const DetalhesEstacionamento = () => {
@@ -21,6 +22,7 @@ const DetalhesEstacionamento = () => {
   const [error, setError] = useState(null)
 
   const API_BASE = import.meta.env.VITE_API_URL || ''
+  const DEFAULT_IMAGE = defaultParkingImage
 
   useEffect(() => {
     // Se já tem o estacionamento (veio via state), não precisa buscar
@@ -190,18 +192,17 @@ const DetalhesEstacionamento = () => {
 
       {/* 2. Mídia e Horário */}
       <div className="secao midia-horario">
-        {estacionamento.foto && (
-          <div className="galeria">
-            <h3>Foto do Local</h3>
-            <div className="galeria-container">
-              <img 
-                src={estacionamento.foto} 
-                alt={`Foto do ${estacionamento.nome}`}
-                className="galeria-imagem"
-              />
-            </div>
+        <div className="galeria">
+          <h3>Foto do Local</h3>
+          <div className="galeria-container">
+            <img 
+              src={estacionamento.foto || DEFAULT_IMAGE} 
+              alt={`Foto do ${estacionamento.nome}`}
+              className="galeria-imagem"
+              onError={(e) => { e.target.src = DEFAULT_IMAGE }}
+            />
           </div>
-        )}
+        </div>
 
         <div className="horario-funcionamento">
           <h3>
