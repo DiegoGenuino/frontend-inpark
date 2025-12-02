@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { estacionamentoService } from '../../utils/services';
-import { Toast, Modal, ModalBody, ModalFooter, ModalActions, Button, Header } from '../../components/shared';
+import { Toast, Header, FormWizard } from '../../components/shared';
 import api from '../../utils/api';
 import { 
   MdLocationOn, 
@@ -8,21 +8,17 @@ import {
   MdLocalParking, 
   MdStar,
   MdPeople,
-  MdTrendingUp,
   MdAccessTime,
   MdAdd,
   MdEdit,
   MdDelete,
-  MdClose,
-  MdSave,
-  MdImage,
   MdRefresh
 } from 'react-icons/md';
+import './EstacionamentosDono.css';
 
 const EstacionamentosDono = () => {
   const [estacionamentos, setEstacionamentos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [toast, setToast] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editingEstacionamento, setEditingEstacionamento] = useState(null);
@@ -41,7 +37,6 @@ const EstacionamentosDono = () => {
     maximoDeVagas: 0,
     numeroDeEscrituraImovel: ''
   });
-  const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   const fetchData = useCallback(async (isRefresh = false) => {
@@ -50,7 +45,7 @@ const EstacionamentosDono = () => {
     } else {
       setLoading(true);
     }
-    setError('');
+    setToast(null);
     try {
       const data = await estacionamentoService.getAll();
       const lista = Array.isArray(data) ? data : (data.content || []);
@@ -67,7 +62,7 @@ const EstacionamentosDono = () => {
             console.log('DonoId encontrado via /auth/me:', userData.id);
           } else {
             console.error('Dados do usuário não retornaram ID');
-            setError('Não foi possível identificar o proprietário. Verifique suas permissões.');
+            setToast({ message: 'Não foi possível identificar o proprietário. Verifique suas permissões.', type: 'error' });
           }
         } catch (e) {
           console.error('Erro ao buscar dados do usuário:', e);
@@ -84,7 +79,7 @@ const EstacionamentosDono = () => {
         setToast({ message: 'Dados atualizados com sucesso', type: 'success' });
       }
     } catch (e) {
-      setError(e.message || 'Erro ao carregar estacionamentos');
+      setToast({ message: e.message || 'Erro ao carregar estacionamentos', type: 'error' });
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -195,7 +190,6 @@ const EstacionamentosDono = () => {
         numeroDeEscrituraImovel: ''
       });
     }
-    setFormErrors({});
     setShowModal(true);
   };
 
@@ -215,110 +209,370 @@ const EstacionamentosDono = () => {
       maximoDeVagas: 0,
       numeroDeEscrituraImovel: ''
     });
-    setFormErrors({});
   };
 
-  const validateForm = () => {
-    const errors = {};
+  // Wizard Steps Components
+  const Step1BasicInfo = ({ data, updateData }) => {
+    const [localErrors, setLocalErrors] = useState({});
 
-    // Nome - VARCHAR(255) NOT NULL
-    if (!formData.nome.trim()) {
-      errors.nome = 'Nome é obrigatório';
-    } else if (formData.nome.length > 255) {
-      errors.nome = 'Nome deve ter no máximo 255 caracteres';
-    }
-
-    // Endereço - VARCHAR(255) NOT NULL
-    if (!formData.endereco.trim()) {
-      errors.endereco = 'Endereço é obrigatório';
-    } else if (formData.endereco.length > 255) {
-      errors.endereco = 'Endereço deve ter no máximo 255 caracteres';
-    }
-
-    // CEP - VARCHAR(20)
-    if (!formData.CEP.trim()) {
-      errors.CEP = 'CEP é obrigatório';
-    } else if (formData.CEP.replace(/\D/g, '').length !== 8) {
-      errors.CEP = 'CEP deve ter 8 dígitos';
-    } else if (formData.CEP.length > 20) {
-      errors.CEP = 'CEP inválido';
-    }
-
-    // Número - VARCHAR(20)
-    if (!formData.numero.trim()) {
-      errors.numero = 'Número é obrigatório';
-    } else if (formData.numero.length > 20) {
-      errors.numero = 'Número deve ter no máximo 20 caracteres';
-    }
-
-    // Foto URL - VARCHAR(500)
-    if (formData.foto && formData.foto.length > 500) {
-      errors.foto = 'URL da foto deve ter no máximo 500 caracteres';
-    }
-
-    // Número Alvará - VARCHAR(100) NOT NULL
-    if (!formData.numeroAlvaraDeFuncionamento.trim()) {
-      errors.numeroAlvaraDeFuncionamento = 'Alvará é obrigatório';
-    } else if (formData.numeroAlvaraDeFuncionamento.length > 100) {
-      errors.numeroAlvaraDeFuncionamento = 'Número do alvará deve ter no máximo 100 caracteres';
-    }
-
-    // Número Escritura - VARCHAR(100)
-    if (!formData.numeroDeEscrituraImovel.trim()) {
-      errors.numeroDeEscrituraImovel = 'Escritura é obrigatória';
-    } else if (formData.numeroDeEscrituraImovel.length > 100) {
-      errors.numeroDeEscrituraImovel = 'Número da escritura deve ter no máximo 100 caracteres';
-    }
-
-    // Horário Abertura - TIME NOT NULL
-    if (!formData.horaAbertura) {
-      errors.horaAbertura = 'Horário de abertura é obrigatório';
-    }
-
-    // Horário Fechamento - TIME NOT NULL
-    if (!formData.horaFechamento) {
-      errors.horaFechamento = 'Horário de fechamento é obrigatório';
-    }
-
-    // Validar se horário de fechamento é posterior ao de abertura
-    if (formData.horaAbertura && formData.horaFechamento) {
-      const abertura = formData.horaAbertura.substring(0, 5);
-      const fechamento = formData.horaFechamento.substring(0, 5);
-      if (abertura >= fechamento) {
-        errors.horaFechamento = 'Horário de fechamento deve ser posterior ao de abertura';
+    const validateField = (field, value) => {
+      let error = '';
+      if (field === 'nome') {
+        if (!value.trim()) error = 'Nome é obrigatório';
+        else if (value.length > 255) error = 'Nome muito longo';
       }
-    }
+      if (field === 'foto') {
+        if (value && value.length > 500) error = 'URL muito longa';
+      }
 
-    // Máximo de Vagas - INT NOT NULL
-    if (!formData.maximoDeVagas || formData.maximoDeVagas <= 0) {
-      errors.maximoDeVagas = 'Deve ter pelo menos 1 vaga';
-    } else if (!Number.isInteger(formData.maximoDeVagas)) {
-      errors.maximoDeVagas = 'Deve ser um número inteiro';
-    } else if (formData.maximoDeVagas > 2147483647) {
-      errors.maximoDeVagas = 'Valor muito alto';
-    }
+      setLocalErrors(prev => ({ ...prev, [field]: error }));
+      if (error) {
+        setToast({ message: error, type: 'error' });
+      }
+      return !error;
+    };
 
-    // Vagas Preferenciais - INT
-    if (formData.vagasPreferenciais < 0) {
-      errors.vagasPreferenciais = 'Não pode ser negativo';
-    } else if (!Number.isInteger(formData.vagasPreferenciais)) {
-      errors.vagasPreferenciais = 'Deve ser um número inteiro';
-    } else if (formData.vagasPreferenciais > formData.maximoDeVagas) {
-      errors.vagasPreferenciais = 'Não pode ser maior que o total de vagas';
-    }
+    const handleChange = (field, value) => {
+      updateData({ [field]: value });
+      if (localErrors[field]) setLocalErrors(prev => ({ ...prev, [field]: '' }));
+    };
 
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    return (
+      <div>
+        <div className="wizard-form-group">
+          <label className="wizard-label">Nome do Estacionamento *</label>
+          <input
+            type="text"
+            value={data.nome}
+            onChange={(e) => handleChange('nome', e.target.value)}
+            onBlur={(e) => validateField('nome', e.target.value)}
+            placeholder="Ex: Estacionamento Centro"
+            maxLength={255}
+            className={`wizard-input ${localErrors.nome ? 'error' : ''}`}
+          />
+          {localErrors.nome && <div className="wizard-error-text">{localErrors.nome}</div>}
+          <div className="wizard-hint">{data.nome.length}/255 caracteres</div>
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">URL da Foto (Opcional)</label>
+          <input
+            type="text"
+            value={data.foto}
+            onChange={(e) => handleChange('foto', e.target.value)}
+            onBlur={(e) => validateField('foto', e.target.value)}
+            placeholder="https://exemplo.com/foto.jpg"
+            maxLength={500}
+            className={`wizard-input ${localErrors.foto ? 'error' : ''}`}
+          />
+          {localErrors.foto && <div className="wizard-error-text">{localErrors.foto}</div>}
+          <div className="wizard-hint">Cole o link de uma imagem online ({data.foto.length}/500 caracteres)</div>
+        </div>
+      </div>
+    );
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const Step2Location = ({ data, updateData }) => {
+    const [localErrors, setLocalErrors] = useState({});
+
+    const formatCEP = (value) => {
+      const cleaned = value.replace(/\D/g, '');
+      if (cleaned.length <= 5) return cleaned;
+      return cleaned.substring(0, 5) + '-' + cleaned.substring(5, 8);
+    };
+
+    const validateField = (field, value) => {
+      let error = '';
+      if (field === 'CEP') {
+        if (!value.trim()) error = 'CEP é obrigatório';
+        else if (value.replace(/\D/g, '').length !== 8) error = 'CEP inválido';
+      }
+      if (field === 'endereco') {
+        if (!value.trim()) error = 'Endereço é obrigatório';
+      }
+      if (field === 'numero') {
+        if (!value.trim()) error = 'Número é obrigatório';
+      }
+
+      setLocalErrors(prev => ({ ...prev, [field]: error }));
+      if (error) {
+        setToast({ message: error, type: 'error' });
+      }
+      return !error;
+    };
+
+    const handleCEPChange = (e) => {
+      const formatted = formatCEP(e.target.value);
+      updateData({ CEP: formatted });
+      if (localErrors.CEP) setLocalErrors(prev => ({ ...prev, CEP: '' }));
+    };
+
+    const handleChange = (field, value) => {
+      updateData({ [field]: value });
+      if (localErrors[field]) setLocalErrors(prev => ({ ...prev, [field]: '' }));
+    };
+
+    return (
+      <div>
+        <div className="wizard-form-group">
+          <label className="wizard-label">CEP *</label>
+          <input
+            type="text"
+            value={data.CEP}
+            onChange={handleCEPChange}
+            onBlur={(e) => validateField('CEP', e.target.value)}
+            placeholder="00000-000"
+            maxLength="9"
+            className={`wizard-input ${localErrors.CEP ? 'error' : ''}`}
+          />
+          {localErrors.CEP && <div className="wizard-error-text">{localErrors.CEP}</div>}
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Endereço *</label>
+          <input
+            type="text"
+            value={data.endereco}
+            onChange={(e) => handleChange('endereco', e.target.value)}
+            onBlur={(e) => validateField('endereco', e.target.value)}
+            placeholder="Ex: Rua das Flores"
+            maxLength={255}
+            className={`wizard-input ${localErrors.endereco ? 'error' : ''}`}
+          />
+          {localErrors.endereco && <div className="wizard-error-text">{localErrors.endereco}</div>}
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Número *</label>
+          <input
+            type="text"
+            value={data.numero}
+            onChange={(e) => handleChange('numero', e.target.value)}
+            onBlur={(e) => validateField('numero', e.target.value)}
+            placeholder="Ex: 123"
+            maxLength={20}
+            className={`wizard-input ${localErrors.numero ? 'error' : ''}`}
+          />
+          {localErrors.numero && <div className="wizard-error-text">{localErrors.numero}</div>}
+        </div>
+      </div>
+    );
+  };
+
+  const Step3Operation = ({ data, updateData }) => {
+    const [localErrors, setLocalErrors] = useState({});
+
+    const validateField = (field, value) => {
+      let error = '';
+      if (field === 'horaAbertura' && !value) error = 'Horário de abertura obrigatório';
+      if (field === 'horaFechamento' && !value) error = 'Horário de fechamento obrigatório';
+      
+      if (field === 'maximoDeVagas') {
+        if (!value || value <= 0) error = 'Mínimo 1 vaga';
+      }
+      if (field === 'vagasPreferenciais') {
+        if (value < 0) error = 'Não pode ser negativo';
+        if (value > data.maximoDeVagas) error = 'Maior que total de vagas';
+      }
+
+      setLocalErrors(prev => ({ ...prev, [field]: error }));
+      if (error) {
+        setToast({ message: error, type: 'error' });
+      }
+      return !error;
+    };
+
+    const handleChange = (field, value) => {
+      updateData({ [field]: value });
+      if (localErrors[field]) setLocalErrors(prev => ({ ...prev, [field]: '' }));
+    };
+
+    return (
+      <div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="wizard-form-group">
+            <label className="wizard-label">Horário de Abertura *</label>
+            <input
+              type="time"
+              value={data.horaAbertura}
+              onChange={(e) => handleChange('horaAbertura', e.target.value + ':00')}
+              onBlur={(e) => validateField('horaAbertura', e.target.value)}
+              className={`wizard-input ${localErrors.horaAbertura ? 'error' : ''}`}
+            />
+            {localErrors.horaAbertura && <div className="wizard-error-text">{localErrors.horaAbertura}</div>}
+          </div>
+
+          <div className="wizard-form-group">
+            <label className="wizard-label">Horário de Fechamento *</label>
+            <input
+              type="time"
+              value={data.horaFechamento}
+              onChange={(e) => handleChange('horaFechamento', e.target.value + ':00')}
+              onBlur={(e) => validateField('horaFechamento', e.target.value)}
+              className={`wizard-input ${localErrors.horaFechamento ? 'error' : ''}`}
+            />
+            {localErrors.horaFechamento && <div className="wizard-error-text">{localErrors.horaFechamento}</div>}
+          </div>
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Total de Vagas *</label>
+          <input
+            type="number"
+            min="1"
+            max="2147483647"
+            value={data.maximoDeVagas}
+            onChange={(e) => handleChange('maximoDeVagas', parseInt(e.target.value) || 0)}
+            onBlur={(e) => validateField('maximoDeVagas', parseInt(e.target.value) || 0)}
+            placeholder="Ex: 50"
+            className={`wizard-input ${localErrors.maximoDeVagas ? 'error' : ''}`}
+          />
+          {localErrors.maximoDeVagas && <div className="wizard-error-text">{localErrors.maximoDeVagas}</div>}
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Vagas Preferenciais *</label>
+          <input
+            type="number"
+            min="0"
+            max={data.maximoDeVagas}
+            value={data.vagasPreferenciais}
+            onChange={(e) => handleChange('vagasPreferenciais', parseInt(e.target.value) || 0)}
+            onBlur={(e) => validateField('vagasPreferenciais', parseInt(e.target.value) || 0)}
+            placeholder="Ex: 5"
+            className={`wizard-input ${localErrors.vagasPreferenciais ? 'error' : ''}`}
+          />
+          {localErrors.vagasPreferenciais && <div className="wizard-error-text">{localErrors.vagasPreferenciais}</div>}
+          <div className="wizard-hint">Máximo: {data.maximoDeVagas} (total de vagas)</div>
+        </div>
+      </div>
+    );
+  };
+
+  const Step4Legal = ({ data, updateData }) => {
+    const [localErrors, setLocalErrors] = useState({});
+
+    const validateField = (field, value) => {
+      let error = '';
+      if (field === 'numeroAlvaraDeFuncionamento' && !value.trim()) error = 'Alvará obrigatório';
+      if (field === 'numeroDeEscrituraImovel' && !value.trim()) error = 'Escritura obrigatória';
+
+      setLocalErrors(prev => ({ ...prev, [field]: error }));
+      if (error) {
+        setToast({ message: error, type: 'error' });
+      }
+      return !error;
+    };
+
+    const handleChange = (field, value) => {
+      updateData({ [field]: value });
+      if (localErrors[field]) setLocalErrors(prev => ({ ...prev, [field]: '' }));
+    };
+
+    return (
+      <div>
+        <div className="wizard-form-group">
+          <label className="wizard-label">Número do Alvará de Funcionamento *</label>
+          <input
+            type="text"
+            value={data.numeroAlvaraDeFuncionamento}
+            onChange={(e) => handleChange('numeroAlvaraDeFuncionamento', e.target.value)}
+            onBlur={(e) => validateField('numeroAlvaraDeFuncionamento', e.target.value)}
+            placeholder="Ex: ALV-2024-00123"
+            maxLength={100}
+            className={`wizard-input ${localErrors.numeroAlvaraDeFuncionamento ? 'error' : ''}`}
+          />
+          {localErrors.numeroAlvaraDeFuncionamento && <div className="wizard-error-text">{localErrors.numeroAlvaraDeFuncionamento}</div>}
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Número de Escritura do Imóvel *</label>
+          <input
+            type="text"
+            value={data.numeroDeEscrituraImovel}
+            onChange={(e) => handleChange('numeroDeEscrituraImovel', e.target.value)}
+            onBlur={(e) => validateField('numeroDeEscrituraImovel', e.target.value)}
+            placeholder="Ex: ESC-2024-00456"
+            maxLength={100}
+            className={`wizard-input ${localErrors.numeroDeEscrituraImovel ? 'error' : ''}`}
+          />
+          {localErrors.numeroDeEscrituraImovel && <div className="wizard-error-text">{localErrors.numeroDeEscrituraImovel}</div>}
+        </div>
+      </div>
+    );
+  };
+
+  const validateStep1 = (data) => {
+    const errors = {};
+    if (!data.nome.trim()) errors.nome = 'Nome é obrigatório';
+    else if (data.nome.length > 255) errors.nome = 'Nome muito longo';
     
-    if (!validateForm()) {
-      setToast({ message: 'Por favor, corrija os erros no formulário', type: 'error' });
-      return;
+    if (data.foto && data.foto.length > 500) errors.foto = 'URL muito longa';
+
+    if (Object.keys(errors).length > 0) {
+      setToast({ message: Object.values(errors)[0], type: 'error' });
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = (data) => {
+    const errors = {};
+    if (!data.CEP.trim()) errors.CEP = 'CEP é obrigatório';
+    else if (data.CEP.replace(/\D/g, '').length !== 8) errors.CEP = 'CEP inválido';
+    
+    if (!data.endereco.trim()) errors.endereco = 'Endereço é obrigatório';
+    if (!data.numero.trim()) errors.numero = 'Número é obrigatório';
+
+    if (Object.keys(errors).length > 0) {
+      setToast({ message: Object.values(errors)[0], type: 'error' });
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep3 = (data) => {
+    const errors = {};
+    if (!data.horaAbertura) errors.horaAbertura = 'Horário de abertura obrigatório';
+    if (!data.horaFechamento) errors.horaFechamento = 'Horário de fechamento obrigatório';
+    
+    if (data.horaAbertura && data.horaFechamento) {
+      const abertura = data.horaAbertura.substring(0, 5);
+      const fechamento = data.horaFechamento.substring(0, 5);
+      if (abertura >= fechamento) errors.horaFechamento = 'Fechamento deve ser após abertura';
     }
 
+    if (!data.maximoDeVagas || data.maximoDeVagas <= 0) errors.maximoDeVagas = 'Mínimo 1 vaga';
+    if (data.vagasPreferenciais < 0) errors.vagasPreferenciais = 'Não pode ser negativo';
+    if (data.vagasPreferenciais > data.maximoDeVagas) errors.vagasPreferenciais = 'Maior que total de vagas';
+
+    if (Object.keys(errors).length > 0) {
+      setToast({ message: Object.values(errors)[0], type: 'error' });
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep4 = (data) => {
+    const errors = {};
+    if (!data.numeroAlvaraDeFuncionamento.trim()) errors.numeroAlvaraDeFuncionamento = 'Alvará obrigatório';
+    if (!data.numeroDeEscrituraImovel.trim()) errors.numeroDeEscrituraImovel = 'Escritura obrigatória';
+
+    if (Object.keys(errors).length > 0) {
+      setToast({ message: Object.values(errors)[0], type: 'error' });
+      return false;
+    }
+    return true;
+  };
+
+  const wizardSteps = [
+    { title: 'Informações Básicas', component: Step1BasicInfo, validate: validateStep1 },
+    { title: 'Localização', component: Step2Location, validate: validateStep2 },
+    { title: 'Operação', component: Step3Operation, validate: validateStep3 },
+    { title: 'Documentação', component: Step4Legal, validate: validateStep4 }
+  ];
+
+  const handleWizardComplete = async (finalData) => {
     if (!donoId && !editingEstacionamento) {
       setToast({ message: 'Erro: Dono não identificado', type: 'error' });
       return;
@@ -329,14 +583,14 @@ const EstacionamentosDono = () => {
     try {
       if (editingEstacionamento) {
         // Atualizar
-        const updated = await estacionamentoService.update(editingEstacionamento.id, formData);
+        const updated = await estacionamentoService.update(editingEstacionamento.id, finalData);
         setEstacionamentos(prev => prev.map(est => 
           est.id === editingEstacionamento.id ? updated : est
         ));
         setToast({ message: 'Estacionamento atualizado com sucesso!', type: 'success' });
       } else {
         // Criar novo
-        const created = await estacionamentoService.create(donoId, formData);
+        const created = await estacionamentoService.create(donoId, finalData);
         setEstacionamentos(prev => [...prev, created]);
         setToast({ message: 'Estacionamento criado com sucesso!', type: 'success' });
       }
@@ -369,70 +623,25 @@ const EstacionamentosDono = () => {
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Limpar erro do campo ao digitar
-    if (formErrors[field]) {
-      setFormErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const formatCEP = (value) => {
-    const cleaned = value.replace(/\D/g, '');
-    if (cleaned.length <= 5) return cleaned;
-    return cleaned.substring(0, 5) + '-' + cleaned.substring(5, 8);
-  };
-
-  const handleCEPChange = (value) => {
-    const formatted = formatCEP(value);
-    handleInputChange('CEP', formatted);
-  };
-
   return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+    <div className="estacionamentos-dono-container">
       <Header
-        title="Produtos"
+        title="Gerenciar Estacionamentos"
         subtitle="Gerencie seus estacionamentos, visualize estatísticas e acompanhe reservas"
         actions={
-          <div style={{ display: 'flex', gap: '.75rem' }}>
+          <div className="header-actions">
             <button
               onClick={handleManualRefresh}
               disabled={refreshing}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '.5rem',
-                padding: '.75rem 1.25rem',
-                background: refreshing ? '#e5e7eb' : '#ffffff',
-                color: refreshing ? '#9ca3af' : '#374151',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '.875rem',
-                fontWeight: '600',
-                cursor: refreshing ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s'
-              }}
+              className="btn-refresh"
             >
-              <MdRefresh size={20} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+              <MdRefresh size={20} className={refreshing ? 'spin-animation' : ''} />
               {refreshing ? 'Atualizando...' : 'Atualizar'}
             </button>
             
             <button
               onClick={() => handleOpenModal()}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '.5rem',
-                padding: '.75rem 1.5rem',
-                background: '#111827',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
+              className="btn-novo-estacionamento"
             >
               <MdAdd size={20} />
               Novo Estacionamento
@@ -441,42 +650,19 @@ const EstacionamentosDono = () => {
         }
       />
       
-      <div style={{ padding: '0 2rem 2rem 2rem' }}>
+      <div className="estacionamentos-content">
 
-      {error && (
-        <div style={{ 
-          padding: '1rem', 
-          background: '#fef2f2', 
-          border: '1px solid #fecaca', 
-          borderRadius: '8px', 
-          color: '#991b1b',
-          marginBottom: '1.5rem'
-        }}>
-          {error}
-        </div>
-      )}
-
-      {estacionamentos.length === 0 && !error && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem', 
-          background: '#ffffff', 
-          borderRadius: '12px',
-          border: '2px dashed #e5e7eb'
-        }}>
+      {estacionamentos.length === 0 && (
+        <div className="empty-state">
           <MdLocalParking size={64} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
-          <h3 style={{ margin: '0 0 .5rem 0', color: '#374151' }}>Nenhum estacionamento cadastrado</h3>
-          <p style={{ margin: 0, color: '#6b7280', fontSize: '.875rem' }}>
+          <h3>Nenhum estacionamento cadastrado</h3>
+          <p>
             Cadastre seu primeiro estacionamento para começar
           </p>
         </div>
       )}
 
-      <div style={{ 
-        display: 'grid', 
-        gap: '1.5rem', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))' 
-      }}>
+      <div className="estacionamentos-grid">
         {estacionamentos.map(est => {
           const stats = calcularEstatisticas(est);
           const ocupacaoColor = getOcupacaoColor(stats.ocupacaoPercentual);
@@ -484,94 +670,52 @@ const EstacionamentosDono = () => {
           return (
             <div 
               key={est.id} 
-              style={{
-                background: '#ffffff',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                border: '1px solid #e5e7eb',
-                transition: 'all 0.2s',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#3b82f6';
-                e.currentTarget.style.background = '#f8fafc';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#e5e7eb';
-                e.currentTarget.style.background = '#ffffff';
-              }}
+              className="estacionamento-card"
             >
               {/* Header com status */}
-              <div style={{ 
-                padding: '1.25rem',
-                borderBottom: '1px solid #f3f4f6'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div className="card-header">
+                <div className="card-header-content">
                   <div style={{ flex: 1 }}>
-                    <h3 style={{ 
-                      margin: '0 0 .5rem 0', 
-                      fontSize: '1.125rem', 
-                      fontWeight: '600',
-                      color: '#111827'
-                    }}>
+                    <h3 className="card-title">
                       {est.nome}
                     </h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', color: '#6b7280', fontSize: '.875rem' }}>
+                    <div className="card-address">
                       <MdLocationOn size={16} />
                       <span>{est.endereco}, {est.numero}</span>
                     </div>
-                    <div style={{ marginTop: '.25rem', fontSize: '.75rem', color: '#9ca3af' }}>
+                    <div className="card-cep">
                       CEP: {est.CEP}
                     </div>
                   </div>
                   
-                  <div style={{
-                    padding: '.375rem .75rem',
-                    borderRadius: '9999px',
-                    background: est.status ? '#d1fae5' : '#fee2e2',
-                    color: est.status ? '#065f46' : '#991b1b',
-                    fontSize: '.75rem',
-                    fontWeight: '600',
-                    whiteSpace: 'nowrap'
-                  }}>
+                  <div className={`status-badge ${est.status ? 'status-active' : 'status-inactive'}`}>
                     {est.status ? 'Ativo' : 'Inativo'}
                   </div>
                 </div>
               </div>
 
               {/* Ocupação e Horário */}
-              <div style={{ padding: '1.25rem', borderBottom: '1px solid #f3f4f6' }}>
+              <div className="card-body">
                 {/* Barra de ocupação */}
-                <div style={{ marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.5rem' }}>
-                    <span style={{ fontSize: '.875rem', fontWeight: '600', color: '#374151' }}>
+                <div className="occupation-bar-container">
+                  <div className="occupation-header">
+                    <span className="occupation-label">
                       Ocupação
                     </span>
-                    <span style={{ fontSize: '.875rem', fontWeight: '700', color: ocupacaoColor }}>
+                    <span className="occupation-value" style={{ color: ocupacaoColor }}>
                       {stats.ocupacaoPercentual}%
                     </span>
                   </div>
-                  <div style={{ 
-                    width: '100%', 
-                    height: '8px', 
-                    background: '#e5e7eb', 
-                    borderRadius: '9999px',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{ 
-                      width: `${stats.ocupacaoPercentual}%`, 
-                      height: '100%', 
-                      background: ocupacaoColor,
-                      transition: 'width 0.3s'
-                    }} />
+                  <div className="progress-bar-bg">
+                    <div 
+                      className="progress-bar-fill"
+                      style={{ 
+                        width: `${stats.ocupacaoPercentual}%`, 
+                        background: ocupacaoColor
+                      }} 
+                    />
                   </div>
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    marginTop: '.5rem',
-                    fontSize: '.75rem',
-                    color: '#6b7280'
-                  }}>
+                  <div className="occupation-stats">
                     <span>Livres: {stats.vagasDisponiveis}</span>
                     <span>Ocupadas: {stats.vagasOcupadas}</span>
                     <span>Total: {est.maximoDeVagas}</span>
@@ -579,118 +723,69 @@ const EstacionamentosDono = () => {
                 </div>
 
                 {/* Horário de funcionamento */}
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '.5rem',
-                  padding: '.75rem',
-                  background: '#f9fafb',
-                  borderRadius: '8px'
-                }}>
+                <div className="schedule-info">
                   <MdSchedule size={18} style={{ color: '#6b7280' }} />
-                  <span style={{ fontSize: '.875rem', color: '#374151' }}>
+                  <span className="schedule-text">
                     {formatTime(est.horaAbertura)} - {formatTime(est.horaFechamento)}
                   </span>
                 </div>
               </div>
 
               {/* Estatísticas em grid */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '1rem',
-                padding: '1.25rem'
-              }}>
+              <div className="card-stats-grid">
                 {/* Avaliações */}
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    gap: '.25rem',
-                    marginBottom: '.25rem'
-                  }}>
+                <div className="stat-item">
+                  <div className="stat-value-container">
                     <MdStar size={20} style={{ color: '#f59e0b' }} />
-                    <span style={{ fontSize: '1.25rem', fontWeight: '700', color: '#111827' }}>
+                    <span className="stat-value">
                       {stats.mediaAvaliacoes}
                     </span>
                   </div>
-                  <div style={{ fontSize: '.75rem', color: '#6b7280' }}>
+                  <div className="stat-label">
                     {stats.totalAvaliacoes} avaliações
                   </div>
                 </div>
 
                 {/* Reservas Pendentes */}
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    gap: '.25rem',
-                    marginBottom: '.25rem'
-                  }}>
-                    <MdAccessTime size={20} style={{ color: '#3b82f6' }} />
-                    <span style={{ fontSize: '1.25rem', fontWeight: '700', color: '#111827' }}>
+                <div className="stat-item">
+                  <div className="stat-value-container">
+                    <MdAccessTime size={20} style={{ color: '#65a30d' }} />
+                    <span className="stat-value">
                       {stats.reservasPendentes}
                     </span>
                   </div>
-                  <div style={{ fontSize: '.75rem', color: '#6b7280' }}>
+                  <div className="stat-label">
                     Pendentes
                   </div>
                 </div>
 
                 {/* Gerentes */}
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    gap: '.25rem',
-                    marginBottom: '.25rem'
-                  }}>
-                    <MdPeople size={20} style={{ color: '#8b5cf6' }} />
-                    <span style={{ fontSize: '1.25rem', fontWeight: '700', color: '#111827' }}>
+                <div className="stat-item">
+                  <div className="stat-value-container">
+                    <MdPeople size={20} style={{ color: '#3f6212' }} />
+                    <span className="stat-value">
                       {stats.totalGerentes}
                     </span>
                   </div>
-                  <div style={{ fontSize: '.75rem', color: '#6b7280' }}>
+                  <div className="stat-label">
                     Gerentes
                   </div>
                 </div>
               </div>
 
               {/* Footer com ações e vagas preferenciais */}
-              <div style={{ 
-                padding: '1rem 1.25rem',
-                background: '#f9fafb',
-                borderTop: '1px solid #e5e7eb',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <div style={{ fontSize: '.75rem', color: '#6b7280' }}>
+              <div className="card-footer">
+                <div className="footer-info">
                   <span style={{ fontWeight: '600' }}>Vagas Preferenciais:</span> {est.vagasPreferenciais}
                 </div>
                 
-                <div style={{ display: 'flex', gap: '.5rem' }}>
+                <div className="footer-actions">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleOpenModal(est);
                     }}
-                    style={{
-                      padding: '.5rem .75rem',
-                      background: '#3b82f6',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '.75rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '.375rem'
-                    }}
+                    className="btn-editar"
                     title="Editar"
                   >
                     <MdEdit size={14} />
@@ -703,20 +798,7 @@ const EstacionamentosDono = () => {
                       handleDelete(est);
                     }}
                     disabled={submitting}
-                    style={{
-                      padding: '.5rem .75rem',
-                      background: '#ef4444',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '.75rem',
-                      fontWeight: '600',
-                      cursor: submitting ? 'not-allowed' : 'pointer',
-                      opacity: submitting ? 0.5 : 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '.375rem'
-                    }}
+                    className="btn-desativar"
                     title="Desativar"
                   >
                     <MdDelete size={14} />
@@ -729,304 +811,17 @@ const EstacionamentosDono = () => {
         })}
       </div>
 
-      {/* Modal de Criar/Editar Estacionamento */}
+      {/* Wizard Modal */}
       {showModal && (
-        <Modal
+        <FormWizard
           isOpen={showModal}
           onClose={handleCloseModal}
           title={editingEstacionamento ? 'Editar Estacionamento' : 'Novo Estacionamento'}
-          size="lg"
-        >
-          <form onSubmit={handleSubmit}>
-            <ModalBody>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-                {/* Nome */}
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Nome do Estacionamento *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.nome}
-                    onChange={(e) => handleInputChange('nome', e.target.value)}
-                    placeholder="Ex: Estacionamento Centro"
-                    maxLength={255}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.nome ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.nome && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.nome}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    {formData.nome.length}/255 caracteres
-                  </small>
-                </div>
-
-                {/* Endereço */}
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Endereço *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.endereco}
-                    onChange={(e) => handleInputChange('endereco', e.target.value)}
-                    placeholder="Ex: Rua das Flores"
-                    maxLength={255}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.endereco ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.endereco && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.endereco}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    {formData.endereco.length}/255 caracteres
-                  </small>
-                </div>
-
-                {/* Número */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Número *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.numero}
-                    onChange={(e) => handleInputChange('numero', e.target.value)}
-                    placeholder="Ex: 123"
-                    maxLength={20}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.numero ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.numero && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.numero}</span>}
-                </div>
-
-                {/* CEP */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    CEP *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.CEP}
-                    onChange={(e) => handleCEPChange(e.target.value)}
-                    placeholder="00000-000"
-                    maxLength="9"
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.CEP ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.CEP && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.CEP}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    Formato: 00000-000
-                  </small>
-                </div>
-
-                {/* Hora Abertura */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Horário de Abertura *
-                  </label>
-                  <input
-                    type="time"
-                    value={formData.horaAbertura}
-                    onChange={(e) => handleInputChange('horaAbertura', e.target.value + ':00')}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.horaAbertura ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.horaAbertura && <span style={{ fontSize: '.75rem', color: '#ef4444' }}>{formErrors.horaAbertura}</span>}
-                </div>
-
-                {/* Hora Fechamento */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Horário de Fechamento *
-                  </label>
-                  <input
-                    type="time"
-                    value={formData.horaFechamento}
-                    onChange={(e) => handleInputChange('horaFechamento', e.target.value + ':00')}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.horaFechamento ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.horaFechamento && <span style={{ fontSize: '.75rem', color: '#ef4444' }}>{formErrors.horaFechamento}</span>}
-                </div>
-
-                {/* Máximo de Vagas */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Total de Vagas *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="2147483647"
-                    value={formData.maximoDeVagas}
-                    onChange={(e) => handleInputChange('maximoDeVagas', parseInt(e.target.value) || 0)}
-                    placeholder="Ex: 50"
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.maximoDeVagas ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.maximoDeVagas && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.maximoDeVagas}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    Número inteiro positivo
-                  </small>
-                </div>
-
-                {/* Vagas Preferenciais */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Vagas Preferenciais *
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    max={formData.maximoDeVagas}
-                    value={formData.vagasPreferenciais}
-                    onChange={(e) => handleInputChange('vagasPreferenciais', parseInt(e.target.value) || 0)}
-                    placeholder="Ex: 5"
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.vagasPreferenciais ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.vagasPreferenciais && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.vagasPreferenciais}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    Máximo: {formData.maximoDeVagas} (total de vagas)
-                  </small>
-                </div>
-
-                {/* Alvará */}
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Número do Alvará de Funcionamento *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.numeroAlvaraDeFuncionamento}
-                    onChange={(e) => handleInputChange('numeroAlvaraDeFuncionamento', e.target.value)}
-                    placeholder="Ex: ALV-2024-00123"
-                    maxLength={100}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.numeroAlvaraDeFuncionamento ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.numeroAlvaraDeFuncionamento && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.numeroAlvaraDeFuncionamento}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    {formData.numeroAlvaraDeFuncionamento.length}/100 caracteres
-                  </small>
-                </div>
-
-                {/* Escritura */}
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    Número de Escritura do Imóvel *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.numeroDeEscrituraImovel}
-                    onChange={(e) => handleInputChange('numeroDeEscrituraImovel', e.target.value)}
-                    placeholder="Ex: ESC-2024-00456"
-                    maxLength={100}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.numeroDeEscrituraImovel ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.numeroDeEscrituraImovel && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.numeroDeEscrituraImovel}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    {formData.numeroDeEscrituraImovel.length}/100 caracteres
-                  </small>
-                </div>
-
-                {/* Foto URL */}
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ display: 'block', marginBottom: '.5rem', fontSize: '.875rem', fontWeight: '500', color: '#374151' }}>
-                    URL da Foto (Opcional)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.foto}
-                    onChange={(e) => handleInputChange('foto', e.target.value)}
-                    placeholder="https://exemplo.com/foto.jpg"
-                    maxLength={500}
-                    style={{
-                      width: '100%',
-                      padding: '.625rem',
-                      border: formErrors.foto ? '1px solid #ef4444' : '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '.875rem'
-                    }}
-                  />
-                  {formErrors.foto && <span style={{ fontSize: '.75rem', color: '#ef4444', display: 'block', marginTop: '.25rem' }}>{formErrors.foto}</span>}
-                  <small style={{ fontSize: '.75rem', color: '#6b7280', display: 'block', marginTop: '.25rem' }}>
-                    Cole o link de uma imagem online ({formData.foto.length}/500 caracteres)
-                  </small>
-                </div>
-              </div>
-            </ModalBody>
-
-            <ModalFooter>
-              <ModalActions>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleCloseModal}
-                  disabled={submitting}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Salvando...' : (editingEstacionamento ? 'Atualizar' : 'Criar Estacionamento')}
-                </Button>
-              </ModalActions>
-            </ModalFooter>
-          </form>
-        </Modal>
+          subtitle="Preencha as informações abaixo para cadastrar seu estacionamento"
+          steps={wizardSteps}
+          onComplete={handleWizardComplete}
+          initialData={formData}
+        />
       )}
 
       {toast && (
@@ -1036,13 +831,6 @@ const EstacionamentosDono = () => {
           onClose={() => setToast(null)}
         />
       )}
-      
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
       </div>
     </div>
   );
