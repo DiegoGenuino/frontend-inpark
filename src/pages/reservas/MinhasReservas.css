@@ -10,7 +10,7 @@
   overflow-x: hidden;
   max-height: 100vh;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
