@@ -30,7 +30,7 @@ export default defineConfig({
         secure: false,
       },
       // API endpoints - apenas rotas de API sem subrotas específicas do frontend
-      '^/(auth|estacionamento|reserva|valor|carro|usuario|pagamentos|avaliacao)(/.*)?$': {
+      '^/(auth|estacionamento|reserva|valor|carro|usuario|pagamentos|avaliacao|cliente|dono)(/.*)?$': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
