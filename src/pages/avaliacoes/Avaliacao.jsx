@@ -103,10 +103,23 @@ const Avaliacao = () => {
   };
 
   const handleEnviarAvaliacao = async () => {
+    console.log('Iniciando envio de avaliação...');
+    
     if (avaliacao.nota === 0) {
+      console.warn('Tentativa de envio sem nota selecionada');
       setToast({ 
         message: 'Por favor, selecione uma nota de 1 a 5 estrelas', 
         type: 'error' 
+      });
+      return;
+    }
+
+    // Validação adicional para comentário (opcional, mas não deve ser apenas espaços se preenchido)
+    if (!avaliacao.comentario || avaliacao.comentario.trim().length === 0) {
+      console.warn('Comentário é obrigatório');
+      setToast({
+        message: 'O comentário é obrigatório',
+        type: 'error'
       });
       return;
     }
@@ -128,13 +141,15 @@ const Avaliacao = () => {
         clienteId: clienteId,
         estacionamentoId: estacionamento.id,
         nota: avaliacao.nota,
-        comentario: avaliacao.comentario || null,
+        comentario: avaliacao.comentario ? avaliacao.comentario.trim() : null,
         dataDeAvaliacao: new Date().toISOString()
       };
 
+      console.log('Enviando payload:', avaliacaoPayload);
 
       await avaliacaoService.create(avaliacaoPayload);
       
+      console.log('Avaliação enviada com sucesso');
       setToast({ 
         message: 'Avaliação enviada com sucesso! Obrigado pelo seu feedback.', 
         type: 'success' 
@@ -243,7 +258,7 @@ const Avaliacao = () => {
 
           {/* Comentário */}
           <div className="form-group">
-            <label htmlFor="comentario">Comentário (opcional)</label>
+            <label htmlFor="comentario" className="required">Comentário</label>
             <textarea
               id="comentario"
               value={avaliacao.comentario}
@@ -251,7 +266,10 @@ const Avaliacao = () => {
               placeholder="Conte-nos mais sobre sua experiência..."
               rows={4}
             />
-            <span className="char-count">{avaliacao.comentario.length}/500</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+              {!avaliacao.comentario && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>Campo obrigatório</span>}
+              <span className="char-count" style={{ marginLeft: 'auto' }}>{avaliacao.comentario.length}/500</span>
+            </div>
           </div>
         </form>
 

@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../utils/auth';
-import { Header, Toast, Button, Modal, ModalFooter, ModalActions } from '../../components/shared';
+import { Header, Toast } from '../../components/shared';
 import api from '../../utils/api';
 import { 
   MdPerson, 
   MdEmail, 
-  MdPhone, 
   MdCalendarToday,
-  MdEdit,
-  MdSave,
-  MdClose,
-  MdBusiness,
-  MdLocationOn
+  MdEdit
 } from 'react-icons/md';
 import './PerfilDono.css';
 
@@ -93,11 +88,15 @@ const PerfilDono = () => {
     }
 
     try {
+      // IMPORTANTE: A senha aqui NÃO deve ser usada para alterar a senha do usuário!
+      // O backend deve verificar se a senha está correta (autenticação)
+      // mas NÃO deve atualizar o campo senha no banco de dados.
+      // Apenas nome, email e dataNascimento devem ser atualizados.
       const dataToSend = {
         nome: formData.nome,
         email: formData.email,
-        dataNascimento: formData.dataNascimento ? new Date(formData.dataNascimento).toISOString() : null,
-        senha: senha
+        senha: senha, // Apenas para validação de identidade
+        dataNascimento: formData.dataNascimento ? new Date(formData.dataNascimento).toISOString() : null
       };
 
       await api.put(`/dono/${userData.id}`, dataToSend);
@@ -155,9 +154,9 @@ const PerfilDono = () => {
 
   if (loading) {
     return (
-      <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+      <div className="perfil-page-wrapper">
         <Header title="Meu Perfil" subtitle="Gerencie suas informações pessoais" />
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <div className="perfil-loading">
           <p>Carregando...</p>
         </div>
       </div>
@@ -165,7 +164,7 @@ const PerfilDono = () => {
   }
 
   return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+    <div className="perfil-page-wrapper">
       <Header 
         title="Meu Perfil" 
         subtitle="Clique nos campos para editar suas informações"
@@ -259,48 +258,16 @@ const PerfilDono = () => {
           </div>
 
           {hasChanges && (
-            <div style={{
-              position: 'fixed',
-              bottom: '2rem',
-              right: '2rem',
-              display: 'flex',
-              gap: '0.75rem',
-              background: '#ffffff',
-              padding: '1rem',
-              borderRadius: '12px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              border: '1px solid #e5e7eb',
-              zIndex: 1000
-            }}>
+            <div className="floating-save-bar">
               <button
                 onClick={handleCancelChanges}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#ffffff',
-                  color: '#374151',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
+                className="floating-save-btn-cancel"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSave}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#10b981',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
+                className="floating-save-btn-save"
               >
                 Salvar Alterações
               </button>
@@ -310,70 +277,28 @@ const PerfilDono = () => {
       </div>
 
       {showPasswordModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 2000
-        }}>
-          <div style={{
-            background: '#ffffff',
-            padding: '2rem',
-            borderRadius: '12px',
-            maxWidth: '400px',
-            width: '90%'
-          }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.25rem', color: '#111827' }}>Confirme sua senha</h3>
-            <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.875rem', color: '#6b7280' }}>Para salvar as alterações, digite sua senha:</p>
+        <div className="password-modal-overlay">
+          <div className="password-modal-content">
+            <h3 className="password-modal-title">Confirme sua senha</h3>
+            <p className="password-modal-text">Para salvar as alterações, digite sua senha:</p>
             <input
               type="password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               placeholder="Digite sua senha"
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                marginBottom: '1.5rem'
-              }}
+              className="password-modal-input"
               onKeyDown={(e) => e.key === 'Enter' && handleConfirmSave()}
             />
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <div className="password-modal-actions">
               <button
                 onClick={() => { setShowPasswordModal(false); setSenha(''); }}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#ffffff',
-                  color: '#374151',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
+                className="password-modal-btn-cancel"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmSave}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#10b981',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
+                className="password-modal-btn-confirm"
               >
                 Confirmar
               </button>

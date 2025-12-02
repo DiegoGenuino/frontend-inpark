@@ -1,3 +1,13 @@
+.perfil-page-wrapper {
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+.perfil-loading {
+  padding: 2rem;
+  text-align: center;
+}
+
 .perfil-container {
   padding: 2rem;
   max-width: 1200px;
@@ -141,93 +151,37 @@
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
-/* Form Styles */
-.perfil-form {
+/* Floating Save Bar */
+.floating-save-bar {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 0.75rem;
   background: #ffffff;
+  padding: 1rem;
   border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: 1px solid #e5e7eb;
-  padding: 2rem;
+  z-index: 1000;
 }
 
-.form-section {
-  margin-bottom: 2rem;
-}
-
-.form-section:last-of-type {
-  margin-bottom: 0;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
+.floating-save-btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background: #ffffff;
   color: #374151;
-}
-
-.label-icon {
-  font-size: 1rem;
-  color: #6b7280;
-}
-
-.form-group input {
-  padding: 0.75rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 0.875rem;
-  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-.form-group input::placeholder {
-  color: #9ca3af;
-}
-
-.form-group input:disabled {
-  background: #f3f4f6;
-  cursor: not-allowed;
-  color: #6b7280;
-}
-
-/* Form Actions */
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #f3f4f6;
-}
-
-.btn-cancel,
-.btn-save {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.floating-save-btn-save {
   padding: 0.75rem 1.5rem;
+  background: #10b981;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -236,30 +190,82 @@
   transition: all 0.2s;
 }
 
-.btn-cancel {
+/* Password Modal */
+.password-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.password-modal-content {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.password-modal-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: #111827;
+}
+
+.password-modal-text {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.password-modal-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.password-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.password-modal-btn-cancel {
+  padding: 0.75rem 1.5rem;
   background: #ffffff;
   color: #374151;
   border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.btn-cancel:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-}
-
-.btn-save {
+.password-modal-btn-confirm {
+  padding: 0.75rem 1.5rem;
   background: #10b981;
   color: #ffffff;
-}
-
-.btn-save:hover {
-  background: #059669;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .perfil-container {
     padding: 1rem;
+    padding-bottom: 6rem; /* Space for floating bar */
   }
 
   .profile-header {
@@ -273,18 +279,20 @@
     height: 64px;
   }
 
-  .info-grid,
-  .form-grid {
+  .info-grid {
     grid-template-columns: 1fr;
   }
 
-  .form-actions {
-    flex-direction: column-reverse;
+  .floating-save-bar {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    justify-content: space-between;
   }
 
-  .btn-cancel,
-  .btn-save {
-    width: 100%;
+  .floating-save-btn-cancel,
+  .floating-save-btn-save {
+    flex: 1;
     justify-content: center;
   }
 }

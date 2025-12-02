@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useAuth, getAuthHeaders } from '../../utils/auth'
 import { useNavigate } from 'react-router-dom'
 import { MdSearch, MdLocationOn, MdAccessTime, MdLocalParking, MdStar, MdClose, MdPhone, MdEmail, MdAttachMoney, MdSecurity, MdWifi, MdAccessibleForward, MdDirectionsCar, MdCalendarToday, MdPerson } from 'react-icons/md'
-import { ParkingCard, Modal, ModalBody, ModalFooter, ModalActions, Button, Badge, Header } from '../../components/shared'
+import { ParkingCard, Modal, ModalBody, ModalFooter, ModalActions, Button, Badge, Header, Toast } from '../../components/shared'
 import './Estacionamentos.css'
 
 // Componente do Modal de Reserva
@@ -16,7 +16,7 @@ const ReservaModal = ({ estacionamento, onClose, isOpen }) => {
     statusReserva: 'PENDENTE'
   })
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [toast, setToast] = useState(null)
 
   // Data mínima é hoje
   const today = new Date().toISOString().split('T')[0]
@@ -24,7 +24,7 @@ const ReservaModal = ({ estacionamento, onClose, isOpen }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
+    setToast(null)
 
     try {
       const API_BASE = import.meta.env.VITE_API_URL || ''
@@ -47,15 +47,17 @@ const ReservaModal = ({ estacionamento, onClose, isOpen }) => {
       })
 
       if (response.ok) {
-        alert('Reserva criada com sucesso!')
-        onClose()
+        setToast({ message: 'Reserva criada com sucesso!', type: 'success' })
+        setTimeout(() => {
+          onClose()
+        }, 2000)
       } else {
         const errorData = await response.json()
         throw new Error(errorData.message || 'Erro ao criar reserva')
       }
     } catch (err) {
       console.error('Erro ao criar reserva:', err)
-      setError(err.message || 'Erro ao criar reserva. Tente novamente.')
+      setToast({ message: err.message || 'Erro ao criar reserva. Tente novamente.', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -88,18 +90,12 @@ const ReservaModal = ({ estacionamento, onClose, isOpen }) => {
             </p>
           </div>
 
-          {error && (
-            <div className="error-message" style={{ 
-              padding: '0.75rem', 
-              background: '#fee2e2', 
-              border: '1px solid #fecaca',
-              borderRadius: '6px',
-              color: '#dc2626',
-              fontSize: '0.875rem',
-              marginBottom: '1rem'
-            }}>
-              {error}
-            </div>
+          {toast && (
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast(null)}
+            />
           )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -251,7 +247,7 @@ export const Estacionamentos = () => {
   const navigate = useNavigate()
   const [estacionamentos, setEstacionamentos] = useState([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [toast, setToast] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredEstacionamentos, setFilteredEstacionamentos] = useState([])
   const [selectedEstacionamento, setSelectedEstacionamento] = useState(null)
@@ -267,7 +263,7 @@ export const Estacionamentos = () => {
 
     const fetchEstacionamentos = async () => {
       setLoading(true)
-      setError(null)
+      setToast(null)
       
       console.log('🏢 Buscando estacionamentos...')
       console.log('🌐 URL:', `${API_BASE}/estacionamento`)
@@ -306,7 +302,7 @@ export const Estacionamentos = () => {
         console.error('❌ Erro ao buscar estacionamentos:', err)
         
         if (mounted) {
-          setError(err.message || 'Erro desconhecido')
+          setToast({ message: err.message || 'Erro desconhecido', type: 'error' })
           // Limpar dados em caso de erro
           setEstacionamentos([])
           setFilteredEstacionamentos([])
@@ -394,20 +390,6 @@ export const Estacionamentos = () => {
         </div>
       </div>
 
-      {loading && (
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Carregando estacionamentos...</p>
-        </div>
-      )}
-
-      {error && !loading && (
-        <div className="error-container">
-          <p>⚠️ Erro ao carregar: {error}</p>
-          <p>Exibindo dados de demonstração</p>
-        </div>
-      )}
-
       {!loading && (
         <div className="estacionamentos-grid">
           {filteredEstacionamentos.length === 0 ? (
@@ -429,6 +411,14 @@ export const Estacionamentos = () => {
             ))
           )}
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
 
       {/* Modal de Detalhes */}

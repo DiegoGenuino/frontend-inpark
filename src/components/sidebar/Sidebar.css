@@ -213,29 +213,50 @@
   font-weight: 400;
 }
 
+/* Topbar oculta em desktop */
+.mobile-topbar {
+  display: none;
+}
+
+.sidebar-close-button {
+  display: none;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
+  /* Topbar Mobile */
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 64px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 998; /* Abaixo do sidebar (1000) mas acima do conteúdo */
+  }
+
   /* Botão hambúrguer mobile */
   .mobile-menu-toggle {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 1001;
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 0.75rem;
+    position: static; /* Removido fixed */
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    color: #374151;
+    transition: all 0.2s ease;
   }
 
   .mobile-menu-toggle:hover {
-    background-color: #f9fafb;
-    transform: scale(1.05);
+    background-color: transparent;
+    color: #111827;
+    transform: scale(1.1);
   }
 
   .mobile-menu-toggle:active {
@@ -267,21 +288,45 @@
   .sidebar {
     position: fixed;
     top: 0;
-    right: 100%;
-    width: 100%;
-    min-width: 280px;
+    left: 0;
+    right: auto;
+    width: 85%;
+    max-width: 320px;
     height: 100vh;
     z-index: 1000;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-110%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
   }
 
   .sidebar.mobile-open {
-    right: 0;
+    transform: translateX(0);
   }
 
   .sidebar-header {
     padding: 20px 16px;
+    justify-content: space-between;
+  }
+
+  .sidebar-close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-close-button:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+    transform: rotate(90deg);
   }
 
   .nav-section {
@@ -311,11 +356,22 @@
 /* Desktop - esconder botão hambúrguer */
 @media (min-width: 769px) {
   .mobile-menu-toggle {
-    display: none;
+    display: none !important;
   }
 
   .mobile-menu-overlay {
-    display: none;
+    display: none !important;
+  }
+}
+
+/* Garantir que overlay não apareça em desktop */
+.mobile-menu-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-overlay {
+    display: block;
   }
 }
 

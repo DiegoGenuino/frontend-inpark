@@ -7,11 +7,10 @@ body {
   overflow-x: hidden;
 }
 
-/* ============================================
-   DASHBOARD PAGE - WRAPPER COM ESCOPO
+/* 
    Todas as classes são prefixadas com .dashboard
    para evitar conflitos com outras páginas
-   ============================================ */
+ */
 
 .dashboard {
   padding: 0;
@@ -20,7 +19,7 @@ body {
   overflow-x: hidden;
   max-height: 100vh;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -560,7 +559,11 @@ body {
 /* Responsividade */
 @media (max-width: 768px) {
   .dashboard {
-    padding: 16px;
+    padding: 0;
+  }
+
+  .dashboard-content {
+    padding: 0 16px 16px 16px;
   }
 
   /* Responsividade para o novo header */

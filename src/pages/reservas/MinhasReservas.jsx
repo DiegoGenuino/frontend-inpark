@@ -6,7 +6,7 @@ import {
   MdLocalParking,
   MdStar,
 } from "react-icons/md";
-import { Header } from '../../components/shared';
+import { Header, Toast } from '../../components/shared';
 import { useAuth } from "../../utils/auth";
 import { reservaService, usuarioService } from "../../utils/services";
 import "./MinhasReservas.css";
@@ -17,14 +17,17 @@ const MinhasReservas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [tabFilter, setTabFilter] = useState("ativas"); // 'ativas' ou 'historico'
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [reservas, setReservas] = useState([]);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
 
   // Buscar reservas do backend ao montar o componente
   useEffect(() => {
     const fetchReservas = async () => {
       setLoading(true);
-      setError("");
       try {
         // 1. Buscar dados do usuário logado
         const userData = await usuarioService.getMe();
@@ -39,7 +42,7 @@ const MinhasReservas = () => {
         setReservas(minhasReservas);
       } catch (e) {
         console.error('Erro ao carregar reservas:', e);
-        setError(e.message || 'Erro ao carregar reservas');
+        showToast(e.message || 'Erro ao carregar reservas', 'error');
       } finally {
         setLoading(false);
       }
@@ -140,25 +143,12 @@ const MinhasReservas = () => {
     return { ativas, historico };
   }, [reservas]);
 
-  if (loading) {
-    return (
-      <div className="minhas-reservas-page">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Carregando suas reservas...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="minhas-reservas-page">
       <Header 
         title="Minhas Reservas"
         subtitle="Gerencie todas as suas reservas de estacionamento"
       />
-
-      {error && <div className="error-container">{error}</div>}
 
       {/* Navegação e Filtros */}
       <div className="filtros-section">
@@ -229,18 +219,64 @@ const MinhasReservas = () => {
               </thead>
               <tbody>
                 {filteredReservas.map((reserva) => {
+                  console.log('Reserva completa:', reserva);
+                  
                   const status = reserva.statusReserva || reserva.status || 'PENDENTE';
                   const statusInfo = getStatusInfo(status);
                   
                   // Formato backend pode ser dataDaReserva + horaDaReserva, ou dataInicio/dataFim
-                  const dataInicio = reserva.dataInicio || `${reserva.dataDaReserva}T${reserva.horaDaReserva || '00:00:00'}`;
-                  const dataFim = reserva.dataFim || dataInicio;
+                  let dataInicio = reserva.dataInicio;
+                  
+                  // Se não tem dataInicio, tentar construir a partir de dataDaReserva
+                  if (!dataInicio && reserva.dataDaReserva) {
+                    // Se dataDaReserva já é uma string ISO ou similar
+                    if (typeof reserva.dataDaReserva === 'string') {
+                      dataInicio = reserva.dataDaReserva;
+                      // Se tem horaDaReserva e dataDaReserva não inclui hora
+                      if (reserva.horaDaReserva && !reserva.dataDaReserva.includes('T')) {
+                        dataInicio = `${reserva.dataDaReserva}T${reserva.horaDaReserva}`;
+                      }
+                    } else if (Array.isArray(reserva.dataDaReserva)) {
+                      // Se for array [2024, 12, 1, 14, 30, 0]
+                      const [year, month, day, hour = 0, minute = 0, second = 0] = reserva.dataDaReserva;
+                      dataInicio = new Date(year, month - 1, day, hour, minute, second).toISOString();
+                    }
+                  }
+                  
+                  let dataFim = reserva.dataFim;
+                  if (!dataFim && reserva.dataFinal) {
+                    if (typeof reserva.dataFinal === 'string') {
+                      dataFim = reserva.dataFinal;
+                    } else if (Array.isArray(reserva.dataFinal)) {
+                      const [year, month, day, hour = 0, minute = 0, second = 0] = reserva.dataFinal;
+                      dataFim = new Date(year, month - 1, day, hour, minute, second).toISOString();
+                    }
+                  }
+                  
+                  if (!dataFim) {
+                    dataFim = dataInicio;
+                  }
+                  
+                  console.log('Data Inicio processada:', dataInicio);
+                  console.log('Data Fim processada:', dataFim);
                   
                   const inicio = formatDateTime(dataInicio);
                   const fim = formatDateTime(dataFim);
                   
                   const nomeEstacionamento = reserva.estacionamento?.nome || reserva.estacionamentoNome || '—';
-                  const placa = reserva.placaVeiculo || reserva.veiculo?.placa || reserva.carro?.placa || '—';
+                  
+                  // Melhorar extração de placa
+                  let placa = reserva.placaVeiculo || reserva.placa;
+                  if (!placa && reserva.veiculo) {
+                    placa = reserva.veiculo.placa || reserva.veiculo.placaVeiculo;
+                  }
+                  if (!placa && reserva.carro) {
+                    placa = reserva.carro.placa || reserva.carro.placaVeiculo;
+                  }
+                  placa = placa || '—';
+                  
+                  console.log('Placa extraída:', placa);
+                  
                   const valor = reserva.valorTotal ?? reserva.valor ?? 0;
 
                   return (
@@ -303,6 +339,14 @@ const MinhasReservas = () => {
           </div>
         )}
       </div>
+
+      {toast.visible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, visible: false })}
+        />
+      )}
     </div>
   );
 };

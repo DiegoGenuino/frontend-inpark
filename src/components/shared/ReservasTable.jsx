@@ -84,11 +84,10 @@ const ReservasTable = ({
               <td>{formatDate(reserva.dataDaReserva)}</td>
               <td>{formatTime(reserva.horaDaReserva)}</td>
               <td className="td-valor">
-                {reserva.valorTotal 
-                  ? `R$ ${Number(reserva.valorTotal).toFixed(2).replace('.', ',')}` 
-                  : reserva.valor 
-                  ? `R$ ${Number(reserva.valor).toFixed(2).replace('.', ',')}` 
-                  : '—'}
+                {(() => {
+                  const valor = reserva.valorTotal || reserva.valor || reserva.estacionamento?.valor || 0;
+                  return valor > 0 ? `R$ ${Number(valor).toFixed(2).replace('.', ',')}` : '—';
+                })()}
               </td>
               <td>
                 <span className={`status-badge ${getStatusClass(reserva.statusReserva || reserva.status)}`}>

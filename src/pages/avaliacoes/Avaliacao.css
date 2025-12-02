@@ -372,16 +372,17 @@
 }
 
 .btn-primary {
-  background: var(--gradient-primary);
-  color: var(--text-on-primary);
-  box-shadow: var(--shadow-primary);
-  border: 1px solid var(--primary-color);
+  background: #c2fe00;
+  color: #000000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  font-weight: 700;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--gradient-primary-reverse);
+  background: #b2e600;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(194, 254, 0, 0.4);
+  box-shadow: 0 6px 12px rgba(194, 254, 0, 0.4);
 }
 
 .btn-primary:disabled {

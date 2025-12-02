@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdAdd, MdEdit, MdDelete, MdDirectionsCar, MdInfo, MdUpload, MdClose, MdCheckCircle } from 'react-icons/md';
-import { CarCard, Header } from '../../components/shared';
+import { CarCard, Header, FormWizard, Toast, Modal, ModalBody, ModalFooter, ModalActions, Button } from '../../components/shared';
 import api from '../../utils/api';
 import { usuarioService } from '../../utils/services';
 import './MeusCarros.css';
@@ -11,6 +11,7 @@ const MeusCarros = () => {
   const [editingCarro, setEditingCarro] = useState(null);
   const [loading, setLoading] = useState(false);
   const [clienteId, setClienteId] = useState(null);
+  const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
     placa: '',
     modelo: '',
@@ -20,6 +21,8 @@ const MeusCarros = () => {
     documentoComprobatorio: null
   });
   const [errors, setErrors] = useState({});
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [carroToDelete, setCarroToDelete] = useState(null);
 
   // Opções para dropdowns
   const modelos = [
@@ -92,46 +95,267 @@ const MeusCarros = () => {
     );
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Validar placa
-    if (!formData.placa.trim()) {
-      newErrors.placa = 'Placa é obrigatória';
-    } else if (!validatePlacaMercosul(formData.placa)) {
-      newErrors.placa = 'Placa deve seguir o formato Mercosul (AAA0A00)';
-    } else if (!validateUnicidade(formData.placa, editingCarro?.id)) {
-      newErrors.placa = 'Esta placa já está cadastrada';
+  const formatPlacaMercosul = (value) => {
+    // Remove caracteres especiais e converte para maiúsculo
+    const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+    
+    // Aplica formato AAA0A00
+    if (cleaned.length <= 3) {
+      return cleaned;
+    } else if (cleaned.length <= 4) {
+      return cleaned.slice(0, 3) + cleaned.slice(3);
+    } else if (cleaned.length <= 5) {
+      return cleaned.slice(0, 3) + cleaned.slice(3, 4) + cleaned.slice(4);
+    } else if (cleaned.length <= 7) {
+      return cleaned.slice(0, 3) + cleaned.slice(3, 4) + cleaned.slice(4, 5) + cleaned.slice(5);
     }
-
-    // Validar modelo
-    if (!formData.modelo) {
-      newErrors.modelo = 'Modelo é obrigatório';
-    }
-
-    // Validar cor
-    if (!formData.cor) {
-      newErrors.cor = 'Cor é obrigatória';
-    }
-
-    // Validar documento para vaga preferencial
-    if (formData.vagaPreferencial && !formData.documentoComprobatorio && !editingCarro) {
-      newErrors.documentoComprobatorio = 'Documento comprobatório é obrigatório para vaga preferencial';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return cleaned.slice(0, 7);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+  // Wizard Steps Components
+  const Step1BasicInfo = ({ data, updateData }) => {
+    const [localErrors, setLocalErrors] = useState({});
 
+    const validateField = (field, value) => {
+      let error = '';
+      if (field === 'placa') {
+        if (!value.trim()) error = 'Placa é obrigatória';
+        else if (!validatePlacaMercosul(value)) error = 'Formato inválido (Mercosul: AAA0A00)';
+        else if (!validateUnicidade(value, editingCarro?.id)) error = 'Placa já cadastrada';
+      }
+      if (field === 'modelo' && !value) error = 'Modelo é obrigatório';
+      if (field === 'cor' && !value) error = 'Cor é obrigatória';
+
+      setLocalErrors(prev => ({ ...prev, [field]: error }));
+      return !error;
+    };
+
+    const handlePlacaChange = (e) => {
+      const formatted = formatPlacaMercosul(e.target.value);
+      updateData({ placa: formatted });
+      if (localErrors.placa) setLocalErrors(prev => ({ ...prev, placa: '' }));
+    };
+
+    return (
+      <div>
+        <div className="wizard-form-group">
+          <label className="wizard-label">Placa do Carro *</label>
+          <input
+            type="text"
+            value={data.placa}
+            onChange={handlePlacaChange}
+            onBlur={(e) => validateField('placa', e.target.value)}
+            placeholder="AAA0A00 (Formato Mercosul)"
+            maxLength={7}
+            className={`wizard-input ${localErrors.placa ? 'error' : ''}`}
+          />
+          {localErrors.placa && <div className="wizard-error-text">{localErrors.placa}</div>}
+          <div className="wizard-hint">Formato Mercosul: 3 letras, 1 número, 1 letra, 2 números</div>
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Modelo do Carro *</label>
+          <select
+            value={data.modelo}
+            onChange={e => {
+              updateData({ modelo: e.target.value });
+              if (localErrors.modelo) setLocalErrors(prev => ({ ...prev, modelo: '' }));
+            }}
+            onBlur={(e) => validateField('modelo', e.target.value)}
+            className={`wizard-select ${localErrors.modelo ? 'error' : ''}`}
+          >
+            <option value="">Selecione o modelo</option>
+            {modelos.map(modelo => (
+              <option key={modelo} value={modelo}>{modelo}</option>
+            ))}
+          </select>
+          {localErrors.modelo && <div className="wizard-error-text">{localErrors.modelo}</div>}
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Cor *</label>
+          <select
+            value={data.cor}
+            onChange={e => {
+              updateData({ cor: e.target.value });
+              if (localErrors.cor) setLocalErrors(prev => ({ ...prev, cor: '' }));
+            }}
+            onBlur={(e) => validateField('cor', e.target.value)}
+            className={`wizard-select ${localErrors.cor ? 'error' : ''}`}
+          >
+            <option value="">Selecione a cor</option>
+            {cores.map(cor => (
+              <option key={cor} value={cor}>{cor}</option>
+            ))}
+          </select>
+          {localErrors.cor && <div className="wizard-error-text">{localErrors.cor}</div>}
+        </div>
+
+        <div className="wizard-form-group">
+          <label className="wizard-label">Apelido (Opcional)</label>
+          <input
+            type="text"
+            value={data.apelido}
+            onChange={e => updateData({ apelido: e.target.value })}
+            placeholder="Ex: Carro do Trabalho"
+            maxLength={50}
+            className="wizard-input"
+          />
+          <div className="wizard-hint">Nome amigável para identificar o veículo</div>
+        </div>
+      </div>
+    );
+  };
+
+  const Step2Preferences = ({ data, updateData }) => {
+    const handleFileUpload = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        updateData({ documentoComprobatorio: file });
+      }
+    };
+
+    return (
+      <div>
+        <div className="wizard-form-group">
+          <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={data.vagaPreferencial}
+              onChange={e => updateData({ 
+                vagaPreferencial: e.target.checked,
+                documentoComprobatorio: e.target.checked ? data.documentoComprobatorio : null
+              })}
+              style={{ width: '18px', height: '18px' }}
+            />
+            <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#374151' }}>
+              Necessita de Vaga Preferencial (PCD ou Idoso)
+            </span>
+          </label>
+          <div className="wizard-hint" style={{ marginLeft: '26px' }}>
+            Marque se você possui direito a vaga preferencial
+          </div>
+        </div>
+
+        {data.vagaPreferencial && (
+          <div className="wizard-form-group" style={{ marginTop: '20px', animation: 'fadeIn 0.3s' }}>
+            <label className="wizard-label">Documento Comprobatório *</label>
+            <div className="file-upload" style={{ border: '2px dashed #d1d5db', borderRadius: '8px', padding: '20px', textAlign: 'center' }}>
+              <input
+                type="file"
+                id="documento"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={handleFileUpload}
+                className="file-input"
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="documento" className="file-label" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                <MdUpload size={24} color="#6b7280" />
+                <span style={{ color: '#3b82f6', fontWeight: '500' }}>
+                  {data.documentoComprobatorio 
+                    ? data.documentoComprobatorio.name 
+                    : 'Clique para enviar documento'
+                  }
+                </span>
+              </label>
+            </div>
+            <div className="wizard-hint">
+              Formatos aceitos: PDF, JPG, PNG. Máximo 5MB.
+              <br />Documentos aceitos: CNH com observação, Carteirinha PCD, RG com idade 60+
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const Step3Review = ({ data }) => {
+    return (
+      <div>
+        <div style={{ background: '#f9fafb', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+          <h4 style={{ margin: '0 0 12px 0', fontSize: '0.875rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Resumo do Veículo
+          </h4>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <span style={{ display: 'block', fontSize: '0.75rem', color: '#6b7280' }}>Placa</span>
+              <span style={{ display: 'block', fontSize: '1rem', fontWeight: '600', color: '#111827' }}>{data.placa}</span>
+            </div>
+            <div>
+              <span style={{ display: 'block', fontSize: '0.75rem', color: '#6b7280' }}>Modelo</span>
+              <span style={{ display: 'block', fontSize: '1rem', fontWeight: '600', color: '#111827' }}>{data.modelo}</span>
+            </div>
+            <div>
+              <span style={{ display: 'block', fontSize: '0.75rem', color: '#6b7280' }}>Cor</span>
+              <span style={{ display: 'block', fontSize: '1rem', fontWeight: '600', color: '#111827' }}>{data.cor}</span>
+            </div>
+            <div>
+              <span style={{ display: 'block', fontSize: '0.75rem', color: '#6b7280' }}>Apelido</span>
+              <span style={{ display: 'block', fontSize: '1rem', fontWeight: '600', color: '#111827' }}>{data.apelido || '-'}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: '#f9fafb', padding: '16px', borderRadius: '8px' }}>
+          <h4 style={{ margin: '0 0 12px 0', fontSize: '0.875rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Preferências
+          </h4>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {data.vagaPreferencial ? (
+              <>
+                <MdCheckCircle color="#10b981" size={20} />
+                <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>Necessita de vaga preferencial</span>
+              </>
+            ) : (
+              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Não necessita de vaga preferencial</span>
+            )}
+          </div>
+          
+          {data.vagaPreferencial && data.documentoComprobatorio && (
+            <div style={{ marginTop: '8px', fontSize: '0.875rem', color: '#6b7280' }}>
+              Documento anexado: {data.documentoComprobatorio.name}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const validateStep1 = (data) => {
+    const errors = {};
+    if (!data.placa.trim()) errors.placa = 'Placa é obrigatória';
+    else if (!validatePlacaMercosul(data.placa)) errors.placa = 'Formato inválido';
+    else if (!validateUnicidade(data.placa, editingCarro?.id)) errors.placa = 'Placa já cadastrada';
+    
+    if (!data.modelo) errors.modelo = 'Modelo é obrigatório';
+    if (!data.cor) errors.cor = 'Cor é obrigatória';
+
+    if (Object.keys(errors).length > 0) {
+      setToast({ message: Object.values(errors)[0], type: 'error' });
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = (data) => {
+    if (data.vagaPreferencial && !data.documentoComprobatorio && !editingCarro) {
+      setToast({ message: 'Documento comprobatório é obrigatório para vaga preferencial', type: 'error' });
+      return false;
+    }
+    return true;
+  };
+
+  const wizardSteps = [
+    { title: 'Informações Básicas', component: Step1BasicInfo, validate: validateStep1 },
+    { title: 'Preferências', component: Step2Preferences, validate: validateStep2 },
+    { title: 'Revisão', component: Step3Review }
+  ];
+
+  const handleWizardComplete = async (finalData) => {
     if (!clienteId) {
-      alert('Erro: Cliente não identificado. Faça login novamente.');
+      setToast({ message: 'Erro: Cliente não identificado. Faça login novamente.', type: 'error' });
       return;
     }
     
@@ -142,9 +366,9 @@ const MeusCarros = () => {
         // Editar carro existente
         const carroData = {
           clienteId: clienteId,
-          placa: formData.placa.toUpperCase(),
-          modelo: formData.modelo,
-          cor: formData.cor
+          placa: finalData.placa.toUpperCase(),
+          modelo: finalData.modelo,
+          cor: finalData.cor
         };
         
         const carroAtualizado = await api.put(`/carro/${editingCarro.id}`, carroData);
@@ -153,21 +377,19 @@ const MeusCarros = () => {
           carro.id === editingCarro.id ? carroAtualizado : carro
         ));
         
-        alert('Dados do veículo atualizados com sucesso!');
+        setToast({ message: 'Dados do veículo atualizados com sucesso!', type: 'success' });
       } else {
-        // Adicionar novo carro - ordem exata dos campos
+        // Adicionar novo carro
         const carroData = {
           clienteId: clienteId,
-          placa: formData.placa.toUpperCase(),
-          modelo: formData.modelo,
-          cor: formData.cor
+          placa: finalData.placa.toUpperCase(),
+          modelo: finalData.modelo,
+          cor: finalData.cor
         };
         
-        console.log('Enviando carro:', carroData);
+        await api.post('/carro', carroData);
         
-        const novoCarro = await api.post('/carro', carroData);
-        
-        // Recarregar lista de carros após cadastrar
+        // Recarregar lista
         const todosCarros = await api.get('/carro');
         const listaCarros = Array.isArray(todosCarros) ? todosCarros : (todosCarros.content || []);
         const carrosDoCliente = listaCarros.filter(c => 
@@ -179,13 +401,13 @@ const MeusCarros = () => {
         );
         setCarros(carrosDoCliente);
         
-        alert('Veículo cadastrado com sucesso!');
+        setToast({ message: 'Veículo cadastrado com sucesso!', type: 'success' });
       }
       
       handleCloseModal();
     } catch (error) {
       console.error('Erro ao salvar carro:', error);
-      alert(error.message || 'Erro ao salvar veículo. Tente novamente.');
+      setToast({ message: error.message || 'Erro ao salvar veículo. Tente novamente.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -205,24 +427,26 @@ const MeusCarros = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (carro) => {
-    const confirmacao = window.confirm(
-      `Tem certeza que deseja excluir o veículo "${carro.placa}"?\n\n` +
-      'Esta ação não pode ser desfeita e todas as reservas futuras com este veículo serão afetadas.'
-    );
+  const handleDelete = (carro) => {
+    setCarroToDelete(carro);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!carroToDelete) return;
     
-    if (confirmacao) {
-      setLoading(true);
-      try {
-        await api.delete(`/carro/${carro.id}`);
-        setCarros(prev => prev.filter(c => c.id !== carro.id));
-        alert('Veículo excluído com sucesso!');
-      } catch (error) {
-        console.error('Erro ao excluir carro:', error);
-        alert(error.message || 'Erro ao excluir veículo. Tente novamente.');
-      } finally {
-        setLoading(false);
-      }
+    setLoading(true);
+    try {
+      await api.delete(`/carro/${carroToDelete.id}`);
+      setCarros(prev => prev.filter(c => c.id !== carroToDelete.id));
+      setToast({ message: 'Veículo excluído com sucesso!', type: 'success' });
+      setDeleteModalOpen(false);
+      setCarroToDelete(null);
+    } catch (error) {
+      console.error('Erro ao excluir carro:', error);
+      setToast({ message: error.message || 'Erro ao excluir veículo. Tente novamente.', type: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -245,43 +469,6 @@ const MeusCarros = () => {
       documentoComprobatorio: null
     });
     setErrors({});
-  };
-
-  const formatPlacaMercosul = (value) => {
-    // Remove caracteres especiais e converte para maiúsculo
-    const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-    
-    // Aplica formato AAA0A00
-    if (cleaned.length <= 3) {
-      return cleaned;
-    } else if (cleaned.length <= 4) {
-      return cleaned.slice(0, 3) + cleaned.slice(3);
-    } else if (cleaned.length <= 5) {
-      return cleaned.slice(0, 3) + cleaned.slice(3, 4) + cleaned.slice(4);
-    } else if (cleaned.length <= 7) {
-      return cleaned.slice(0, 3) + cleaned.slice(3, 4) + cleaned.slice(4, 5) + cleaned.slice(5);
-    }
-    return cleaned.slice(0, 7);
-  };
-
-  const handlePlacaChange = (e) => {
-    const formatted = formatPlacaMercosul(e.target.value);
-    setFormData(prev => ({ ...prev, placa: formatted }));
-    
-    // Limpar erro de placa ao digitar
-    if (errors.placa) {
-      setErrors(prev => ({ ...prev, placa: '' }));
-    }
-  };
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, documentoComprobatorio: file }));
-      if (errors.documentoComprobatorio) {
-        setErrors(prev => ({ ...prev, documentoComprobatorio: '' }));
-      }
-    }
   };
 
   return (
@@ -320,142 +507,111 @@ const MeusCarros = () => {
         )}
       </div>
 
-      {/* Modal de Adicionar/Editar */}
+      {/* Wizard Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{editingCarro ? 'Editar Veículo' : 'Adicionar Novo Veículo'}</h2>
-              <button className="btn-close" onClick={handleCloseModal}>
-                <MdClose />
-              </button>
-            </div>
+        <FormWizard
+          isOpen={showModal}
+          onClose={handleCloseModal}
+          title={editingCarro ? 'Editar Veículo' : 'Adicionar Novo Veículo'}
+          subtitle="Preencha as informações abaixo para cadastrar seu veículo"
+          steps={wizardSteps}
+          onComplete={handleWizardComplete}
+          initialData={formData}
+        />
+      )}
 
-            <form onSubmit={handleSubmit} className="carro-form">
-              {/* Placa do Carro */}
-              <div className="form-group">
-                <label htmlFor="placa">Placa do Carro *</label>
-                <input
-                  type="text"
-                  id="placa"
-                  value={formData.placa}
-                  onChange={handlePlacaChange}
-                  placeholder="AAA0A00 (Formato Mercosul)"
-                  maxLength={7}
-                  className={errors.placa ? 'error' : ''}
-                />
-                {errors.placa && <span className="error-message">{errors.placa}</span>}
-                <small className="field-hint">Formato Mercosul: 3 letras, 1 número, 1 letra, 2 números</small>
-              </div>
-
-              {/* Modelo do Carro */}
-              <div className="form-group">
-                <label htmlFor="modelo">Modelo do Carro *</label>
-                <select
-                  id="modelo"
-                  value={formData.modelo}
-                  onChange={e => setFormData(prev => ({ ...prev, modelo: e.target.value }))}
-                  className={errors.modelo ? 'error' : ''}
-                >
-                  <option value="">Selecione o modelo</option>
-                  {modelos.map(modelo => (
-                    <option key={modelo} value={modelo}>{modelo}</option>
-                  ))}
-                </select>
-                {errors.modelo && <span className="error-message">{errors.modelo}</span>}
-              </div>
-
-              {/* Cor */}
-              <div className="form-group">
-                <label htmlFor="cor">Cor *</label>
-                <select
-                  id="cor"
-                  value={formData.cor}
-                  onChange={e => setFormData(prev => ({ ...prev, cor: e.target.value }))}
-                  className={errors.cor ? 'error' : ''}
-                >
-                  <option value="">Selecione a cor</option>
-                  {cores.map(cor => (
-                    <option key={cor} value={cor}>{cor}</option>
-                  ))}
-                </select>
-                {errors.cor && <span className="error-message">{errors.cor}</span>}
-              </div>
-
-              {/* Apelido */}
-              <div className="form-group">
-                <label htmlFor="apelido">Apelido (Opcional)</label>
-                <input
-                  type="text"
-                  id="apelido"
-                  value={formData.apelido}
-                  onChange={e => setFormData(prev => ({ ...prev, apelido: e.target.value }))}
-                  placeholder="Ex: Carro do Trabalho, Carro da Família"
-                  maxLength={50}
-                />
-                <small className="field-hint">Nome amigável para identificar o veículo</small>
-              </div>
-
-              {/* Tipo de Vaga Preferencial */}
-              <div className="form-group checkbox-group">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={formData.vagaPreferencial}
-                    onChange={e => setFormData(prev => ({ 
-                      ...prev, 
-                      vagaPreferencial: e.target.checked,
-                      documentoComprobatorio: e.target.checked ? prev.documentoComprobatorio : null
-                    }))}
-                  />
-                  <span className="checkmark"></span>
-                  Necessita de Vaga Preferencial (PCD ou Idoso)
-                </label>
-                <small className="field-hint">Marque se você possui direito a vaga preferencial</small>
-              </div>
-
-              {/* Upload de Documento (se vaga preferencial marcada) */}
-              {formData.vagaPreferencial && (
-                <div className="form-group">
-                  <label htmlFor="documento">Documento Comprobatório *</label>
-                  <div className="file-upload">
-                    <input
-                      type="file"
-                      id="documento"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={handleFileUpload}
-                      className="file-input"
-                    />
-                    <label htmlFor="documento" className="file-label">
-                      <MdUpload />
-                      {formData.documentoComprobatorio 
-                        ? formData.documentoComprobatorio.name 
-                        : 'Clique para enviar documento'
-                      }
-                    </label>
-                  </div>
-                  {errors.documentoComprobatorio && (
-                    <span className="error-message">{errors.documentoComprobatorio}</span>
-                  )}
-                  <small className="field-hint">
-                    Formatos aceitos: PDF, JPG, PNG. Máximo 5MB.
-                    <br />Documentos aceitos: CNH com observação, Carteirinha PCD, RG com idade 60+
-                  </small>
-                </div>
-              )}
-
-              <div className="form-actions">
-                <button type="button" className="btn-cancel" onClick={handleCloseModal}>
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-save">
-                  {editingCarro ? 'Atualizar Dados' : 'Salvar Carro'}
-                </button>
-              </div>
-            </form>
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+        <div style={{ padding: '24px', textAlign: 'center' }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            borderRadius: '50%', 
+            background: '#fee2e2', 
+            color: '#ef4444',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px'
+          }}>
+            <MdDelete size={32} />
+          </div>
+          <h3 style={{ margin: '0 0 8px', fontSize: '1.25rem', color: '#111827' }}>Excluir Veículo</h3>
+          <p style={{ margin: '0 0 24px', color: '#6b7280' }}>
+            Tem certeza que deseja excluir o veículo <strong>{carroToDelete?.placa}</strong>? 
+            Esta ação não pode ser desfeita.
+          </p>
+          
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <button
+              onClick={() => setDeleteModalOpen(false)}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '8px',
+                border: '1px solid #d1d5db',
+                background: 'white',
+                color: '#374151',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmDelete}
+              disabled={loading}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '8px',
+                border: 'none',
+                background: '#ef4444',
+                color: 'white',
+                fontWeight: '500',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1
+              }}
+            >
+              {loading ? 'Excluindo...' : 'Sim, Excluir'}
+            </button>
           </div>
         </div>
+      </Modal>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
+
+      <style>{`
+        /* Wizard Theme Overrides - InPark Brand */
+        .wizard-progress-fill {
+          background-color: #c2fe00 !important;
+        }
+        
+        .btn-wizard-primary {
+          background-color: #c2fe00 !important;
+          color: #000000 !important;
+          font-weight: 600 !important;
+        }
+        
+        .btn-wizard-primary:hover {
+          background-color: #b2e600 !important;
+        }
+        
+        .btn-wizard-primary:disabled {
+          background-color: #e5e7eb !important;
+          color: #9ca3af !important;
+        }
+        
+        .wizard-input:focus, 
+        .wizard-select:focus {
+          border-color: #c2fe00 !important;
+          box-shadow: none !important;
+        }
+      `}</style>
 
       {/* Informações Adicionais */}
       <div className="info-section">

@@ -28,7 +28,13 @@ const ConfirmacaoPagamento = () => {
   }, [reserva, transacaoId, navigate])
 
   const formatDateTime = (dateString) => {
+    if (!dateString) {
+      return { date: 'Não definido', time: '--:--' }
+    }
     const date = new Date(dateString)
+    if (isNaN(date.getTime())) {
+      return { date: 'Data inválida', time: '--:--' }
+    }
     return {
       date: date.toLocaleDateString('pt-BR', {
         day: '2-digit',
@@ -59,17 +65,29 @@ const ConfirmacaoPagamento = () => {
   }
 
   if (!reserva) {
-    return (
-      <div className="confirmacao-page">
-        <div className="loading-container">
-          <p>Redirecionando...</p>
-        </div>
-      </div>
-    )
+    return null;
   }
 
-  const inicio = formatDateTime(reserva.dataInicio)
-  const fim = formatDateTime(reserva.dataFim)
+  // Lidar com diferentes formatos de data do backend
+  const dataInicio = reserva.dataInicio || 
+    (reserva.dataDaReserva && reserva.horaDaReserva ? 
+      `${reserva.dataDaReserva}T${reserva.horaDaReserva}` : null)
+  
+  const dataFim = reserva.dataFim || dataInicio
+  
+  const inicio = formatDateTime(dataInicio)
+  const fim = formatDateTime(dataFim)
+  
+  // Lidar com diferentes formatos de placa
+  const placaVeiculo = reserva.placaVeiculo || 
+    reserva.veiculo?.placa || 
+    reserva.carro?.placa || 
+    'Não informado'
+  
+  // Lidar com diferentes formatos de tipo de vaga
+  const tipoVaga = reserva.tipoVaga || 
+    reserva.tipo || 
+    'Normal'
 
   return (
     <div className="confirmacao-page">
@@ -153,8 +171,8 @@ const ConfirmacaoPagamento = () => {
                   <span className="title">Veículo</span>
                 </div>
                 <div className="detalhe-content">
-                  <p className="placa">{reserva.placaVeiculo}</p>
-                  <p className="tipo">Vaga {reserva.tipoVaga}</p>
+                  <p className="placa">{placaVeiculo}</p>
+                  <p className="tipo">Vaga {tipoVaga}</p>
                 </div>
               </div>
 
@@ -164,7 +182,7 @@ const ConfirmacaoPagamento = () => {
                   <span className="title">Valor</span>
                 </div>
                 <div className="detalhe-content">
-                  <p className="valor-final">R$ {reserva.valorTotal.toFixed(2)}</p>
+                  <p className="valor-final">R$ {(reserva.valorTotal || reserva.valor || 0).toFixed(2)}</p>
                   <p className="status-pagamento">✓ Pago</p>
                 </div>
               </div>

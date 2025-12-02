@@ -10,13 +10,14 @@ import {
   MdCheckCircle,
   MdRadioButtonChecked
 } from 'react-icons/md';
-import { Header } from '../../components/shared';
+import { Header, Toast } from '../../components/shared';
 import api from '../../utils/api';
+import './AcessosDono.css';
 
 const AcessosDono = () => {
   const [acessos, setAcessos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [toast, setToast] = useState(null);
   const [filtro, setFiltro] = useState('todos'); // 'todos', 'ativos', 'encerrados'
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [ultimaAtualizacao, setUltimaAtualizacao] = useState(new Date());
@@ -27,10 +28,10 @@ const AcessosDono = () => {
       const lista = Array.isArray(data) ? data : (data.content || []);
       setAcessos(lista);
       setUltimaAtualizacao(new Date());
-      setError('');
+      setToast(null);
     } catch (e) {
       console.error('Erro ao carregar acessos:', e);
-      setError(e.message || 'Erro ao carregar acessos');
+      setToast({ message: e.message || 'Erro ao carregar acessos', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -90,7 +91,7 @@ const AcessosDono = () => {
     if (acesso.horaDeSaida) return '#6b7280'; // Cinza para encerrados
     
     // Verde pulsante para ativos
-    return '#10b981';
+    return '#c2fe00';
   };
 
   if (loading) {
@@ -102,50 +103,25 @@ const AcessosDono = () => {
   }
 
   return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
+    <div className="acessos-dono-container">
       <Header 
         title="Acessos em Tempo Real"
         subtitle="Monitore entradas e saídas dos estacionamentos"
         actions={
-          <div style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>
+          <div className="header-actions">
             {/* Toggle Auto-refresh */}
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
-              style={{
-                padding: '.625rem 1rem',
-                background: autoRefresh ? '#10b981' : '#e5e7eb',
-                color: autoRefresh ? '#ffffff' : '#6b7280',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '.5rem',
-                transition: 'all 0.2s'
-              }}
+              className={`btn-auto-refresh ${autoRefresh ? 'active' : 'inactive'}`}
             >
-              <MdRefresh size={18} style={{ animation: autoRefresh ? 'spin 2s linear infinite' : 'none' }} />
+              <MdRefresh size={18} className={autoRefresh ? 'spin-animation' : ''} />
               {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
             </button>
 
             {/* Botão refresh manual */}
             <button
               onClick={fetchAcessos}
-              style={{
-                padding: '.625rem 1rem',
-                background: '#3b82f6',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '.5rem'
-              }}
+              className="btn-refresh"
             >
               <MdRefresh size={18} />
               Atualizar
@@ -154,138 +130,72 @@ const AcessosDono = () => {
         }
       />
       
-      <div style={{ padding: '0 1.5rem 2rem 1.5rem' }}>
+      <div className="acessos-content">
         {/* Última atualização */}
-        <div style={{ fontSize: '.75rem', color: '#9ca3af', marginBottom: '1.5rem' }}>
+        <div className="last-update">
           Última atualização: {ultimaAtualizacao.toLocaleTimeString('pt-BR')}
         </div>
 
       {/* KPIs */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          background: '#ffffff',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ fontSize: '.875rem', color: '#6b7280', marginBottom: '.5rem' }}>Total de Acessos</div>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#111827' }}>{stats.total}</div>
+      <div className="kpi-grid">
+        <div className="kpi-card">
+          <div className="kpi-label">Total de Acessos</div>
+          <div className="kpi-value">{stats.total}</div>
         </div>
 
-        <div style={{
-          background: '#ffffff',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          border: '1px solid #e5e7eb',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div style={{ fontSize: '.875rem', color: '#6b7280', marginBottom: '.5rem' }}>Veículos Ativos</div>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#10b981', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-            <MdRadioButtonChecked size={24} style={{ animation: 'pulse 2s ease-in-out infinite' }} />
+        <div className="kpi-card">
+          <div className="kpi-label">Veículos Ativos</div>
+          <div className="kpi-value active">
+            <MdRadioButtonChecked size={24} className="pulse-animation" />
             {stats.ativos}
           </div>
         </div>
 
-        <div style={{
-          background: '#ffffff',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ fontSize: '.875rem', color: '#6b7280', marginBottom: '.5rem' }}>Encerrados</div>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#6b7280' }}>{stats.encerrados}</div>
+        <div className="kpi-card">
+          <div className="kpi-label">Encerrados</div>
+          <div className="kpi-value closed">{stats.encerrados}</div>
         </div>
 
-        <div style={{
-          background: '#ffffff',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ fontSize: '.875rem', color: '#6b7280', marginBottom: '.5rem' }}>Receita Total</div>
-          <div style={{ fontSize: '2rem', fontWeight: '700', color: '#10b981' }}>
+        <div className="kpi-card">
+          <div className="kpi-label">Receita Total</div>
+          <div className="kpi-value revenue">
             R$ {stats.receitaTotal.toFixed(2)}
           </div>
         </div>
       </div>
 
       {/* Filtros */}
-      <div style={{ 
-        background: '#ffffff',
-        padding: '1rem',
-        borderRadius: '12px',
-        border: '1px solid #e5e7eb',
-        marginBottom: '1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem'
-      }}>
+      <div className="filter-bar">
         <MdFilterList size={20} style={{ color: '#6b7280' }} />
-        <div style={{ display: 'flex', gap: '.5rem' }}>
+        <div className="filter-buttons">
           {['todos', 'ativos', 'encerrados'].map(f => (
             <button
               key={f}
               onClick={() => setFiltro(f)}
-              style={{
-                padding: '.5rem 1rem',
-                background: filtro === f ? '#3b82f6' : '#f3f4f6',
-                color: filtro === f ? '#ffffff' : '#6b7280',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                textTransform: 'capitalize',
-                transition: 'all 0.2s'
-              }}
+              className={`filter-btn ${filtro === f ? 'active' : 'inactive'}`}
             >
               {f}
             </button>
           ))}
         </div>
-        <div style={{ marginLeft: 'auto', fontSize: '.875rem', color: '#6b7280' }}>
+        <div className="filter-count">
           {acessosFiltrados.length} registro{acessosFiltrados.length !== 1 ? 's' : ''}
         </div>
       </div>
 
       {/* Lista de Acessos */}
-      {error && (
-        <div style={{ 
-          padding: '1rem', 
-          background: '#fef2f2', 
-          border: '1px solid #fecaca', 
-          borderRadius: '8px', 
-          color: '#991b1b',
-          marginBottom: '1.5rem'
-        }}>
-          {error}
-        </div>
-      )}
-
       {acessosFiltrados.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '3rem', 
-          background: '#ffffff', 
-          borderRadius: '12px',
-          border: '2px dashed #e5e7eb'
-        }}>
+        <div className="empty-state">
           <MdDirectionsCar size={64} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
-          <h3 style={{ margin: '0 0 .5rem 0', color: '#374151' }}>Nenhum acesso encontrado</h3>
-          <p style={{ margin: 0, color: '#6b7280', fontSize: '.875rem' }}>
+          <h3>Nenhum acesso encontrado</h3>
+          <p>
             {filtro === 'ativos' && 'Não há veículos ativos no momento'}
             {filtro === 'encerrados' && 'Nenhum acesso encerrado registrado'}
             {filtro === 'todos' && 'Nenhum acesso registrado'}
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: '1rem' }}>
+        <div className="access-list">
           {acessosFiltrados.map(acesso => {
             const isAtivo = !acesso.horaDeSaida;
             const statusColor = getStatusColor(acesso);
@@ -293,72 +203,41 @@ const AcessosDono = () => {
             return (
               <div 
                 key={acesso.id}
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '12px',
-                  border: `2px solid ${isAtivo ? '#10b981' : '#e5e7eb'}`,
-                  padding: '1.5rem',
-                  display: 'grid',
-                  gridTemplateColumns: 'auto 1fr auto auto auto',
-                  gap: '2rem',
-                  alignItems: 'center',
-                  transition: 'all 0.2s',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
+                className={`access-item ${isAtivo ? 'active' : ''}`}
               >
                 {/* Indicador de status */}
                 {isAtivo && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '4px',
-                    height: '100%',
-                    background: statusColor,
-                    animation: 'pulse 2s ease-in-out infinite'
-                  }} />
+                  <div className="active-indicator" style={{ background: statusColor }} />
                 )}
 
                 {/* Placa */}
-                <div style={{ 
-                  background: isAtivo ? '#10b981' : '#6b7280',
-                  color: '#ffffff',
-                  padding: '.75rem 1.25rem',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '1.25rem',
-                  letterSpacing: '2px',
-                  fontFamily: 'monospace',
-                  textAlign: 'center',
-                  minWidth: '140px'
-                }}>
+                <div className={`placa-badge ${isAtivo ? 'active' : 'inactive'}`}>
                   {acesso.placaDoCarro}
                 </div>
 
                 {/* Informações de horário */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-                    <MdPlayArrow size={20} style={{ color: '#10b981' }} />
-                    <span style={{ fontSize: '.875rem', color: '#6b7280' }}>Entrada:</span>
-                    <span style={{ fontSize: '1rem', fontWeight: '600', color: '#111827' }}>
+                <div className="info-group">
+                  <div className="info-row">
+                    <MdPlayArrow size={20} style={{ color: '#65a30d' }} />
+                    <span className="info-label">Entrada:</span>
+                    <span className="info-value">
                       {formatarTempo(acesso.horaDeEntrada)}
                     </span>
                   </div>
                   
                   {acesso.horaDeSaida ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+                    <div className="info-row">
                       <MdExitToApp size={20} style={{ color: '#ef4444' }} />
-                      <span style={{ fontSize: '.875rem', color: '#6b7280' }}>Saída:</span>
-                      <span style={{ fontSize: '1rem', fontWeight: '600', color: '#111827' }}>
+                      <span className="info-label">Saída:</span>
+                      <span className="info-value">
                         {formatarTempo(acesso.horaDeSaida)}
                       </span>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+                    <div className="info-row">
                       <MdAccessTime size={20} style={{ color: '#3b82f6' }} />
-                      <span style={{ fontSize: '.875rem', color: '#6b7280' }}>Tempo:</span>
-                      <span style={{ fontSize: '1rem', fontWeight: '600', color: '#3b82f6' }}>
+                      <span className="info-label">Tempo:</span>
+                      <span className="info-value time">
                         {calcularTempoDecorrido(acesso.horaDeEntrada)}
                       </span>
                     </div>
@@ -366,54 +245,29 @@ const AcessosDono = () => {
                 </div>
 
                 {/* Tempo Total */}
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '.75rem', color: '#6b7280', marginBottom: '.25rem' }}>
+                <div className="stat-group">
+                  <div className="stat-label">
                     Total de Horas
                   </div>
-                  <div style={{ 
-                    fontSize: '1.5rem', 
-                    fontWeight: '700', 
-                    color: '#111827',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '.25rem'
-                  }}>
+                  <div className="stat-value-row">
                     <MdAccessTime size={24} style={{ color: '#6b7280' }} />
                     {acesso.totalHoras ? `${acesso.totalHoras}h` : '—'}
                   </div>
                 </div>
 
                 {/* Valor */}
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '.75rem', color: '#6b7280', marginBottom: '.25rem' }}>
+                <div className="stat-group">
+                  <div className="stat-label">
                     Valor a Pagar
                   </div>
-                  <div style={{ 
-                    fontSize: '1.5rem', 
-                    fontWeight: '700', 
-                    color: '#10b981',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '.25rem'
-                  }}>
+                  <div className="stat-value-row revenue">
                     <MdAttachMoney size={24} />
                     {acesso.valorAPagar ? `R$ ${acesso.valorAPagar.toFixed(2)}` : '—'}
                   </div>
                 </div>
 
                 {/* Badge de Status */}
-                <div style={{
-                  padding: '.5rem 1rem',
-                  borderRadius: '9999px',
-                  background: isAtivo ? '#d1fae5' : '#f3f4f6',
-                  color: isAtivo ? '#065f46' : '#6b7280',
-                  fontSize: '.875rem',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '.5rem',
-                  whiteSpace: 'nowrap'
-                }}>
+                <div className={`status-badge ${isAtivo ? 'active' : 'inactive'}`}>
                   {isAtivo ? (
                     <>
                       <MdRadioButtonChecked size={16} />
@@ -432,18 +286,13 @@ const AcessosDono = () => {
         </div>
       )}
 
-      {/* CSS para animações */}
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      `}</style>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       </div>
     </div>
   );

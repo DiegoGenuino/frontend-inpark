@@ -1,5 +1,5 @@
 .detalhes-estacionamento {
-  max-width: 1000px;
+
   margin: 0 auto;
   padding: 0;
   min-height: 100vh;
@@ -40,20 +40,7 @@
   text-align: center;
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f4f6;
-  border-top: 4px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-}
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
 /* Header */
 .detalhes-header {
@@ -91,7 +78,6 @@
   border-radius: 16px;
   padding: 24px;
   margin: 0 1.5rem 24px 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
 }
 
@@ -327,14 +313,14 @@
 }
 
 .vaga-tipo {
-  background: #f9fafb;
+  background: #0000007e;
   padding: 20px;
   border-radius: 12px;
   text-align: center;
 }
 
 .vaga-tipo.preferencial {
-  background: #fef3c7;
+  background: #adff00;
 }
 
 .vaga-numero {
@@ -348,7 +334,7 @@
 .numero {
   font-size: 32px;
   font-weight: 700;
-  color: #1f2937;
+  color: #000000;
 }
 
 .total {
@@ -359,7 +345,7 @@
 .vaga-label {
   display: block;
   font-size: 14px;
-  color: #6b7280;
+  color: #000000;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -610,43 +596,51 @@
   position: sticky;
   bottom: 0;
   background: white;
-  padding: 20px 0;
+  padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
   margin-top: 32px;
-}
-
-.btn-reservar {
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 16px 24px;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: white;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.btn-reservar {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #c2fe00;
+  color: rgb(0, 0, 0);
   border: none;
-  border-radius: 12px;
-  font-size: 18px;
+  border-radius: 8px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
-  margin-bottom: 12px;
+  margin-bottom: 0;
+  max-width: 400px;
 }
 
 .btn-reservar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+  transform: translateY(-1px);
+  background-color: #b2e600;
 }
 
 .acoes-secundarias {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 200px;
 }
 
 .btn-ligar,
 .btn-rota,
 .btn-avaliar {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -659,6 +653,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
+  font-size: 14px;
 }
 
 .btn-ligar:hover,
@@ -671,54 +666,60 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .detalhes-estacionamento {
+    padding: 0;
+  }
+
+  .secao {
+    margin: 0 16px 16px 16px;
     padding: 16px;
   }
-  
+
   .detalhes-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+    padding: 16px;
   }
-  
+
   .detalhes-header h1 {
     font-size: 24px;
   }
-  
+
   .midia-horario {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .identificacao .local-info {
     flex-direction: column;
   }
-  
+
   .documentacao-info {
     grid-template-columns: 1fr;
   }
-  
+
   .vagas-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .precos-grid {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .recursos-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .acoes-secundarias {
     grid-template-columns: 1fr;
   }
-  
+
   .avaliacao-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .data {
     margin-left: 0;
   }

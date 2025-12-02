@@ -37,9 +37,9 @@
 }
 
 .badge--success {
-  background: #d1fae5;
-  color: #065f46;
-  border-color: #a7f3d0;
+  background: #c2fe00ff;
+  color: #000000;
+  border-color: #000000;
 }
 
 .badge--warning {

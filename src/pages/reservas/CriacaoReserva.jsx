@@ -15,6 +15,7 @@ import {
   MdInfo,
   MdCheck
 } from 'react-icons/md'
+import { Toast } from '../../components/shared'
 import './CriacaoReserva.css'
 
 const CriacaoReserva = () => {
@@ -22,7 +23,8 @@ const CriacaoReserva = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [toast, setToast] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
   
   // Dados do estacionamento (vem da navegação ou busca por ID)
   const [estacionamento, setEstacionamento] = useState(state?.estacionamento || null)
@@ -75,51 +77,32 @@ const CriacaoReserva = () => {
 
   const fetchVeiculos = async () => {
     try {
-      const headers = {
-        'Content-Type': 'application/json',
-        ...getAuthHeaders()
+      // Buscar dados do usuário logado
+      const userData = await usuarioService.getMe();
+      
+      if (!userData || !userData.id) {
+        throw new Error('Usuário não encontrado');
       }
 
-      const response = await fetch(`/api/usuarios/${user?.id}/veiculos`, {
-        method: 'GET',
-        headers
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setVeiculos(data)
-        if (data.length > 0) {
-          setFormData(prev => ({ ...prev, veiculoSelecionado: data[0].id }))
-        }
+      // Buscar carros do cliente usando o endpoint correto
+      const carros = await api.get('/carro');
+      
+      // Filtrar apenas os carros do cliente logado
+      const carrosDoCliente = Array.isArray(carros) 
+        ? carros.filter(carro => carro.clienteId === userData.id || carro.cliente?.id === userData.id)
+        : [];
+      
+      console.log('Carros do cliente:', carrosDoCliente);
+      
+      setVeiculos(carrosDoCliente);
+      
+      if (carrosDoCliente.length > 0) {
+        setFormData(prev => ({ ...prev, veiculoSelecionado: carrosDoCliente[0].id }));
       }
     } catch (err) {
-      console.log('Erro ao carregar veículos, usando mock:', err)
-      // Mock data para veículos
-      const mockVeiculos = [
-        {
-          id: 1,
-          placa: 'ABC-1234',
-          modelo: 'Honda Civic',
-          cor: 'Prata',
-          tipo: 'comum'
-        },
-        {
-          id: 2,
-          placa: 'XYZ-5678',
-          modelo: 'Toyota Corolla',
-          cor: 'Branco',
-          tipo: 'comum'
-        },
-        {
-          id: 3,
-          placa: 'DEF-9999',
-          modelo: 'Adaptado PCD',
-          cor: 'Azul',
-          tipo: 'preferencial'
-        }
-      ]
-      setVeiculos(mockVeiculos)
-      setFormData(prev => ({ ...prev, veiculoSelecionado: mockVeiculos[0].id }))
+      console.error('Erro ao carregar veículos:', err);
+      setVeiculos([]);
+      setToast({ message: 'Erro ao carregar seus veículos. Por favor, cadastre um veículo antes de fazer uma reserva.', type: 'error' });
     }
   }
 
@@ -165,6 +148,11 @@ const CriacaoReserva = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
 
+    // Limpar erro do campo ao digitar
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: null }))
+    }
+
     if (name === 'duracao') {
       const opcaoSelecionada = opcoesDuracao.find(opcao => opcao.value === value)
       setFormData(prev => ({
@@ -182,9 +170,27 @@ const CriacaoReserva = () => {
 
   const validarFormulario = () => {
     const { dataInicio, horaInicio, veiculoSelecionado } = formData
+    const newErrors = {}
+    let isValid = true
     
-    if (!dataInicio || !horaInicio || !veiculoSelecionado) {
-      setError('Por favor, preencha todos os campos obrigatórios.')
+    if (!dataInicio) {
+      newErrors.dataInicio = 'Data é obrigatória'
+      isValid = false
+    }
+    
+    if (!horaInicio) {
+      newErrors.horaInicio = 'Hora é obrigatória'
+      isValid = false
+    }
+    
+    if (!veiculoSelecionado) {
+      newErrors.veiculoSelecionado = 'Selecione um veículo'
+      isValid = false
+    }
+
+    if (!isValid) {
+      setFieldErrors(newErrors)
+      setToast({ message: 'Por favor, preencha todos os campos obrigatórios.', type: 'error' })
       return false
     }
 
@@ -193,7 +199,7 @@ const CriacaoReserva = () => {
     const dataHoraReserva = new Date(`${dataInicio}T${horaInicio}`)
     
     if (dataHoraReserva <= agora) {
-      setError('A data e hora da reserva deve ser no futuro.')
+      setToast({ message: 'A data e hora da reserva deve ser no futuro.', type: 'error' })
       return false
     }
 
@@ -204,7 +210,7 @@ const CriacaoReserva = () => {
       const horaFechamento = parseInt(estacionamento.horarioFechamento.split(':')[0])
       
       if (horaReserva < horaAbertura || horaReserva >= horaFechamento) {
-        setError(`O horário deve estar entre ${estacionamento.horarioAbertura.substring(0, 5)} e ${estacionamento.horarioFechamento.substring(0, 5)}.`)
+        setToast({ message: `O horário deve estar entre ${estacionamento.horarioAbertura.substring(0, 5)} e ${estacionamento.horarioFechamento.substring(0, 5)}.`, type: 'error' })
         return false
       }
     }
@@ -220,7 +226,7 @@ const CriacaoReserva = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(null)
+    setToast(null)
 
     if (!validarFormulario()) {
       return
@@ -236,29 +242,38 @@ const CriacaoReserva = () => {
         throw new Error('Usuário não encontrado. Faça login novamente.');
       }
 
-      // 2. Preparar dados da reserva com clienteId (número)
+      // 2. Buscar placa do veículo selecionado
+      const veiculoSelecionado = veiculos.find(v => v.id === formData.veiculoSelecionado);
+      
+      if (!veiculoSelecionado) {
+        throw new Error('Veículo não encontrado. Por favor, selecione um veículo válido.');
+      }
+
+      // 3. Preparar dados da reserva com clienteId (número) e placa
       const reservaData = {
         clienteId: userData.id,
         estacioId: estacionamento.id,
         dataDaReserva: formData.dataInicio, // Formato: "2023-12-25"
         horaDaReserva: formData.horaInicio + ':00', // Formato: "14:30:00"
+        placaVeiculo: veiculoSelecionado.placa, // Placa do veículo
+        tipoVaga: formData.tipoVaga, // Tipo de vaga (comum ou preferencial)
+        valorTotal: precos.total, // Valor total calculado
         statusReserva: 'PENDENTE'
       }
 
       console.log('Enviando reserva:', reservaData);
 
-      // 3. Fazer POST para criar a reserva
+      // 4. Fazer POST para criar a reserva
       const reservaCriada = await api.post('/reserva', reservaData);
       
       console.log('Reserva criada:', reservaCriada);
 
-      // 4. Preparar dados para o pagamento
-      const veiculoSelecionado = veiculos.find(v => v.id === formData.veiculoSelecionado);
+      // 5. Preparar dados para o pagamento (reutilizar veiculoSelecionado já buscado)
       const dadosReserva = {
         id: reservaCriada.id,
         dataInicio: formData.dataInicio + 'T' + formData.horaInicio + ':00.000Z',
         dataFim: calcularDataFim(),
-        placaVeiculo: veiculoSelecionado?.placa || 'N/A',
+        placaVeiculo: veiculoSelecionado.placa,
         tipoVaga: formData.tipoVaga,
         valorTotal: precos.total,
         estacionamento: {
@@ -268,14 +283,14 @@ const CriacaoReserva = () => {
         }
       }
       
-      // 5. Navegar para a página de pagamento
+      // 6. Navegar para a página de pagamento
       navigate('/pagamento', { 
         state: { reserva: dadosReserva } 
       })
 
     } catch (err) {
       console.error('Erro ao criar reserva:', err)
-      setError(err.message || 'Erro ao criar reserva. Tente novamente.')
+      setToast({ message: err.message || 'Erro ao criar reserva. Tente novamente.', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -334,13 +349,6 @@ const CriacaoReserva = () => {
           <div className="secao formulario-campos">
             <h2>Detalhes da Reserva</h2>
             
-            {error && (
-              <div className="error-message">
-                <MdInfo className="icon" />
-                {error}
-              </div>
-            )}
-
             <div className="campos-grid">
               {/* Data de Início */}
               <div className="campo">
@@ -356,8 +364,9 @@ const CriacaoReserva = () => {
                   onChange={handleInputChange}
                   min={new Date().toISOString().split('T')[0]}
                   required
-                  className="form-input"
+                  className={`form-input ${fieldErrors.dataInicio ? 'error' : ''}`}
                 />
+                {fieldErrors.dataInicio && <span className="field-error-text">{fieldErrors.dataInicio}</span>}
               </div>
 
               {/* Hora de Início */}
@@ -373,8 +382,9 @@ const CriacaoReserva = () => {
                   value={formData.horaInicio}
                   onChange={handleInputChange}
                   required
-                  className="form-input"
+                  className={`form-input ${fieldErrors.horaInicio ? 'error' : ''}`}
                 />
+                {fieldErrors.horaInicio && <span className="field-error-text">{fieldErrors.horaInicio}</span>}
                 <small className="campo-hint">
                   Funcionamento: {estacionamento.horarioAbertura?.substring(0, 5)} às {estacionamento.horarioFechamento?.substring(0, 5)}
                 </small>
@@ -414,7 +424,7 @@ const CriacaoReserva = () => {
                   value={formData.veiculoSelecionado}
                   onChange={handleInputChange}
                   required
-                  className="form-input"
+                  className={`form-input ${fieldErrors.veiculoSelecionado ? 'error' : ''}`}
                 >
                   <option value="">Selecione um veículo</option>
                   {veiculos.map((veiculo) => (
@@ -423,6 +433,7 @@ const CriacaoReserva = () => {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.veiculoSelecionado && <span className="field-error-text">{fieldErrors.veiculoSelecionado}</span>}
                 {veiculos.length === 0 && (
                   <small className="campo-hint warning">
                     Você precisa cadastrar um veículo para continuar.
@@ -528,6 +539,14 @@ const CriacaoReserva = () => {
           </button>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }

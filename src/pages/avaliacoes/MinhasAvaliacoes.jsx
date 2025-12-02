@@ -3,23 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { 
   MdStar, 
   MdStarBorder, 
-  MdEdit, 
   MdDelete, 
-  MdLocationOn,
   MdCalendarToday,
   MdThumbUp,
   MdThumbDown
 } from 'react-icons/md';
 import { avaliacaoService, usuarioService } from '../../utils/services';
-import { Toast, Header } from '../../components/shared';
+import { Toast, Header, Modal, ModalFooter, ModalActions, Button } from '../../components/shared';
+import parkingPhoto from '../../assets/parking-photo-mock.jpg';
 import './MinhasAvaliacoes.css';
 
 const MinhasAvaliacoes = () => {
   const navigate = useNavigate();
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [toast, setToast] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [avaliacaoToDelete, setAvaliacaoToDelete] = useState(null);
 
   useEffect(() => {
     fetchAvaliacoes();
@@ -27,7 +27,7 @@ const MinhasAvaliacoes = () => {
 
   const fetchAvaliacoes = async () => {
     setLoading(true);
-    setError('');
+    setToast(null);
     try {
       const userData = await usuarioService.getMe();
       const clienteId = userData.id;
@@ -36,24 +36,32 @@ const MinhasAvaliacoes = () => {
       setAvaliacoes(minhasAvaliacoes);
     } catch (e) {
       console.error('Erro ao carregar avaliações:', e);
-      setError(e.message || 'Erro ao carregar avaliações');
+      setToast({ message: e.message || 'Erro ao carregar avaliações', type: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (avaliacaoId) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta avaliação?')) {
-      return;
-    }
+  const confirmDelete = (avaliacaoId) => {
+    setAvaliacaoToDelete(avaliacaoId);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!avaliacaoToDelete) return;
 
     try {
-      await avaliacaoService.delete(avaliacaoId);
+      console.log(`Excluindo avaliação ${avaliacaoToDelete}...`);
+      await avaliacaoService.delete(avaliacaoToDelete);
       setToast({ message: 'Avaliação excluída com sucesso!', type: 'success' });
+      console.log('Avaliação excluída com sucesso');
       fetchAvaliacoes();
     } catch (e) {
       console.error('Erro ao excluir avaliação:', e);
       setToast({ message: e.message || 'Erro ao excluir avaliação', type: 'error' });
+    } finally {
+      setShowDeleteModal(false);
+      setAvaliacaoToDelete(null);
     }
   };
 
@@ -84,9 +92,13 @@ const MinhasAvaliacoes = () => {
   if (loading) {
     return (
       <div className="minhas-avaliacoes-page">
+        <Header 
+          title="Minhas Avaliações"
+          subtitle="Veja todas as avaliações que você fez sobre estacionamentos"
+        />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Carregando suas avaliações...</p>
+          <p>Carregando avaliações...</p>
         </div>
       </div>
     );
@@ -99,195 +111,140 @@ const MinhasAvaliacoes = () => {
         subtitle="Veja todas as avaliações que você fez sobre estacionamentos"
       />
 
-      {error && (
-        <div className="error-container" style={{
-          padding: '1rem',
-          background: '#fef2f2',
-          border: '1px solid #fecaca',
-          borderRadius: '8px',
-          color: '#991b1b',
-          marginBottom: '1.5rem'
-        }}>
-          {error}
-        </div>
-      )}
-
-      {avaliacoes.length === 0 && !error ? (
-        <div className="no-avaliacoes" style={{
-          textAlign: 'center',
-          padding: '3rem',
-          background: '#ffffff',
-          borderRadius: '12px',
-          border: '2px dashed #e5e7eb'
-        }}>
+      {avaliacoes.length === 0 ? (
+        <div className="no-avaliacoes">
           <MdStar size={64} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
-          <h3 style={{ margin: '0 0 .5rem 0', color: '#374151' }}>Nenhuma avaliação encontrada</h3>
-          <p style={{ margin: '0 0 1.5rem 0', color: '#6b7280', fontSize: '.875rem' }}>
+          <h3>Nenhuma avaliação encontrada</h3>
+          <p>
             Você ainda não avaliou nenhum estacionamento
           </p>
           <button
             onClick={() => navigate('/estacionamentos')}
-            style={{
-              padding: '.75rem 1.5rem',
-              background: '#3b82f6',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '.875rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}
+            className="btn-search"
           >
             Buscar Estacionamentos
           </button>
         </div>
       ) : (
-        <div className="avaliacoes-grid" style={{
-          display: 'grid',
-          gap: '1.5rem',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))'
-        }}>
-          {avaliacoes.map(avaliacao => (
+        <div className="avaliacoes-grid">
+          {avaliacoes.map(avaliacao => {
+            const estacionamento = avaliacao.estacionamento || {};
+            const fotoEstacionamento = estacionamento.foto || estacionamento.imagem || parkingPhoto;
+            
+            return (
             <div
               key={avaliacao.id}
               className="avaliacao-card"
-              style={{
-                background: '#ffffff',
-                borderRadius: '12px',
-                border: '1px solid #e5e7eb',
-                padding: '1.5rem',
-                transition: 'all 0.2s'
-              }}
             >
-              {/* Header do Card */}
-              <div style={{ marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.5rem' }}>
-                  <MdLocationOn style={{ color: '#6b7280', fontSize: '18px' }} />
-                  <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '600', color: '#111827' }}>
-                    {avaliacao.estacionamento?.nome || avaliacao.estacionamentoNome || 'Estacionamento'}
-                  </h3>
-                </div>
-                
-                <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: '.875rem', color: '#6b7280' }}>
-                  <MdCalendarToday size={16} />
+              <div className="card-image-container">
+                <img 
+                  src={fotoEstacionamento} 
+                  alt={estacionamento.nome || 'Estacionamento'} 
+                  className="card-image"
+                  onError={(e) => { e.target.src = parkingPhoto; }}
+                />
+                <div className="card-date-badge">
+                  <MdCalendarToday size={14} />
                   <span>{formatDate(avaliacao.dataDeAvaliacao || avaliacao.data || avaliacao.createdAt)}</span>
                 </div>
               </div>
 
-              {/* Nota com estrelas */}
-              <div style={{ marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
-                  {renderStars(avaliacao.nota || 0)}
-                  <span style={{ fontSize: '.875rem', fontWeight: '600', color: '#374151', marginLeft: '.5rem' }}>
+              <div className="card-content">
+                {/* Header do Card */}
+                <div className="card-header">
+                  <div className="estacionamento-info">
+                    <h3 className="estacionamento-name">
+                      {estacionamento.nome || avaliacao.estacionamentoNome || 'Estacionamento'}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Nota com estrelas */}
+                <div className="rating-display">
+                  <div className="stars-container">
+                    {renderStars(avaliacao.nota || 0)}
+                  </div>
+                  <span className="rating-value">
                     {avaliacao.nota || 0}/5
                   </span>
                 </div>
-              </div>
 
-              {/* Comentário */}
-              {avaliacao.comentario && (
-                <div style={{
-                  padding: '1rem',
-                  background: '#f9fafb',
-                  borderRadius: '8px',
-                  marginBottom: '1rem',
-                  fontSize: '.875rem',
-                  color: '#374151',
-                  lineHeight: '1.5'
-                }}>
-                  "{avaliacao.comentario}"
-                </div>
-              )}
+                {/* Comentário */}
+                {avaliacao.comentario && (
+                  <div className="comment-box">
+                    "{avaliacao.comentario}"
+                  </div>
+                )}
 
-              {/* Recomendaria */}
-              {avaliacao.recomendaria !== null && avaliacao.recomendaria !== undefined && (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '.5rem',
-                  padding: '.75rem',
-                  background: avaliacao.recomendaria ? '#d1fae5' : '#fee2e2',
-                  borderRadius: '8px',
-                  marginBottom: '1rem'
-                }}>
-                  {avaliacao.recomendaria ? (
-                    <>
-                      <MdThumbUp style={{ color: '#065f46', fontSize: '18px' }} />
-                      <span style={{ fontSize: '.875rem', fontWeight: '600', color: '#065f46' }}>
-                        Você recomenda este local
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <MdThumbDown style={{ color: '#991b1b', fontSize: '18px' }} />
-                      <span style={{ fontSize: '.875rem', fontWeight: '600', color: '#991b1b' }}>
-                        Você não recomenda este local
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
+                {/* Recomendaria */}
+                {avaliacao.recomendaria !== null && avaliacao.recomendaria !== undefined && (
+                  <div className={`recommendation-badge ${avaliacao.recomendaria ? 'positive' : 'negative'}`}>
+                    {avaliacao.recomendaria ? (
+                      <>
+                        <MdThumbUp style={{ fontSize: '16px' }} />
+                        <span>Recomendo</span>
+                      </>
+                    ) : (
+                      <>
+                        <MdThumbDown style={{ fontSize: '16px' }} />
+                        <span>Não recomendo</span>
+                      </>
+                    )}
+                  </div>
+                )}
 
-              {/* Detalhes da experiência */}
-              {avaliacao.detalhesExperiencia && avaliacao.detalhesExperiencia.length > 0 && (
-                <div style={{ marginBottom: '1rem' }}>
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '.5rem'
-                  }}>
+                {/* Detalhes da experiência */}
+                {avaliacao.detalhesExperiencia && avaliacao.detalhesExperiencia.length > 0 && (
+                  <div className="tags-container">
                     {avaliacao.detalhesExperiencia.map((detalhe, idx) => (
-                      <span
-                        key={idx}
-                        style={{
-                          padding: '.375rem .75rem',
-                          background: '#e0f2fe',
-                          color: '#0369a1',
-                          borderRadius: '9999px',
-                          fontSize: '.75rem',
-                          fontWeight: '500'
-                        }}
-                      >
+                      <span key={idx} className="tag">
                         {detalhe}
                       </span>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Ações */}
-              <div style={{
-                display: 'flex',
-                gap: '.5rem',
-                paddingTop: '1rem',
-                borderTop: '1px solid #e5e7eb'
-              }}>
-                <button
-                  onClick={() => handleDelete(avaliacao.id)}
-                  style={{
-                    flex: 1,
-                    padding: '.625rem',
-                    background: '#ffffff',
-                    color: '#ef4444',
-                    border: '1px solid #ef4444',
-                    borderRadius: '6px',
-                    fontSize: '.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '.5rem'
-                  }}
-                >
-                  <MdDelete size={18} />
-                  Excluir
-                </button>
+                {/* Ações */}
+                <div className="card-actions">
+                  <button
+                    onClick={() => confirmDelete(avaliacao.id)}
+                    className="btn-delete"
+                  >
+                    <MdDelete size={18} />
+                    Excluir
+                  </button>
+                </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      {/* Modal de Confirmação de Exclusão */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Excluir Avaliação"
+      >
+        <p>Tem certeza que deseja excluir esta avaliação? Esta ação não pode ser desfeita.</p>
+        <ModalFooter>
+          <ModalActions>
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancelar
+            </Button>
+            <Button 
+              variant="danger" 
+              onClick={handleDelete}
+            >
+              Excluir
+            </Button>
+          </ModalActions>
+        </ModalFooter>
+      </Modal>
 
       {toast && (
         <Toast
