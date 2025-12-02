@@ -98,7 +98,7 @@
 }
 
 .endereco .icon {
-  color: #3b82f6;
+  color: #65a30d;
   font-size: 16px;
 }
 
@@ -109,8 +109,8 @@
 
 .distancia {
   font-size: 12px;
-  color: #6b7280;
-  background: #f3f4f6;
+  color: #3f6212;
+  background: #ecfccb;
   padding: 4px 8px;
   border-radius: 4px;
   display: inline-block;
@@ -130,7 +130,7 @@
 .preco-valor {
   font-size: 18px;
   font-weight: 700;
-  color: #059669;
+  color: #1a2e05;
 }
 
 /* Formulário */
@@ -172,7 +172,7 @@
 }
 
 .campo label .icon {
-  color: #3b82f6;
+  color: #65a30d;
   font-size: 18px;
 }
 
@@ -188,8 +188,18 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #c2fe00;
+}
 
+.form-input.error {
+  border-color: #ef4444;
+}
+
+.field-error-text {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
 }
 
 .campo-hint {
@@ -242,8 +252,8 @@
 }
 
 .radio-item input[type="radio"]:checked + label {
-  border-color: #3b82f6;
-  background: #f0f9ff;
+  border-color: #c2fe00;
+  background: #f7fee7;
 }
 
 .radio-custom {
@@ -257,7 +267,7 @@
 }
 
 .radio-item input[type="radio"]:checked + label .radio-custom {
-  border-color: #3b82f6;
+  border-color: #a3d600;
 }
 
 .radio-item input[type="radio"]:checked + label .radio-custom::after {
@@ -268,7 +278,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #a3d600;
 }
 
 .radio-item label > div {
@@ -347,7 +357,7 @@
 .resumo-item.total .item-valor {
   font-size: 20px;
   font-weight: 700;
-  color: #059669;
+  color: #1a2e05;
 }
 
 /* Ações */
@@ -385,8 +395,8 @@
   justify-content: center;
   gap: 12px;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: white;
+  background-color: #c2fe00;
+  color: #000000;
   border: none;
   border-radius: 12px;
   font-size: 16px;
@@ -397,7 +407,7 @@
 
 .btn-confirmar:hover:not(:disabled) {
   transform: translateY(-2px);
-
+  background-color: #b2e600;
 }
 
 .btn-confirmar:disabled {
