@@ -15,6 +15,7 @@ import {
   MdInfo,
   MdCheck
 } from 'react-icons/md'
+import { Toast } from '../../components/shared'
 import './CriacaoReserva.css'
 
 const CriacaoReserva = () => {
@@ -22,7 +23,8 @@ const CriacaoReserva = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [toast, setToast] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
   
   // Dados do estacionamento (vem da navegação ou busca por ID)
   const [estacionamento, setEstacionamento] = useState(state?.estacionamento || null)
@@ -100,7 +102,7 @@ const CriacaoReserva = () => {
     } catch (err) {
       console.error('Erro ao carregar veículos:', err);
       setVeiculos([]);
-      setError('Erro ao carregar seus veículos. Por favor, cadastre um veículo antes de fazer uma reserva.');
+      setToast({ message: 'Erro ao carregar seus veículos. Por favor, cadastre um veículo antes de fazer uma reserva.', type: 'error' });
     }
   }
 
@@ -146,6 +148,11 @@ const CriacaoReserva = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
 
+    // Limpar erro do campo ao digitar
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: null }))
+    }
+
     if (name === 'duracao') {
       const opcaoSelecionada = opcoesDuracao.find(opcao => opcao.value === value)
       setFormData(prev => ({
@@ -163,9 +170,27 @@ const CriacaoReserva = () => {
 
   const validarFormulario = () => {
     const { dataInicio, horaInicio, veiculoSelecionado } = formData
+    const newErrors = {}
+    let isValid = true
     
-    if (!dataInicio || !horaInicio || !veiculoSelecionado) {
-      setError('Por favor, preencha todos os campos obrigatórios.')
+    if (!dataInicio) {
+      newErrors.dataInicio = 'Data é obrigatória'
+      isValid = false
+    }
+    
+    if (!horaInicio) {
+      newErrors.horaInicio = 'Hora é obrigatória'
+      isValid = false
+    }
+    
+    if (!veiculoSelecionado) {
+      newErrors.veiculoSelecionado = 'Selecione um veículo'
+      isValid = false
+    }
+
+    if (!isValid) {
+      setFieldErrors(newErrors)
+      setToast({ message: 'Por favor, preencha todos os campos obrigatórios.', type: 'error' })
       return false
     }
 
@@ -174,7 +199,7 @@ const CriacaoReserva = () => {
     const dataHoraReserva = new Date(`${dataInicio}T${horaInicio}`)
     
     if (dataHoraReserva <= agora) {
-      setError('A data e hora da reserva deve ser no futuro.')
+      setToast({ message: 'A data e hora da reserva deve ser no futuro.', type: 'error' })
       return false
     }
 
@@ -185,7 +210,7 @@ const CriacaoReserva = () => {
       const horaFechamento = parseInt(estacionamento.horarioFechamento.split(':')[0])
       
       if (horaReserva < horaAbertura || horaReserva >= horaFechamento) {
-        setError(`O horário deve estar entre ${estacionamento.horarioAbertura.substring(0, 5)} e ${estacionamento.horarioFechamento.substring(0, 5)}.`)
+        setToast({ message: `O horário deve estar entre ${estacionamento.horarioAbertura.substring(0, 5)} e ${estacionamento.horarioFechamento.substring(0, 5)}.`, type: 'error' })
         return false
       }
     }
@@ -201,7 +226,7 @@ const CriacaoReserva = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(null)
+    setToast(null)
 
     if (!validarFormulario()) {
       return
@@ -265,7 +290,7 @@ const CriacaoReserva = () => {
 
     } catch (err) {
       console.error('Erro ao criar reserva:', err)
-      setError(err.message || 'Erro ao criar reserva. Tente novamente.')
+      setToast({ message: err.message || 'Erro ao criar reserva. Tente novamente.', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -324,13 +349,6 @@ const CriacaoReserva = () => {
           <div className="secao formulario-campos">
             <h2>Detalhes da Reserva</h2>
             
-            {error && (
-              <div className="error-message">
-                <MdInfo className="icon" />
-                {error}
-              </div>
-            )}
-
             <div className="campos-grid">
               {/* Data de Início */}
               <div className="campo">
@@ -346,8 +364,9 @@ const CriacaoReserva = () => {
                   onChange={handleInputChange}
                   min={new Date().toISOString().split('T')[0]}
                   required
-                  className="form-input"
+                  className={`form-input ${fieldErrors.dataInicio ? 'error' : ''}`}
                 />
+                {fieldErrors.dataInicio && <span className="field-error-text">{fieldErrors.dataInicio}</span>}
               </div>
 
               {/* Hora de Início */}
@@ -363,8 +382,9 @@ const CriacaoReserva = () => {
                   value={formData.horaInicio}
                   onChange={handleInputChange}
                   required
-                  className="form-input"
+                  className={`form-input ${fieldErrors.horaInicio ? 'error' : ''}`}
                 />
+                {fieldErrors.horaInicio && <span className="field-error-text">{fieldErrors.horaInicio}</span>}
                 <small className="campo-hint">
                   Funcionamento: {estacionamento.horarioAbertura?.substring(0, 5)} às {estacionamento.horarioFechamento?.substring(0, 5)}
                 </small>
@@ -404,7 +424,7 @@ const CriacaoReserva = () => {
                   value={formData.veiculoSelecionado}
                   onChange={handleInputChange}
                   required
-                  className="form-input"
+                  className={`form-input ${fieldErrors.veiculoSelecionado ? 'error' : ''}`}
                 >
                   <option value="">Selecione um veículo</option>
                   {veiculos.map((veiculo) => (
@@ -413,6 +433,7 @@ const CriacaoReserva = () => {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.veiculoSelecionado && <span className="field-error-text">{fieldErrors.veiculoSelecionado}</span>}
                 {veiculos.length === 0 && (
                   <small className="campo-hint warning">
                     Você precisa cadastrar um veículo para continuar.
@@ -518,6 +539,14 @@ const CriacaoReserva = () => {
           </button>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }
