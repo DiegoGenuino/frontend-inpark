@@ -635,7 +635,12 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .pagamento-page {
+    padding: 0;
+  }
+
+  .pagamento-header {
     padding: 16px;
+    margin-bottom: 16px;
   }
 
   .pagamento-header h1 {
@@ -645,11 +650,12 @@
   .pagamento-container {
     grid-template-columns: 1fr;
     gap: 24px;
+    padding: 0 16px 16px 16px;
   }
 
   .pagamento-sidebar {
     position: static;
-    order: -1;
+    /* order: -1; Removido para ficar no final */
   }
 
   .metodos-grid {
