@@ -6,7 +6,7 @@ import {
   MdLocalParking,
   MdStar,
 } from "react-icons/md";
-import { Header } from '../../components/shared';
+import { Header, Toast } from '../../components/shared';
 import { useAuth } from "../../utils/auth";
 import { reservaService, usuarioService } from "../../utils/services";
 import "./MinhasReservas.css";
@@ -17,14 +17,17 @@ const MinhasReservas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [tabFilter, setTabFilter] = useState("ativas"); // 'ativas' ou 'historico'
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [reservas, setReservas] = useState([]);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
 
   // Buscar reservas do backend ao montar o componente
   useEffect(() => {
     const fetchReservas = async () => {
       setLoading(true);
-      setError("");
       try {
         // 1. Buscar dados do usuário logado
         const userData = await usuarioService.getMe();
@@ -39,7 +42,7 @@ const MinhasReservas = () => {
         setReservas(minhasReservas);
       } catch (e) {
         console.error('Erro ao carregar reservas:', e);
-        setError(e.message || 'Erro ao carregar reservas');
+        showToast(e.message || 'Erro ao carregar reservas', 'error');
       } finally {
         setLoading(false);
       }
@@ -146,8 +149,6 @@ const MinhasReservas = () => {
         title="Minhas Reservas"
         subtitle="Gerencie todas as suas reservas de estacionamento"
       />
-
-      {error && <div className="error-container">{error}</div>}
 
       {/* Navegação e Filtros */}
       <div className="filtros-section">
@@ -338,6 +339,14 @@ const MinhasReservas = () => {
           </div>
         )}
       </div>
+
+      {toast.visible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, visible: false })}
+        />
+      )}
     </div>
   );
 };
