@@ -56,10 +56,14 @@ export const Sidebar = () => {
 
     return (
         <>
-            {/* Botão Hambúrguer Mobile */}
-            <button className="mobile-menu-toggle" onClick={toggleMobileMenu} aria-label="Menu">
-                {isMobileMenuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
-            </button>
+            {/* Topbar Mobile */}
+            <div className="mobile-topbar">
+                <button className="mobile-menu-toggle" onClick={toggleMobileMenu} aria-label="Menu">
+                    {isMobileMenuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+                </button>
+                <img src={InparkLogo} alt="Inpark" style={{ height: '24px' }} />
+                <div style={{ width: '40px' }}></div> {/* Espaçador para equilíbrio visual */}
+            </div>
 
             {/* Overlay para fechar menu ao clicar fora */}
             {isMobileMenuOpen && (
@@ -71,6 +75,9 @@ export const Sidebar = () => {
                     <div className="brand-name">
                         <img src={InparkLogo} alt="Inpark" className="inpark-logo-img" />
                     </div>
+                    <button className="sidebar-close-button" onClick={closeMobileMenu}>
+                        <MdClose size={24} />
+                    </button>
                 </div>
             
             <nav className="sidebar-nav">
