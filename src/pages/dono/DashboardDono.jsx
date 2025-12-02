@@ -125,8 +125,8 @@ const DashboardDono = () => {
       {/* Cards de Estatísticas */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon" style={{ backgroundColor: '#e3f2fd' }}>
-            <MdLocalParking style={{ color: '#1976d2' }} />
+          <div className="stat-icon stat-icon-parking">
+            <MdLocalParking />
           </div>
           <div className="stat-content">
             <p className="stat-label">Estacionamentos</p>
@@ -136,8 +136,8 @@ const DashboardDono = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ backgroundColor: '#f3e5f5' }}>
-            <MdEventNote style={{ color: '#7b1fa2' }} />
+          <div className="stat-icon stat-icon-vagas">
+            <MdEventNote />
           </div>
           <div className="stat-content">
             <p className="stat-label">Vagas Disponíveis</p>
@@ -147,8 +147,8 @@ const DashboardDono = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ backgroundColor: '#e8f5e9' }}>
-            <MdAttachMoney style={{ color: '#388e3c' }} />
+          <div className="stat-icon stat-icon-money">
+            <MdAttachMoney />
           </div>
           <div className="stat-content">
             <p className="stat-label">Receita Mensal</p>
@@ -160,8 +160,8 @@ const DashboardDono = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon" style={{ backgroundColor: '#fff3e0' }}>
-            <MdPending style={{ color: '#f57c00' }} />
+          <div className="stat-icon stat-icon-pending">
+            <MdPending />
           </div>
           <div className="stat-content">
             <p className="stat-label">Reservas Pendentes</p>
