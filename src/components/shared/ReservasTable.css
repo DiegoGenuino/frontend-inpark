@@ -55,7 +55,7 @@
 
 .reservas-table .td-valor {
   font-weight: 600;
-  color: #059669;
+  color: #1a2e05;
 }
 
 .reservas-table .status-badge {
@@ -69,13 +69,13 @@
 }
 
 .reservas-table .status-pendente {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: #fef9c3;
+  color: #854d0e;
 }
 
 .reservas-table .status-aceita {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: #ecfccb;
+  color: #365314;
 }
 
 .reservas-table .status-recusada {
@@ -123,12 +123,12 @@
 }
 
 .reservas-table .btn-accept {
-  background-color: #10b981;
-  color: #ffffff;
+  background-color: #c2fe00;
+  color: #000000;
 }
 
 .reservas-table .btn-accept:hover:not(:disabled) {
-  background-color: #059669;
+  background-color: #b2e600;
 }
 
 .reservas-table .btn-reject {
