@@ -596,43 +596,51 @@
   position: sticky;
   bottom: 0;
   background: white;
-  padding: 20px 0;
+  padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
   margin-top: 32px;
-}
-
-.btn-reservar {
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 16px 24px;
-  background-color: #adff00;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.btn-reservar {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #c2fe00;
   color: rgb(0, 0, 0);
   border: none;
-  border-radius: 12px;
-  font-size: 18px;
+  border-radius: 8px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
-  margin-bottom: 12px;
+  margin-bottom: 0;
+  max-width: 400px;
 }
 
 .btn-reservar:hover {
-  transform: translateY(-2px);
- 
+  transform: translateY(-1px);
+  background-color: #b2e600;
 }
 
 .acoes-secundarias {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 200px;
 }
 
 .btn-ligar,
 .btn-rota,
 .btn-avaliar {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -645,6 +653,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
+  font-size: 14px;
 }
 
 .btn-ligar:hover,
@@ -657,6 +666,11 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .detalhes-estacionamento {
+    padding: 0;
+  }
+
+  .secao {
+    margin: 0 16px 16px 16px;
     padding: 16px;
   }
 
@@ -664,6 +678,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+    padding: 16px;
   }
 
   .detalhes-header h1 {
