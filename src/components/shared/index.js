@@ -9,3 +9,4 @@ export { default as Toast } from './Toast';
 export { default as PageHeader } from './PageHeader';
 export { default as Header } from './Header';
 export { default as ReservasTable } from './ReservasTable';
+export { default as FormWizard } from './FormWizard';
