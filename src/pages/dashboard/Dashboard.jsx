@@ -135,13 +135,12 @@ export default function Dashboard() {
     return (
         <div className="dashboard">
             <Header 
-                title={`Olá, ${user?.nome?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário'}!`}
+                title={`OLÁ, ${user?.nome?.split(' ')[0].toUpperCase() || user?.email?.split('@')[0].toUpperCase() || 'USUÁRIO'}!`}
                 subtitle="Bem-vindo ao seu painel de controle"
                 actions={
                     <div className="card-user-info">
-                        <MdPerson className="user-icon" />
                         <div className="info-user">
-                            <span className="user-name">{user?.nome || user?.email || 'Usuário'}</span>
+                            <span className="user-name">{user?.email || user?.nome || 'Usuário'}</span>
                             <span className="user-role">{getRoleLabel(role)}</span>
                         </div>
                     </div>
