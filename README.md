@@ -63,8 +63,8 @@ In summary, the proposal is to facilitate both the management of parking lots an
 
 What began as part of a Course Completion Project has grown into something larger. Today, Inpark is a project to improve our skills as programmers, part of our professional portfolio, and a system in constant evolution; our current objectives for the front-end of the system are to improve the user experience (UX), enhance the interface’s responsiveness and performance, refactor existing components, and add new visual and administrative features.
 
-⚠️ IMPORTANT
-This repository contains only the front-end (system interface). The back-end, responsible for business logic and data management, is available in a separate repository.
+⚠️ **IMPORTANT
+This repository contains only the front-end (system interface). The back-end, responsible for business logic and data management, is available in a separate repository.**
 
 🌐 Back-End Repository
 
