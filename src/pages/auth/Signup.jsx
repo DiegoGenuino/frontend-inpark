@@ -1,19 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
-import InparkLogo from "../../assets/inpark-logo.svg";
+import InparkLogoBlack from "../../assets/inpark-logo-black.svg";
+import RegisterPagePhoto from "../../assets/register-page-photo.png";
 import api from "../../utils/api";
 import "./Signup.css";
 
 export const Signup = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     nome: "",
     dataNascimento: "",
     email: "",
     senha: "",
+    confirmaSenha: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,6 +32,31 @@ export const Signup = () => {
     }));
   };
 
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError("A foto deve ter no máximo 2MB");
+        return;
+      }
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        setError("A foto deve ser JPG ou PNG");
+        return;
+      }
+      setProfilePhoto(file);
+      setProfilePhotoPreview(URL.createObjectURL(file));
+      setError("");
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setProfilePhoto(null);
+    setProfilePhotoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   // Validações em tempo real
   const getNomeCompletoFeedback = () => {
     if (!formData.nome) {
@@ -35,7 +66,7 @@ export const Signup = () => {
     if (nomes.length < 2 || nomes.some((n) => n.length < 2)) {
       return { text: "Digite seu nome e sobrenome", type: "warning" };
     }
-    return { text: "✓ Nome válido", type: "valid" };
+    return { text: "Nome válido", type: "valid" };
   };
 
   const getDataNascimentoFeedback = () => {
@@ -52,7 +83,7 @@ export const Signup = () => {
     if (idade > 120) {
       return { text: "Data inválida", type: "error" };
     }
-    return { text: "✓ Data válida", type: "valid" };
+    return { text: "Idade +18", type: "valid" };
   };
 
   const getEmailFeedback = () => {
@@ -63,7 +94,7 @@ export const Signup = () => {
     if (!emailRegex.test(formData.email)) {
       return { text: "Digite um email válido", type: "warning" };
     }
-    return { text: "✓ Email válido", type: "valid" };
+    return { text: "E-mail válido", type: "valid" };
   };
 
   const getSenhaFeedback = () => {
@@ -73,7 +104,17 @@ export const Signup = () => {
     if (formData.senha.length < 6) {
       return { text: "Senha deve ter pelo menos 6 caracteres", type: "warning" };
     }
-    return { text: "✓ Senha válida", type: "valid" };
+    return { text: "Senha válida", type: "valid" };
+  };
+
+  const getConfirmaSenhaFeedback = () => {
+    if (!formData.confirmaSenha) {
+      return { text: "Confirme sua senha", type: "neutral" };
+    }
+    if (formData.confirmaSenha !== formData.senha) {
+      return { text: "Senha não condiz", type: "error" };
+    }
+    return { text: "Senhas conferem", type: "valid" };
   };
 
   const handleSubmit = async (e) => {
@@ -103,6 +144,12 @@ export const Signup = () => {
 
     if (formData.senha.length < 6) {
       setError("A senha deve ter pelo menos 6 caracteres");
+      setLoading(false);
+      return;
+    }
+
+    if (formData.confirmaSenha !== formData.senha) {
+      setError("As senhas não conferem");
       setLoading(false);
       return;
     }
@@ -152,130 +199,206 @@ export const Signup = () => {
 
   return (
     <div className="signup-container">
-      <div className="signup-card">
-        <img src={InparkLogo} alt="Inpark Logo" />
+      <div className="signup-left-panel">
+        <img src={InparkLogoBlack} alt="Inpark Logo" className="signup-logo" />
+        <div className="signup-illustration-container">
+          <div className="signup-illustration">
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="signup-form">
-        <img
-          src={InparkLogo}
-          alt="Logotipo inpark"
-          className="logotipo-inpark"
-        />
+      <div className="signup-right-panel">
+        <form onSubmit={handleSubmit} className="signup-form">
+          <h1>Crie sua conta</h1>
 
-        <h1>Criar sua conta</h1>
-        <p className="subtitle">Cadastre-se no InPark para começar</p>
+          {error && <div className="error-message">{error}</div>}
+          {success && <div className="success-message">{success}</div>}
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="nome">Nome completo</label>
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                value={formData.nome}
+                onChange={handleInputChange}
+                placeholder="Diego Genuino"
+                required
+                disabled={loading}
+              />
+              <span
+                className="input-feedback"
+                data-valid={getNomeCompletoFeedback().type === "valid"}
+                data-warning={getNomeCompletoFeedback().type === "warning"}
+                data-neutral={getNomeCompletoFeedback().type === "neutral"}
+              >
+                {getNomeCompletoFeedback().text}
+              </span>
+            </div>
 
-        <div className="form-group">
-          <label htmlFor="nome">Nome completo</label>
-          <input
-            type="text"
-            id="nome"
-            name="nome"
-            value={formData.nome}
-            onChange={handleInputChange}
-            placeholder="Ex: João Silva"
-            required
-            disabled={loading}
-          />
-          <span
-            className="input-feedback"
-            data-valid={getNomeCompletoFeedback().type === "valid"}
-            data-warning={getNomeCompletoFeedback().type === "warning"}
-            data-neutral={getNomeCompletoFeedback().type === "neutral"}
-          >
-            {getNomeCompletoFeedback().text}
-          </span>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="dataNascimento">Data de nascimento</label>
-          <input
-            type="date"
-            id="dataNascimento"
-            name="dataNascimento"
-            value={formData.dataNascimento}
-            onChange={handleInputChange}
-            required
-            disabled={loading}
-            max={new Date().toISOString().split("T")[0]}
-          />
-          <span
-            className="input-feedback"
-            data-valid={getDataNascimentoFeedback().type === "valid"}
-            data-warning={getDataNascimentoFeedback().type === "warning"}
-            data-neutral={getDataNascimentoFeedback().type === "neutral"}
-            data-error={getDataNascimentoFeedback().type === "error"}
-          >
-            {getDataNascimentoFeedback().text}
-          </span>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="email">E-mail</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="seuemail@exemplo.com"
-            required
-            disabled={loading}
-          />
-          <span
-            className="input-feedback"
-            data-valid={getEmailFeedback().type === "valid"}
-            data-warning={getEmailFeedback().type === "warning"}
-            data-neutral={getEmailFeedback().type === "neutral"}
-          >
-            {getEmailFeedback().text}
-          </span>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="senha">Senha</label>
-          <div className="password-input-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="senha"
-              name="senha"
-              value={formData.senha}
-              onChange={handleInputChange}
-              placeholder="Senha123"
-              required
-              disabled={loading}
-            />
-            <button
-              type="button"
-              className="password-toggle-btn"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-            >
-              {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
-            </button>
+            <div className="form-group">
+              <label htmlFor="dataNascimento">Data de nascimento</label>
+              <input
+                type="date"
+                id="dataNascimento"
+                name="dataNascimento"
+                value={formData.dataNascimento}
+                onChange={handleInputChange}
+                required
+                disabled={loading}
+                max={new Date().toISOString().split("T")[0]}
+              />
+              <span
+                className="input-feedback"
+                data-valid={getDataNascimentoFeedback().type === "valid"}
+                data-warning={getDataNascimentoFeedback().type === "warning"}
+                data-neutral={getDataNascimentoFeedback().type === "neutral"}
+                data-error={getDataNascimentoFeedback().type === "error"}
+              >
+                {getDataNascimentoFeedback().text}
+              </span>
+            </div>
           </div>
-          <span
-            className="input-feedback"
-            data-valid={getSenhaFeedback().type === "valid"}
-            data-warning={getSenhaFeedback().type === "warning"}
-            data-neutral={getSenhaFeedback().type === "neutral"}
-          >
-            {getSenhaFeedback().text}
-          </span>
-        </div>
 
-        <button type="submit" className="signup-button" disabled={loading}>
-          {loading ? "Criando conta..." : "Criar conta"}
-        </button>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="email">E-mail</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="seuemail@exemplo.com"
+                required
+                disabled={loading}
+              />
+              <span
+                className="input-feedback"
+                data-valid={getEmailFeedback().type === "valid"}
+                data-warning={getEmailFeedback().type === "warning"}
+                data-neutral={getEmailFeedback().type === "neutral"}
+              >
+                {getEmailFeedback().text}
+              </span>
+            </div>
 
-        <div className="login-link">
-          Já tem uma conta? <Link to="/login">Faça login</Link>
-        </div>
-      </form>
+            <div className="form-group">
+              <label htmlFor="senha">Senha</label>
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="senha"
+                  name="senha"
+                  value={formData.senha}
+                  onChange={handleInputChange}
+                  placeholder="************"
+                  required
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                </button>
+              </div>
+              <span
+                className="input-feedback"
+                data-valid={getSenhaFeedback().type === "valid"}
+                data-warning={getSenhaFeedback().type === "warning"}
+                data-neutral={getSenhaFeedback().type === "neutral"}
+              >
+                {getSenhaFeedback().text}
+              </span>
+            </div>
+          </div>
+
+          <div className="form-group full-width">
+            <label htmlFor="confirmaSenha">Confirme sua senha</label>
+            <div className="password-input-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmaSenha"
+                name="confirmaSenha"
+                value={formData.confirmaSenha}
+                onChange={handleInputChange}
+                placeholder="************"
+                required
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showConfirmPassword ? <MdVisibilityOff /> : <MdVisibility />}
+              </button>
+            </div>
+            <span
+              className="input-feedback"
+              data-valid={getConfirmaSenhaFeedback().type === "valid"}
+              data-warning={getConfirmaSenhaFeedback().type === "warning"}
+              data-neutral={getConfirmaSenhaFeedback().type === "neutral"}
+              data-error={getConfirmaSenhaFeedback().type === "error"}
+            >
+              {getConfirmaSenhaFeedback().text}
+            </span>
+          </div>
+
+          <div className="form-group full-width">
+            <label>
+              Foto de perfil <span className="optional-text">(opcional)</span>
+            </label>
+            <div 
+              className="photo-upload-area"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/jpeg,image/png"
+                onChange={handlePhotoUpload}
+                disabled={loading}
+              />
+              <p className="upload-text">Clique para fazer o upload da sua foto</p>
+              <p className="file-info">JPG ou PNG, máximo 2MB</p>
+            </div>
+            
+            {profilePhotoPreview && (
+              <div className="photo-preview-container">
+                <p className="preview-label">Preview da foto</p>
+                <div className="photo-preview-wrapper">
+                  <img 
+                    src={profilePhotoPreview} 
+                    alt="Preview" 
+                    className="photo-preview" 
+                  />
+                  <button 
+                    type="button" 
+                    className="remove-photo-btn"
+                    onClick={handleRemovePhoto}
+                  >
+                    Excluir foto
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button type="submit" className="signup-button" disabled={loading}>
+            {loading ? "Criando conta..." : "Concluir cadastro"}
+          </button>
+
+          <div className="login-link">
+            Já tem uma conta? <Link to="/login">Faça login</Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
